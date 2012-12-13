@@ -1,0 +1,53 @@
+# The defaults to be used if the conf/tag-formats file does not exist
+# ===================================================================
+
+# Create yearly backups (<YEAR>).
+# By default, yearly backups are kept forever.
+%Y
+
+# Create montly backups (<YEAR><MONTH> or <YEAR>-<MONTH>).
+# By default, monthly backups are kept for 1 year.
+%Y%m
+#%Y-%m
+
+# Create weekly backups (<YEAR>W<WEEK> or <YEAR>-W<WEEK>).
+# By default, weekly backups are kept for 1 month.
+%GW%V
+#%G-W%V
+
+# Create daily backups (<YEAR><MONTH><DAY>, <YEAR>-<MONTH>-<DAY>,
+# <YEAR>W<WEEK><DAY> or <YEAR>-W<WEEK>-<DAY>).
+# By default, daily backups  are kept for 1 week.
+%Y%m%d
+#%Y-%m-%d
+#%GW%V%u
+#%G-W%V-%u
+
+# Create hourly backups (<YEAR><MONTH><DAY>T<HOUR>,
+# <YEAR>-<MONTH>-<DAY>T<HOUR>, <YEAR>W<WEEK><DAY>T<HOUR> or
+# <YEAR>-W<WEEK>-<DAY>T<HOUR>).
+# By default, hourly backups are kept for 1 day.
+%Y%m%dT%H
+#%Y-%m-%dT%H
+#%GW%V%uT%H
+#%G-W%V-%uT%H
+
+# Create minutely backups (<YEAR><MONTH><DAY>T<HOUR><MINUTE>,
+# <YEAR>-<MONTH>-<DAY>T<HOUR>:<MINUTE>,
+# <YEAR>W<WEEK><DAY>T<HOUR><MINUTE> or
+# <YEAR>-W<WEEK>-<DAY>T<HOUR>:<MINUTE>).
+# By default, minutely backups are kept for 1 day.
+%Y%m%dT%H%M
+#%Y-%m-%dT%H:%M
+#%GW%V%uT%H%M
+#%G-W%V-%uT%H:%M
+
+# Create secondly backups (<YEAR><MONTH><DAY>T<HOUR><MINUTE><SECOND>, 
+# <YEAR>-<MONTH>-<DAY>T<HOUR>:<MINUTE>:<SECOND>,
+# <YEAR>W<WEEK><DAY>T<HOUR><MINUTE><SECOND> or
+# <YEAR>-W<WEEK>-<DAY>T<HOUR>:<MINUTE>:<SECOND>).
+# By default, secondly backups are kept for 1 day.
+%Y%m%dT%H%M%S
+#%Y-%m-%dT%H:%M:%S
+#%GW%V%uT%H%M%S
+#%G-W%V-%uT%H:%M:%S

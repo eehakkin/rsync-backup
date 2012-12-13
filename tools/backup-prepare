@@ -1,0 +1,91 @@
+#! /bin/sh -Ceu
+###########################################################################
+# backup-prepare 0.0.20121212
+#
+# Copyright (C) 2010-2012 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 3
+# as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###########################################################################
+# Try to be nice.
+{
+	ionice -c 3  -p "${$}"
+	renice -n 10 -p "${$}"
+} > /dev/null 2>&1 || :
+
+# Locate the script.
+me=$( which -- "${0}" || ls -d -- "${0}" )
+dir=$( dirname -- "${me}" )
+case ${dir} in
+. ) dir=.. ;;
+* ) dir=$( dirname -- "${dir}" ) ;;
+esac
+
+short_description='prepare for backups'
+valid=[:alnum:]_.-
+
+case ${1-} in
+--help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
+Usage: ${0##*[\\/]} [<OPTION>]...
+
+Prepare for backups by executing preparation scripts. \
+This can be used for dumping database snapshots to files, for instance.
+
+Options:
+    -h, --help[=<FORMAT>]
+        Show this help message and exit.
+    -V, --version
+        Show version information and exit.
+
+Files:
+    ${dir%/*/..}/conf/pre.d/
+        An optional directory containing scripts \
+which are executed in lexical order of names. \
+The names of the files must consist of only characters \
+matching the pattern [${valid}].
+__HELP__
+;;
+--help=help2man )
+	COLUMNS=2500 exec "${0}" --help \
+	| sed \
+		-e '/^    [^ ]/!b'	\
+		-e 'N'			\
+		-e 's/\n        /  /'	\
+		-e 'P'			\
+		-e 'D'
+	exit
+	;;
+--help=man )
+	exec "${0}" --help=troff \
+	| exec man -l -- -
+	exit
+	;;
+--help=troff )
+	exec help2man -h --help=help2man -L en_US.UTF-8 -N -n "${short_description}" -- "${0}"
+	;;
+--version | -V )
+	exec sed -n \
+		-e '/^[^#]/q'			\
+		-e 's/^#\( \(.*\)\)*$/\2/p'	\
+		-e '/^##/{2!q;}'		\
+		-- "${me}"
+	;;
+esac
+
+# Prepare for backup.
+for file in "${dir}"/conf/pre.d/*
+do
+	case ${file##*/} in
+	*[!${valid}]* ) continue ;;
+	esac
+	"${file}" || :
+done

@@ -1,0 +1,22 @@
+#! /bin/sh -Ceu
+
+# A sample conf/rsh file
+# ======================
+
+# Locate the script.
+me=$( which -- "${0}" || ls -d -- "${0}" )
+conf=$( dirname -- "${me}" )
+
+# Use a proxy command for root.
+case " ${*} " in
+*' -l root '* ) set -- -o ProxyCommand="\
+'${0}' -l backup -p '%p' -- '%h' nc -w 60 -- localhost '%p'\
+" "${@}" ;;
+esac
+
+# Execute SSH with extra options.
+exec ssh \
+	-i "${conf}/id_rsa"		\
+	-o ClearAllForwardings=yes	\
+	-o StrictHostKeyChecking=yes	\
+	"${@}"

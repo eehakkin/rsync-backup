@@ -1,0 +1,64 @@
+The conf/pre.d directory
+========================
+
+An optional directory containing scripts which are executed in lexical
+order of names by the backup-prepare(1) tool when preparing for backups.
+The names of the files must consist of only characters matching the
+pattern [[:alnum:]_.-].
+
+The conf/purge-list file
+========================
+
+An optional file to override the default patterns and ages. The file
+must contain operand lines having the following form:
+    <PATTERN>=<DAYS>
+These operands will be passed to the backup-purge(1) tool by the
+backup(1) tool. Empty lines and comment lines (starting with a "#") are
+allowed, too. Backup directories matching <PATTERN> are deleted if they
+are over <DAYS> day old. Special patterns:
+    yearly   [0-9][0-9][0-9][0-9]
+             (for <YEAR>)
+    monthly  [0-9][0-9][0-9][0-9][0-9][0-9]
+             [0-9][0-9][0-9][0-9]-[0-9][0-9]
+             (for <YEAR><MONTH> and <YEAR>-<MONTH>)
+    weekly   [0-9][0-9][0-9][0-9]W[0-9][0-9]
+             [0-9][0-9][0-9][0-9]-W[0-9][0-9]
+             (for <YEAR>W<WEEK> and <YEAR>-W<WEEK>)
+    daily    [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]
+             [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]
+             [0-9][0-9][0-9][0-9]W[0-9][0-9][0-9]
+             [0-9][0-9][0-9][0-9]-W[0-9][0-9]-[0-9]
+             (for <YEAR><MONTH><DAY>, <YEAR>-<MONTH>-<DAY>,
+             <YEAR>W<WEEK><DAY> and <YEAR>-W<WEEK>-<DAY>)
+    hourly   [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]T[0-9][0-9]*
+             [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]*
+             [0-9][0-9][0-9][0-9]W[0-9][0-9][0-9]T[0-9][0-9]*
+             [0-9][0-9][0-9][0-9]-W[0-9][0-9]-[0-9]T[0-9][0-9]*
+             (for <YEAR><MONTH><DAY>T<HOUR>*, <YEAR>-<MONTH>-<DAY>T<HOUR>*,
+             <YEAR>W<WEEK><DAY>T<HOUR>* and <YEAR>-W<WEEK>-<DAY>T<HOUR>*)
+
+The conf/rsh file
+=================
+
+An optional script to be used as a remote shell instead of the plain
+ssh(1). This script can be used for setting identity files and proxy
+commands, for instance.
+
+The conf/src-list file
+======================
+
+A file to specify the sources to be used when creating backups. The file
+must contain operand lines having the following form:
+    [[<USER>@]<HOST>:]<SRC>
+These operands will be passed to the backup-create(1) tool by the
+backup(1) tool. Empty lines and comment lines (starting with a "#") are
+allowed, too.
+
+The conf/tag-formats file
+=========================
+
+An optional file containing date formats to be used by the
+backup-create(1) tool when constructing backup directory names for
+backups. Empty lines and comment lines (starting with a "#") are
+allowed, too. Each date format is tried in turn in order specified until
+a non-existing backup directory is found.

@@ -1,0 +1,217 @@
+#! /bin/sh -Ceu
+###########################################################################
+# backup-pull 0.0.20121212
+#
+# Copyright (C) 2010-2012 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 3
+# as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###########################################################################
+# Try to be nice.
+{
+	ionice -c 3  -p "${$}"
+	renice -n 10 -p "${$}"
+} > /dev/null 2>&1 || :
+
+# Locate the script.
+me=$( which -- "${0}" || ls -d -- "${0}" )
+dir=$( dirname -- "${me}" )
+case ${dir} in
+. ) dir=.. ;;
+* ) dir=$( dirname -- "${dir}" ) ;;
+esac
+
+short_description='pull backups'
+
+
+case ${1-} in
+--help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
+Usage: ${0##*[\\/]} [<RSYNC-OPTION>]... [[<USER>@]<HOST>:]<SRC>[/[.]]...
+ or:   ${0##*[\\/]} <OPTION>...
+
+Pull backups using rsync(1). \
+Backups are pulled using the following steps:
+
+  Old temporary backup directories are deleted.
+
+  Source backup directories are copied to a temporary directory \
+using rsync(1) \
+if they are missing from the final location.
+
+  New backup directories are created in a temporary directory.
+  
+  Files and directories are copied \
+from copied source backup directories \
+to the newly created backup directories \
+using rsync(1). \
+Disk usage is minimised and \
+the transfer is speeded up \
+by hard linking files \
+from old backup directories \
+to the newly created backup directory \
+whenever possible \
+(when files in sources and previous backup directories are identical \
+in content and in all preserved attributes).
+
+  A new symbolink link to denote the latest backup directory \
+is created in a temporary directory.
+
+  The newly created backup directories and \
+the newly created symbolink link \
+are moved to the final location.
+
+Options:
+    -h, --help[=<FORMAT>]
+        Show this help message and exit.
+    -V, --version
+        Show version information and exit.
+
+Rsync options:
+$( rsync --help | sed '
+	/^ *-/,/^$/!d
+	/ --help/d
+	/ --version/d
+	/./!d
+	s/^ */        /
+	s/,-/, -/g
+	/^ *-/{
+		s//    -/
+		s/\([^, ]\) /\1\
+/
+	}
+	P
+	D
+' )
+
+Operands:
+    [[<USER>@]<HOST>:]<SRC>/[.]
+        A directory containing source backup directories to be pulled.
+    [[<USER>@]<HOST>:]<SRC>
+        A source backup directory to be pulled.
+
+Files:
+    ${dir}/<YEAR>
+        A yearly backup directory.
+    ${dir}/<YEAR>[-]<MONTH>
+        A monthly backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>
+        A weekly backup directory.
+    ${dir}/<YEAR>[-]<MONTH>[-]<DAY>
+        A daily backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>
+        A daily backup directory.
+    ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>
+        An hourly backup directory.
+    ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[:]<MINUTE>
+        A minutely backup directory.
+    ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[:]<MINUTE>[:]<SECOND>
+        A secondly backup directory.
+    ${dir}/latest
+        A symbolic link to the latest backup directory.
+    $( which rsync )
+        A fast and extraordinarily versatile file copying tool. \
+See also rsync(1).
+__HELP__
+;;
+--help=help2man )
+	COLUMNS=2500 exec "${0}" --help \
+	| sed \
+		-e '/^    [^ ]/!b'	\
+		-e 'N'			\
+		-e 's/\n        /  /'	\
+		-e 'P'			\
+		-e 'D'
+	exit
+	;;
+--help=man )
+	exec "${0}" --help=troff \
+	| exec man -l -- -
+	exit
+	;;
+--help=troff )
+	exec help2man -h --help=help2man -L en_US.UTF-8 -N -n "${short_description}" -- "${0}"
+	;;
+--version | -V )
+	exec sed -n \
+		-e '/^[^#]/q'			\
+		-e 's/^#\( \(.*\)\)*$/\2/p'	\
+		-e '/^##/{2!q;}'		\
+		-- "${me}"
+	;;
+esac
+
+# Create a protected temporary directory.
+mkdir -m go=u-w -p -- "${dir}/tmp"
+mkdir -m go=    -p -- "${dir}/tmp/old" "${dir}/tmp/${$}"
+mv                 -- "${dir}/tmp"/[[:digit:]]* "${dir}/tmp/old/"
+rm    -fr          -- "${dir}/tmp/old"
+mkdir -m go=       -- "${dir}/tmp/${$}" "${dir}/tmp/${$}/tmp"
+
+# Copy source backup directories or a single source backup directory
+# to a protected temporary directory.
+set -f
+case ${*} in
+*/ | */. ) exclude="
+$(
+	ls -- "${dir}" \
+	| sed -n -e '/./s|^[[:digit:][:punct:]TW]*$|--exclude=/&/|p' \
+	)
+--exclude=/*[![:digit:][:punct:]TW]*
+--include=/[[:digit:]]*/
+--exclude=/*
+" ;;
+* ) exclude= ;;
+esac
+rsync --archive ${exclude} --fuzzy --hard-links --sparse \
+	"${@}" "${dir}/tmp/${$}/tmp/."
+set +f
+
+# Create backups to a protected temporary directory.
+link_dest=$(
+	ls -t -- "${dir}/" \
+	| sed -n -e '/./s|^[[:digit:]TW]*$|--link-dest=../../../&|p' \
+	| sed -e '20q'
+	)
+for tag in "${dir}/tmp/${$}/tmp"/*
+do
+	# Ignore invalid tags.
+	tag=${tag##*/}
+	case ${tag} in
+	[![:digit:]]* | *[![:digit:][:punct:]TW]* ) continue ;;
+	esac
+	# Avoid duplicates.
+	[ -d "${dir}/${tag}" ] && continue
+	# Create a backup to a protected temporary directory.
+	rsync --archive --fuzzy ${link_dest} --sparse -- \
+		"${dir}/tmp/${$}/tmp/${tag}/."	\
+		"${dir}/tmp/${$}/${tag}"
+	chmod -- g=u-w,o= "${dir}/tmp/${$}/${tag:?}"
+	chgrp -- users    "${dir}/tmp/${$}/${tag:?}"
+done
+# Remove unneeded copies.
+rm -fr -- "${dir}/tmp/${$}/tmp"
+
+for tag2 in "${dir}/tmp/${$}"/*
+do
+	# Ignore invalid tags.
+	tag2=${tag2##*/}
+	case ${tag2} in
+	[![:digit:]]* | *[![:digit:][:punct:]TW]* ) continue ;;
+	esac
+	# Release backups.
+	sync
+	ln    -s -- "${tag}" "${dir}/tmp/${$}/latest"
+	mv    -f -- "${dir}/tmp/${$}"/* "${dir}/"
+	rmdir    -- "${dir}/tmp/${$}"
+	sync
+	break
+done

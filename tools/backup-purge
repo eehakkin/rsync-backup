@@ -1,0 +1,185 @@
+#! /bin/sh -Ceu
+###########################################################################
+# backup-purge 0.0.20121212
+#
+# Copyright (C) 2010-2012 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 3
+# as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###########################################################################
+# Try to be nice.
+{
+	ionice -c 3  -p "${$}"
+	renice -n 10 -p "${$}"
+} > /dev/null 2>&1 || :
+
+# Locate the script.
+me=$( which -- "${0}" || ls -d -- "${0}" )
+dir=$( dirname -- "${me}" )
+case ${dir} in
+. ) dir=.. ;;
+* ) dir=$( dirname -- "${dir}" ) ;;
+esac
+
+short_description='delete old backup directories'
+default_args='hourly=1 daily=7 weekly=31 monthly=366'
+
+case ${1-} in
+--help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
+Usage: ${0##*[\\/]} [<OPTION>]... [<PATTERN>=<DAYS>]...
+
+Delete old backup directories based on pattern matching and age. \
+The default is to keep \
+hourly backups over one day, \
+daily backups over one week, \
+weekly backups over one month, \
+monthly backups over one year and \
+yearly backups forever \
+(thus the default operands are ${default_args}).
+
+Options:
+    -h, --help[=<FORMAT>]
+        Show this help message and exit.
+    -V, --version
+        Show version information and exit.
+
+Operands:
+    <PATTERN>=<DAYS>
+        Backup directories matching <PATTERN> are deleted \
+if they are over <DAYS> day old.
+        Special patterns:
+            yearly
+                [0-9][0-9][0-9][0-9]
+                (for <YEAR>)
+            monthly
+                [0-9][0-9][0-9][0-9][0-9][0-9]
+                [0-9][0-9][0-9][0-9]-[0-9][0-9]
+                (for <YEAR><MONTH> and <YEAR>-<MONTH>)
+            weekly
+                [0-9][0-9][0-9][0-9]W[0-9][0-9]
+                [0-9][0-9][0-9][0-9]-W[0-9][0-9]
+                (for <YEAR>W<WEEK> and <YEAR>-W<WEEK>)
+            daily
+                [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]
+                [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]
+                [0-9][0-9][0-9][0-9]W[0-9][0-9][0-9]
+                [0-9][0-9][0-9][0-9]-W[0-9][0-9]-[0-9]
+                (for <YEAR><MONTH><DAY>, <YEAR>-<MONTH>-<DAY>,
+                <YEAR>W<WEEK><DAY> and <YEAR>-W<WEEK>-<DAY>)
+            hourly
+                [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]T[0-9][0-9]*
+                [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]*
+                [0-9][0-9][0-9][0-9]W[0-9][0-9][0-9]T[0-9][0-9]*
+                [0-9][0-9][0-9][0-9]-W[0-9][0-9]-[0-9]T[0-9][0-9]*
+                (for <YEAR><MONTH><DAY>T<HOUR>*, <YEAR>-<MONTH>-<DAY>T<HOUR>*,
+                <YEAR>W<WEEK><DAY>T<HOUR>* and <YEAR>-W<WEEK>-<DAY>T<HOUR>*)
+
+Files:
+    ${dir%/*/..}/<YEAR>
+        A yearly backup directory.
+    ${dir}/<YEAR>[-]<MONTH>
+        A monthly backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>
+        A weekly backup directory.
+    ${dir}/<YEAR>[-]<MONTH>[-]<DAY>
+        A daily backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>
+        A daily backup directory.
+    ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>
+        An hourly backup directory.
+    ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[:]<MINUTE>
+        A minutely backup directory.
+    ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[:]<MINUTE>[:]<SECOND>
+        A secondly backup directory.
+__HELP__
+;;
+--help=help2man )
+	COLUMNS=2500 exec "${0}" --help \
+	| sed \
+		-e '/^    [^ ]/!b'	\
+		-e 'N'			\
+		-e 's/\n        /  /'	\
+		-e 'P'			\
+		-e 'D'
+	exit
+	;;
+--help=man )
+	exec "${0}" --help=troff \
+	| exec man -l -- -
+	exit
+	;;
+--help=troff )
+	exec help2man -h --help=help2man -L en_US.UTF-8 -N -n "${short_description}" -- "${0}"
+	;;
+--version | -V )
+	exec sed -n \
+		-e '/^[^#]/q'			\
+		-e 's/^#\( \(.*\)\)*$/\2/p'	\
+		-e '/^##/{2!q;}'		\
+		-- "${me}"
+	;;
+-- ) shift ;;
+esac
+
+on_ac_power > /dev/null 2>&1 && :
+case ${?} in
+1 ) echo "${0}: deferred while on battery power." >&2; exit ;;
+esac
+
+case ${#} in
+0 ) set -- ${default_args} ;;
+esac
+
+digit=[[:digit:]]
+day=${digit}${digit}
+hour=${digit}${digit}
+month=${digit}${digit}
+week=${digit}${digit}
+year=${digit}${digit}${digit}${digit}
+for arg
+do
+	case ${arg%=*} in
+	yearly  ) set -- "${@}" -o -name "${year}" -mtime +"${arg##*=}" ;;
+	monthly ) set -- "${@}" -o \( \
+		-name "${year}${month}" -o \
+		-name "${year}-${month}" \
+		\) -mtime +"${arg##*=}" ;;
+	weekly  ) set -- "${@}" -o \( \
+		-name "${year}W${week}" -o \
+		-name "${year}-W${week}" \
+		\) -mtime +"${arg##*=}" ;;
+	daily   ) set -- "${@}" -o \( \
+		-name "${year}${month}${day}" -o \
+		-name "${year}-${month}-${day}" -o \
+		-name "${year}W${week}${digit}" -o \
+		-name "${year}-W${week}-${digit}" \
+		\) -mtime +"${arg##*=}" ;;
+	hourly  ) set -- "${@}" -o \( \
+		-name "${year}${month}${day}T${hour}*" -o \
+		-name "${year}-${month}-${day}T${hour}*" -o \
+		-name "${year}W${week}${digit}T${hour}*" -o \
+		-name "${year}-W${week}-${digit}T${hour}*" \
+		\) -mtime +"${arg##*=}" ;;
+	*       ) set -- "${@}" -o -name "${digit}*" -name "${arg%=*}" -mtime +"${arg##*=}" ;;
+	esac
+	shift
+done
+shift # -o
+
+find \
+	"${dir}/."		\
+	! -name .		\
+	-prune			\
+	-type d			\
+	\( "${@}" \)		\
+	-exec rm -fr -- {} +	\
+	>&2

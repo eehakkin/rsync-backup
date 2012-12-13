@@ -1,0 +1,232 @@
+#! /bin/sh -Ceu
+###########################################################################
+# backup-create 0.0.20121212
+#
+# Copyright (C) 2010-2012 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 3
+# as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###########################################################################
+# Try to be nice.
+{
+	ionice -c 3  -p "${$}"
+	renice -n 10 -p "${$}"
+} > /dev/null 2>&1 || :
+
+# Locate the script.
+me=$( which -- "${0}" || ls -d -- "${0}" )
+dir=$( dirname -- "${me}" )
+case ${dir} in
+. ) dir=.. ;;
+* ) dir=$( dirname -- "${dir}" ) ;;
+esac
+
+short_description='create backups'
+
+
+case ${1-} in
+--help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
+Usage: ${0##*[\\/]} [<RSYNC-OPTION>]... [[<USER>@]<HOST>:]<SRC>...
+ or:   ${0##*[\\/]} <OPTION>...
+
+Create backups using rsync(1). \
+Each new backup is created into a new backup directory \
+which is named according to the backup date and time. \
+These backup directories are full backup directories \
+containing direct (but possible filtered) copies \
+of original files and directories. \
+They can thus be accessed are restored directly. \
+Disk usage is minimised by hard linking files \
+from old backup directories \
+to newly created backup directories \
+whenever possible \
+(when files in sources and previous backup directories are identical \
+in content and in all preserved attributes).
+
+Backups are created using the following steps:
+
+  Old temporary backup directories are deleted.
+
+  A new backup directory is created in a temporary directory.
+
+  Files and directories are copied \
+from sources \
+to the newly created backup directory \
+using rsync(1). \
+Disk usage is minimised and \
+the transfer is speeded up \
+by hard linking files \
+from old backup directories \
+to the newly created backup directory \
+whenever possible \
+(when files in sources and previous backup directories are identical \
+in content and in all preserved attributes).
+
+  A new symbolink link to denote the latest backup directory \
+is created in a temporary directory.
+
+  The newly created backup directory and \
+the newly created symbolink link \
+are moved to the final location.
+
+Options:
+    -h, --help[=<FORMAT>]
+        Show this help message and exit.
+    -V, --version
+        Show version information and exit.
+
+Rsync options:
+$( rsync --help | sed '
+	/^ *-/,/^$/!d
+	/ --help/d
+	/ --version/d
+	/./!d
+	s/^ */        /
+	s/,-/, -/g
+	/^ *-/{
+		s//    -/
+		s/\([^, ]\) /\1\
+/
+	}
+	P
+	D
+' )
+
+Operands:
+    [[<USER>@]<HOST>:]<SRC>
+        A source to be copied to a newly created backup directory.
+
+Files:
+    ${dir}/<YEAR>
+        A yearly backup directory.
+    ${dir}/<YEAR>[-]<MONTH>
+        A monthly backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>
+        A weekly backup directory.
+    ${dir}/<YEAR>[-]<MONTH>[-]<DAY>
+        A daily backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>
+        A daily backup directory.
+    ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>
+        An hourly backup directory.
+    ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[:]<MINUTE>
+        A minutely backup directory.
+    ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[:]<MINUTE>[:]<SECOND>
+        A secondly backup directory.
+    ${dir}/latest
+        A symbolic link to the latest backup directory.
+    ${dir}/conf/rsh
+        An optional script \
+to be used as a remote shell instead of the plain ssh(1). \
+This script can be used for setting identity files and proxy commands, \
+for instance.
+    ${dir}/conf/tag-formats
+        An optional file containing date formats \
+to be used when constructing backup directory names for backups. \
+Empty lines and comment lines (starting with a "#") are allowed, too. \
+Each date format is tried in turn in order specified \
+until a non-existing backup directory is found.
+    ${dir}/tmp/
+        A temporary directory to be used for creating new backup directories.
+    <SOURCE-DIRECTORY>/.backup-filter
+        An optional per-directory rsync(1) filter merge-file \
+which can be used for excluding files from backups. \
+Empty lines and comment lines (starting with a "#") are allowed, too.
+    $( which rsync )
+        A fast and extraordinarily versatile file copying tool. \
+See also rsync(1).
+    $( which ssh )
+        A remote login program. See also ssh(1)
+__HELP__
+;;
+--help=help2man )
+	COLUMNS=2500 exec "${0}" --help \
+	| sed \
+		-e '/^    [^ ]/!b'	\
+		-e 'N'			\
+		-e 's/\n        /  /'	\
+		-e 'P'			\
+		-e 'D'
+	exit
+	;;
+--help=man )
+	exec "${0}" --help=troff \
+	| exec man -l -- -
+	exit
+	;;
+--help=troff )
+	exec help2man -h --help=help2man -L en_US.UTF-8 -N -n "${short_description}" -- "${0}"
+	;;
+--version | -V )
+	exec sed -n \
+		-e '/^[^#]/q'			\
+		-e 's/^#\( \(.*\)\)*$/\2/p'	\
+		-e '/^##/{2!q;}'		\
+		-- "${me}"
+	;;
+esac
+
+# Construct a tag name.
+file=${dir}/conf/tag-formats; unset formats tag
+[ ! -f "${file}" ] || formats=$(
+	exec sed -n -e '/^[[:space:]]*[^[:space:]#]/p' -- "${file}"
+	)
+while read format
+do
+	tag2=$( date +"${format}" )
+	case ${tag2} in
+	[![:digit:]]* | *[![:digit:][:punct:]TW]* ) continue ;;
+	esac
+	[ ! -e "${dir}/${tag2}" ] && tag=${tag2} && break
+done << __FORMATS__
+${formats-"\
+%Y
+%Y%m
+%GW%V
+%Y%m%d
+%Y%m%dT%H
+%Y%m%dT%H%M
+%Y%m%dT%H%M%S"}
+__FORMATS__
+
+# Create a protected temporary directory.
+mkdir -m go=u-w -p -- "${dir}/tmp"
+mkdir -m go=    -p -- "${dir}/tmp/old" "${dir}/tmp/${$}"
+mv                 -- "${dir}/tmp"/[[:digit:]]* "${dir}/tmp/old/"
+rm    -fr          -- "${dir}/tmp/old"
+mkdir -m go=       -- "${dir}/tmp/${$}"
+
+# Create a backup to a protected temporary directory.
+link_dest=$(
+	ls -t -- "${dir}/" \
+	| sed -n -e '/./s|^[[:digit:][:punct:]TW]*$|--link-dest=../../../&|p' \
+	| sed -e '20q'
+	)
+rsh=${dir}/conf/rsh; [ ! -x "${rsh}" ] && unset rsh
+rsync \
+	--archive				\
+	--filter 'dir-merge /.backup-filter'	\
+	--fuzzy					\
+	${link_dest}				\
+	--one-file-system			\
+	${rsh+ --rsh "${rsh}" }			\
+	--sparse				\
+	"${@}" "${dir}/tmp/${$}/${tag:?}"
+chmod -- g=u-w,o= "${dir}/tmp/${$}/${tag:?}"
+chgrp -- users    "${dir}/tmp/${$}/${tag:?}"
+
+# Release the backup.
+sync
+ln    -s -- "${tag}" "${dir}/tmp/${$}/latest"
+mv    -f -- "${dir}/tmp/${$}"/* "${dir}/"
+rmdir    -- "${dir}/tmp/${$}"
+sync
