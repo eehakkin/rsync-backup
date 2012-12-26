@@ -194,7 +194,7 @@ then
 else
 	set --
 fi
-case ${#},${1-} in
-1,-- ) ;;
-*,*  ) "${0%backup}backup-purge" "${@}" ;;
+case ${#} in
+1 ) ;;
+* ) "${0%backup}backup-purge" "${@}" ;;
 esac
