@@ -220,7 +220,12 @@ rsync \
 	--one-file-system			\
 	${rsh+ --rsh "${rsh}" }			\
 	--sparse				\
-	"${@}" "${dir}/tmp/${$}/${tag:?}"
+	"${@}" "${dir}/tmp/${$}/${tag:?}"	|| {
+	case ${?} in
+	24 ) ;; # Partial transfer due to vanished source files
+	*  ) exit 1 ;;
+	esac
+}
 chmod -- g=u-w,o= "${dir}/tmp/${$}/${tag:?}"
 chgrp -- users    "${dir}/tmp/${$}/${tag:?}"
 
