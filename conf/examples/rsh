@@ -5,18 +5,22 @@
 
 # Locate the script.
 me=$( which -- "${0}" || ls -d -- "${0}" )
-conf=$( dirname -- "${me}" )
+dir=$( dirname -- "${me}" )
+dir=$( readlink -f -- "${dir}" )
+case ${dir} in */.misc/* ) dir=/${dir#*/.misc/} ;; esac
+case ${dir} in */.rw/*   ) dir=${dir%%/.rw/*}/${dir#*/.rw/} ;; esac
+me=${dir}/$( basename -- "${me}" )
 
 # Use a proxy command for root.
 case " ${*} " in
 *' -l root '* ) set -- -o ProxyCommand="\
-'${0}' -l backup -p '%p' -- '%h' nc -w 60 -- localhost '%p'\
+'${me}' -l '${SUDO_USER-backup}' -p '%p' -- '%h' nc -w 60 -- localhost '%p'\
 " "${@}" ;;
 esac
 
-# Execute SSH with extra options.
-exec ssh \
-	-i "${conf}/id_rsa"		\
-	-o ClearAllForwardings=yes	\
-	-o StrictHostKeyChecking=yes	\
-	"${@}"
+# Use some extra options.
+set -- -o ClearAllForwardings=yes -o StrictHostKeyChecking=yes "${@}"
+[ ! -f "${dir}/id_rsa" ] || set -- -i "${dir}/id_rsa" "${@}"
+
+# Execute SSH.
+cd -- / && exec ssh "${@}"
