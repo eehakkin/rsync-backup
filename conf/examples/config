@@ -1,0 +1,5 @@
+# Preserve ACLs.
+acls
+
+# Preserve extended attributes.
+xattrs

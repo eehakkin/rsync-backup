@@ -1,8 +1,8 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-create 0.0.20121212
+# backup-create 0.0.20130302
 #
-# Copyright (C) 2010-2012 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010-2013 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -124,6 +124,11 @@ Files:
         A secondly backup directory.
     ${dir}/latest
         A symbolic link to the latest backup directory.
+    ${dir}/conf/config
+        An optional configuration file \
+containing long option names (without leading slashes) and \
+optional option arguments \
+to be passed to rsync(1).
     ${dir}/conf/rsh
         An optional script \
 to be used as a remote shell instead of the plain ssh(1). \
@@ -145,7 +150,8 @@ Empty lines and comment lines (starting with a "#") are allowed, too.
         A fast and extraordinarily versatile file copying tool. \
 See also rsync(1).
     $( which ssh )
-        A remote login program. See also ssh(1)
+        A remote login program. \
+See also ssh(1).
 __HELP__
 ;;
 --help=help2man )
@@ -211,23 +217,14 @@ link_dest=$(
 	| sed -n -e '/./s|^[[:digit:][:punct:]TW]*$|--link-dest=../../../&|p' \
 	| sed -e '20q'
 	)
-rsh=${dir}/conf/rsh; [ ! -x "${rsh}" ] && unset rsh
-rsync \
-	--archive				\
-	--filter 'dir-merge /.backup-filter'	\
-	--fuzzy					\
-	${link_dest}				\
-	--one-file-system			\
-	${rsh+ --rsh "${rsh}" }			\
-	--sparse				\
-	"${@}" "${dir}/tmp/${$}/${tag:?}"	|| {
+"${0%backup-*}backup-rsync" ${link_dest} "${@}" "${dir}/tmp/${$}/${tag:?}" || {
 	case ${?} in
 	24 ) ;; # Partial transfer due to vanished source files
 	*  ) exit 1 ;;
 	esac
 }
-chmod -- g=u-w,o= "${dir}/tmp/${$}/${tag:?}"
-chgrp -- users    "${dir}/tmp/${$}/${tag:?}"
+chmod -- g=u-w,o= "${dir}/tmp/${$}/${tag}"
+chgrp -- users    "${dir}/tmp/${$}/${tag}"
 
 # Release the backup.
 sync

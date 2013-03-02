@@ -1,8 +1,8 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-pull 0.0.20121212
+# backup-pull 0.0.20130302
 #
-# Copyright (C) 2010-2012 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010-2013 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -117,9 +117,22 @@ Files:
         A secondly backup directory.
     ${dir}/latest
         A symbolic link to the latest backup directory.
+    ${dir}/conf/config
+        An optional configuration file \
+containing long option names (without leading slashes) and \
+optional option arguments \
+to be passed to rsync(1).
+    ${dir}/conf/rsh
+        An optional script \
+to be used as a remote shell instead of the plain ssh(1). \
+This script can be used for setting identity files and proxy commands, \
+for instance.
     $( which rsync )
         A fast and extraordinarily versatile file copying tool. \
 See also rsync(1).
+    $( which ssh )
+        A remote login program. \
+See also ssh(1).
 __HELP__
 ;;
 --help=help2man )
@@ -158,7 +171,6 @@ mkdir -m go=       -- "${dir}/tmp/${$}" "${dir}/tmp/${$}/tmp"
 
 # Copy source backup directories or a single source backup directory
 # to a protected temporary directory.
-set -f
 case ${*} in
 */ | */. ) exclude="
 $(
@@ -171,8 +183,8 @@ $(
 " ;;
 * ) exclude= ;;
 esac
-rsync --archive ${exclude} --fuzzy --hard-links --sparse \
-	"${@}" "${dir}/tmp/${$}/tmp/."
+set -f
+"${0%backup-*}backup-rsync" ${exclude} --hard-links "${@}" "${dir}/tmp/${$}/tmp/."
 set +f
 
 # Create backups to a protected temporary directory.
@@ -191,11 +203,11 @@ do
 	# Avoid duplicates.
 	[ -d "${dir}/${tag}" ] && continue
 	# Create a backup to a protected temporary directory.
-	rsync --archive --fuzzy ${link_dest} --sparse -- \
+	"${0%backup-*}backup-rsync" ${link_dest} -- \
 		"${dir}/tmp/${$}/tmp/${tag}/."	\
 		"${dir}/tmp/${$}/${tag}"
-	chmod -- g=u-w,o= "${dir}/tmp/${$}/${tag:?}"
-	chgrp -- users    "${dir}/tmp/${$}/${tag:?}"
+	chmod -- g=u-w,o= "${dir}/tmp/${$}/${tag}"
+	chgrp -- users    "${dir}/tmp/${$}/${tag}"
 done
 # Remove unneeded copies.
 rm -fr -- "${dir}/tmp/${$}/tmp"

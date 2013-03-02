@@ -1,0 +1,150 @@
+#! /bin/sh -Ceu
+###########################################################################
+# backup-rsync 0.0.20130302
+#
+# Copyright (C) 2010-2013 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 3
+# as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###########################################################################
+# Try to be nice.
+{
+	ionice -c 3  -p "${$}"
+	renice -n 10 -p "${$}"
+} > /dev/null 2>&1 || :
+
+# Locate the script.
+me=$( which -- "${0}" || ls -d -- "${0}" )
+dir=$( dirname -- "${me}" )
+case ${dir} in
+. ) dir=.. ;;
+* ) dir=$( dirname -- "${dir}" ) ;;
+esac
+
+short_description='a backup-oriented file-copying tool'
+
+
+case ${1-} in
+--help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
+Usage: ${0##*[\\/]} [<RSYNC-OPTION>]... [[<USER>@]<HOST>:]<SRC>... <DEST>
+ or:   ${0##*[\\/]} <OPTION>...
+
+Copy files using rsync(1).
+
+Options:
+    -h, --help[=<FORMAT>]
+        Show this help message and exit.
+    -V, --version
+        Show version information and exit.
+
+Rsync options:
+$( rsync --help | sed '
+	/^ *-/,/^$/!d
+	/ --help/d
+	/ --version/d
+	/./!d
+	s/^ */        /
+	s/,-/, -/g
+	/^ *-/{
+		s//    -/
+		s/\([^, ]\) /\1\
+/
+	}
+	P
+	D
+' )
+
+Operands:
+    [[<USER>@]<HOST>:]<SRC>
+        A source to be copied.
+    <DEST>
+        A destination.
+
+Files:
+    ${dir}/conf/config
+        An optional configuration file \
+containing long option names (without leading slashes) and \
+optional option arguments \
+to be passed to rsync(1).
+    ${dir}/conf/rsh
+        An optional script \
+to be used as a remote shell instead of the plain ssh(1). \
+This script can be used for setting identity files and proxy commands, \
+for instance.
+    <SOURCE-DIRECTORY>/.backup-filter
+        An optional per-directory rsync(1) filter merge-file \
+which can be used for excluding files from backups. \
+Empty lines and comment lines (starting with a "#") are allowed, too.
+    $( which rsync )
+        A fast and extraordinarily versatile file copying tool. \
+See also rsync(1).
+    $( which ssh )
+        A remote login program. \
+See also ssh(1).
+__HELP__
+;;
+--help=help2man )
+	COLUMNS=2500 exec "${0}" --help \
+	| sed \
+		-e '/^    [^ ]/!b'	\
+		-e 'N'			\
+		-e 's/\n        /  /'	\
+		-e 'P'			\
+		-e 'D'
+	exit
+	;;
+--help=man )
+	exec "${0}" --help=troff \
+	| exec man -l -- -
+	exit
+	;;
+--help=troff )
+	exec help2man -h --help=help2man -L en_US.UTF-8 -N -n "${short_description}" -- "${0}"
+	;;
+--version | -V )
+	exec sed -n \
+		-e '/^[^#]/q'			\
+		-e 's/^#\( \(.*\)\)*$/\2/p'	\
+		-e '/^##/{2!q;}'		\
+		-- "${me}"
+	;;
+esac
+
+# Construct default option arguments.
+filter='dir-merge /.backup-filter'
+rsh=${dir}/conf/rsh; [ ! -x "${rsh}" ] && unset rsh
+
+# Extend the options with ones read from a configuration file.
+[ ! -f "${dir}/conf/config" ] || {
+	for arg
+	do
+		while read opt optarg
+		do
+			case ${opt} in
+			'' | '#'* ) continue ;;
+			filter    ) unset filter ;;
+			rsh       ) unset rsh ;;
+			esac
+			set -- "${@}" "--${opt}" ${optarg:+"${optarg}"}
+		done
+		set -- "${@}" "${arg}"
+		shift
+	done < "${dir}/conf/config"
+}
+exec rsync \
+	--archive				\
+	${filter+ --filter "${filter}" }	\
+	--fuzzy					\
+	--one-file-system			\
+	${rsh+ --rsh "${rsh}" }			\
+	--sparse				\
+	"${@}"

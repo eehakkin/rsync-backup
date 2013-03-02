@@ -11,6 +11,7 @@ Commands
  * **backup-prepare**: prepare for backups
  * **backup-pull**:    pull backups
  * **backup-purge**:   delete old backup directories
+ * **backup-rsync**:   a backup-oriented file-copying tool
 
 ### **backup**
 
@@ -49,3 +50,7 @@ Delete old backup directories based on pattern matching and age.
 The default is to keep hourly backups over one day, daily backups over
 one week, weekly backups over one month, monthly backups over one year
 and yearly backups forever.
+
+### **backup-rsync**
+
+Copy files using rsync(1).
