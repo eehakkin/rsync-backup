@@ -14,7 +14,7 @@ me=${dir}/$( basename -- "${me}" )
 # Use a proxy command for root.
 case " ${*} " in
 *' -l root '* ) set -- -o ProxyCommand="\
-'${me}' -l '${SUDO_USER-backup}' -p '%p' -- '%h' nc -w 60 -- localhost '%p'\
+'${me}' -l '${SUDO_USER:-backup}' -p '%p' -- '%h' nc -w 60 -- localhost '%p'\
 " "${@}" ;;
 esac
 
