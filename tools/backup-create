@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-create 0.0.20130302
+# backup-create 0.0.20130324
 #
 # Copyright (C) 2010-2013 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -182,18 +182,25 @@ __HELP__
 esac
 
 # Construct a tag name.
-file=${dir}/conf/tag-formats; unset formats tag
-[ ! -f "${file}" ] || formats=$(
-	exec sed -n -e '/^[[:space:]]*[^[:space:]#]/p' -- "${file}"
-	)
-while read format
-do
-	tag2=$( date +"${format}" )
-	case ${tag2} in
-	[![:digit:]]* | *[![:digit:][:punct:]TW]* ) continue ;;
-	esac
-	[ ! -e "${dir}/${tag2}" ] && tag=${tag2} && break
-done << __FORMATS__
+case ${1-} in
+--backup-tag-name=* )
+	tag=${1#*=}
+	shift
+	;;
+* )
+	file=${dir}/conf/tag-formats
+	unset formats tag
+	[ ! -f "${file}" ] || formats=$(
+		exec sed -n -e '/^[[:space:]]*[^[:space:]#]/p' -- "${file}"
+		)
+	while read format
+	do
+		tag2=$( date +"${format}" )
+		case ${tag2} in
+		[![:digit:]]* | *[![:digit:][:punct:]TW]* ) continue ;;
+		esac
+		[ ! -e "${dir}/${tag2}" ] && tag=${tag2} && break
+	done << __FORMATS__
 ${formats-"\
 %Y
 %Y%m
@@ -203,6 +210,9 @@ ${formats-"\
 %Y%m%dT%H%M
 %Y%m%dT%H%M%S"}
 __FORMATS__
+	;;
+esac
+: "${tag:?}"
 
 # Create a protected temporary directory.
 mkdir -m go=u-w -p -- "${dir}/tmp"

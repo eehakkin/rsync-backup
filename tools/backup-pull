@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-pull 0.0.20130302
+# backup-pull 0.0.20130324
 #
 # Copyright (C) 2010-2013 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -39,19 +39,15 @@ Usage: ${0##*[\\/]} [<RSYNC-OPTION>]... [[<USER>@]<HOST>:]<SRC>[/[.]]...
  or:   ${0##*[\\/]} <OPTION>...
 
 Pull backups using rsync(1). \
-Backups are pulled using the following steps:
+Each backup directory is pulled using the following steps:
 
   Old temporary backup directories are deleted.
 
-  Source backup directories are copied to a temporary directory \
-using rsync(1) \
-if they are missing from the final location.
+  A new backup directory is created in a temporary directory.
 
-  New backup directories are created in a temporary directory.
-  
   Files and directories are copied \
-from copied source backup directories \
-to the newly created backup directories \
+from the source backup directory \
+to the newly created backup directory \
 using rsync(1). \
 Disk usage is minimised and \
 the transfer is speeded up \
@@ -65,7 +61,7 @@ in content and in all preserved attributes).
   A new symbolink link to denote the latest backup directory \
 is created in a temporary directory.
 
-  The newly created backup directories and \
+  The newly created backup directory and \
 the newly created symbolink link \
 are moved to the final location.
 
@@ -162,68 +158,139 @@ __HELP__
 	;;
 esac
 
-# Create a protected temporary directory.
-mkdir -m go=u-w -p -- "${dir}/tmp"
-mkdir -m go=    -p -- "${dir}/tmp/old" "${dir}/tmp/${$}"
-mv                 -- "${dir}/tmp"/[[:digit:]]* "${dir}/tmp/old/"
-rm    -fr          -- "${dir}/tmp/old"
-mkdir -m go=       -- "${dir}/tmp/${$}" "${dir}/tmp/${$}/tmp"
+# Find out rsync options requiring an option argument.
+rsync_optarg_opts=$( LC_ALL=C rsync --help | sed '
+	/^ *-/,/^$/!d
+	s/^ *\(\(-[^(), ]*\(, \)*\)*\).*/\1/
+	/=.*/!d
+	s///
+	s/[, ][, ]*/ /g
+' )
 
-# Copy source backup directories or a single source backup directory
-# to a protected temporary directory.
-case ${*} in
-*/ | */. ) exclude="
+# Parse options, option arguments and operands.
+unset argtype
+for arg
+do
+	# Parse an option or an option argument.
+	case ${argtype-opt}:${arg} in
+	opt:-- ) # --
+		# Drop the end of options option and operands.
+		set -- ${argtype+"${@}"}
+		argtype=operand
+		continue
+		;;
+	opt:-?* ) # -<OPT>[...][<OPTARG>], --<OPT>[=<OPTARG>]
+		# Keep an option.
+		set -- ${argtype+"${@}"} "${arg}"
+		case ${arg} in
+		--?*=* ) # --<OPT>=<OPTARG>
+			argtype=opt
+			;;
+		--?* ) # --<OPT>
+			case " ${rsync_optarg_opts:?} " in
+			*[[:space:]]"${arg}"[[:space:]]* ) # --<OPT> <OPTARG>
+				argtype=optarg
+				;;
+			* ) # --<OPT>
+				argtype=opt
+				;;
+			esac
+			;;
+		* )
+			while :
+			do
+				case " ${rsync_optarg_opts:?} " in
+				*[[:space:]]"${arg%"${arg#-?}"}"[[:space:]]* )
+					case ${arg} in
+					-??* ) # -<OPT><OPTARG>
+						argtype=opt
+						;;
+					* ) # -<OPT> <OPTARG>
+						argtype=optarg
+						;;
+					esac
+					break
+					;;
+				* )
+					case ${arg} in
+					-??* ) # -<OPT><OPT>[...][<OPTARG>]
+						arg=-${arg#-?}
+						;;
+					* ) # -<OPT>
+						argtype=opt
+						break
+						;;
+					esac
+					;;
+				esac
+			done
+			;;
+		esac
+		continue
+		;;
+	opt:* ) # <OPERAND>
+		# Drop operands.
+		set -- ${argtype+"${@}"}
+		argtype=operand
+		;;
+	optarg:* ) # <OPTARG>
+		# Keep an option argument.
+		set -- "${@}" "${arg}"
+		argtype=opt
+		continue
+		;;
+	esac
+	# Parse an operand.
+	case ${arg} in
+	*/ | */. ) # [[<USER>@]<HOST>:]<SRC>/[.]
+		# Create a protected temporary directory.
+		mkdir -m go=u-w -p -- "${dir}/tmp"
+		mkdir -m go=    -p -- "${dir}/tmp/old" "${dir}/tmp/${$}"
+		mv                 -- "${dir}/tmp"/[[:digit:]]* "${dir}/tmp/old/"
+		rm    -fr          -- "${dir}/tmp/old"
+		mkdir -m go=       -- "${dir}/tmp/${$}"
+		# Find out the backup directories to be pulled.
+		exclude="
 $(
-	ls -- "${dir}" \
-	| sed -n -e '/./s|^[[:digit:][:punct:]TW]*$|--exclude=/&/|p' \
+	ls -- "${dir}/" \
+	| sed -n -e '/./s|^[[:digit:][:punct:]TW]*$|--exclude=/&/|p'
 	)
 --exclude=/*[![:digit:][:punct:]TW]*
 --include=/[[:digit:]]*/
 --exclude=/*
-" ;;
-* ) exclude= ;;
-esac
-set -f
-"${0%backup-*}backup-rsync" ${exclude} --hard-links "${@}" "${dir}/tmp/${$}/tmp/."
-set +f
-
-# Create backups to a protected temporary directory.
-link_dest=$(
-	ls -t -- "${dir}/" \
-	| sed -n -e '/./s|^[[:digit:]TW]*$|--link-dest=../../../&|p' \
-	| sed -e '20q'
-	)
-for tag in "${dir}/tmp/${$}/tmp"/*
-do
-	# Ignore invalid tags.
-	tag=${tag##*/}
-	case ${tag} in
-	[![:digit:]]* | *[![:digit:][:punct:]TW]* ) continue ;;
+--exclude=/*/*
+"
+		set -f
+		"${0%backup-*}backup-rsync" \
+			--filter='clear'	\
+			${exclude}		\
+			"${@}"			\
+			-- "${arg}" "${dir}/tmp/${$}/."
+		set +f
+		# Pull the backup directories.
+		for tag in "${dir}/tmp/${$}"/*
+		do
+			tag=${tag##*/}
+			case ${tag} in
+			*[![:digit:][:punct:]TW]* ) ;;
+			[[:digit:]]* ) "${0%backup-*}backup-create" \
+				--backup-tag-name="${tag}"	\
+				--filter='clear'		\
+				"${@}"				\
+				-- "${arg%/*}/${tag}/." ;;
+			esac
+		done
+		# Clean up.
+		rm -fr -- "${dir}/tmp/${$}"
+		;;
+	* ) # [[<USER>@]<HOST>:]<SRC>
+		# Pull a backup directory.
+		tag=$( basename -- "${arg}" )
+		"${0%backup-*}backup-create" \
+			--backup-tag-name="${tag}"	\
+			--filter='clear'		\
+			"${@}"				\
+			-- "${arg}/."
+		;;
 	esac
-	# Avoid duplicates.
-	[ -d "${dir}/${tag}" ] && continue
-	# Create a backup to a protected temporary directory.
-	"${0%backup-*}backup-rsync" ${link_dest} -- \
-		"${dir}/tmp/${$}/tmp/${tag}/."	\
-		"${dir}/tmp/${$}/${tag}"
-	chmod -- g=u-w,o= "${dir}/tmp/${$}/${tag}"
-	chgrp -- users    "${dir}/tmp/${$}/${tag}"
-done
-# Remove unneeded copies.
-rm -fr -- "${dir}/tmp/${$}/tmp"
-
-for tag2 in "${dir}/tmp/${$}"/*
-do
-	# Ignore invalid tags.
-	tag2=${tag2##*/}
-	case ${tag2} in
-	[![:digit:]]* | *[![:digit:][:punct:]TW]* ) continue ;;
-	esac
-	# Release backups.
-	sync
-	ln    -s -- "${tag}" "${dir}/tmp/${$}/latest"
-	mv    -f -- "${dir}/tmp/${$}"/* "${dir}/"
-	rmdir    -- "${dir}/tmp/${$}"
-	sync
-	break
 done
