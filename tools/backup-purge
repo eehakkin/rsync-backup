@@ -175,11 +175,16 @@ do
 done
 shift # -o
 
-find \
+fstype=$( find "${dir}/." -prune -printf '%F\n' )
+case ${fstype} in
+fuse.s3ql ) rm_fr=s3qlrm ;;
+*         ) rm_fr='rm -fr' ;;
+esac
+exec find \
 	"${dir}/."		\
 	! -name .		\
 	-prune			\
 	-type d			\
 	\( "${@}" \)		\
-	-exec rm -fr -- {} +	\
+	-exec ${rm_fr} -- {} +	\
 	>&2

@@ -48,15 +48,7 @@ Each backup directory is pulled using the following steps:
   Files and directories are copied \
 from the source backup directory \
 to the newly created backup directory \
-using rsync(1). \
-Disk usage is minimised and \
-the transfer is speeded up \
-by hard linking files \
-from old backup directories \
-to the newly created backup directory \
-whenever possible \
-(when files in sources and previous backup directories are identical \
-in content and in all preserved attributes).
+using rsync(1).
 
   A new symbolink link to denote the latest backup directory \
 is created in a temporary directory.
@@ -64,6 +56,20 @@ is created in a temporary directory.
   The newly created backup directory and \
 the newly created symbolink link \
 are moved to the final location.
+
+Disk usage is minimised and \
+the transfer is speeded up \
+by hard linking files \
+from old backup directories \
+to the newly created backup directory \
+whenever possible \
+(when files in sources and previous backup directories are identical \
+in content and in all preserved attributes). \
+On the s3ql filesystem, \
+hard linking \
+is not needed and \
+is therefore not used \
+for disk usage minimisation.
 
 Options:
     -h, --help[=<FORMAT>]
@@ -244,10 +250,14 @@ do
 	case ${arg} in
 	*/ | */. ) # [[<USER>@]<HOST>:]<SRC>/[.]
 		# Create a protected temporary directory.
+		fstype=$( find "${dir}/." -prune -printf '%F\n' )
 		mkdir -m go=u-w -p -- "${dir}/tmp"
 		mkdir -m go=    -p -- "${dir}/tmp/old" "${dir}/tmp/${$}"
 		mv                 -- "${dir}/tmp"/[[:digit:]]* "${dir}/tmp/old/"
-		rm    -fr          -- "${dir}/tmp/old"
+		case ${fstype} in
+		fuse.s3ql ) s3qlrm -- "${dir}/tmp/old" ;;
+		*         ) rm -fr -- "${dir}/tmp/old" ;;
+		esac
 		mkdir -m go=       -- "${dir}/tmp/${$}"
 		# Find out the backup directories to be pulled.
 		exclude="

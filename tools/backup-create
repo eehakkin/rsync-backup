@@ -61,15 +61,7 @@ Backups are created using the following steps:
   Files and directories are copied \
 from sources \
 to the newly created backup directory \
-using rsync(1). \
-Disk usage is minimised and \
-the transfer is speeded up \
-by hard linking files \
-from old backup directories \
-to the newly created backup directory \
-whenever possible \
-(when files in sources and previous backup directories are identical \
-in content and in all preserved attributes).
+using rsync(1).
 
   A new symbolink link to denote the latest backup directory \
 is created in a temporary directory.
@@ -77,6 +69,20 @@ is created in a temporary directory.
   The newly created backup directory and \
 the newly created symbolink link \
 are moved to the final location.
+
+Disk usage is minimised and \
+the transfer is speeded up \
+by hard linking files \
+from old backup directories \
+to the newly created backup directory \
+whenever possible \
+(when files in sources and previous backup directories are identical \
+in content and in all preserved attributes). \
+On the s3ql filesystem, \
+hard linking \
+is not needed and \
+is therefore not used \
+for disk usage minimisation.
 
 Options:
     -h, --help[=<FORMAT>]
@@ -215,19 +221,35 @@ esac
 : "${tag:?}"
 
 # Create a protected temporary directory.
+fstype=$( find "${dir}/." -prune -printf '%F\n' )
 mkdir -m go=u-w -p -- "${dir}/tmp"
 mkdir -m go=    -p -- "${dir}/tmp/old" "${dir}/tmp/${$}"
 mv                 -- "${dir}/tmp"/[[:digit:]]* "${dir}/tmp/old/"
-rm    -fr          -- "${dir}/tmp/old"
+case ${fstype} in
+fuse.s3ql ) s3qlrm -- "${dir}/tmp/old" ;;
+*         ) rm -fr -- "${dir}/tmp/old" ;;
+esac
 mkdir -m go=       -- "${dir}/tmp/${$}"
 
 # Create a backup to a protected temporary directory.
-link_dest=$(
+case ${fstype} in
+fuse.s3ql )
+	[ ! -d "${dir}/latest/." ] || s3qlcp -- \
+		"${dir}/latest/."		\
+		"${dir}/tmp/${$}/${tag}"
+	set -- --delete --delete-delay --delete-excluded "${@}"
+	dest_opt=--copy-dest
+	;;
+* )
+	dest_opt=--link-dest
+	;;
+esac
+dest_opts=$(
 	ls -t -- "${dir}/" \
-	| sed -n -e '/./s|^[[:digit:][:punct:]TW]*$|--link-dest=../../../&|p' \
+	| sed -n -e '/./s|^[[:digit:][:punct:]TW]*$|'"${dest_opt}"'=../../../&|p' \
 	| sed -e '20q'
 	)
-"${0%backup-*}backup-rsync" ${link_dest} "${@}" "${dir}/tmp/${$}/${tag:?}" || {
+"${0%backup-*}backup-rsync" ${dest_opts} "${@}" "${dir}/tmp/${$}/${tag}" || {
 	case ${?} in
 	24 ) ;; # Partial transfer due to vanished source files
 	*  ) exit 1 ;;
@@ -235,6 +257,9 @@ link_dest=$(
 }
 chmod -- g=u-w,o= "${dir}/tmp/${$}/${tag}"
 chgrp -- users    "${dir}/tmp/${$}/${tag}"
+case ${fstype} in
+fuse.s3ql ) s3qllock -- "${dir}/tmp/${$}/${tag}" ;;
+esac
 
 # Release the backup.
 sync
