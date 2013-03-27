@@ -144,7 +144,6 @@ exec rsync \
 	--archive				\
 	${filter+ --filter "${filter}" }	\
 	--fuzzy					\
-	--one-file-system			\
 	${rsh+ --rsh "${rsh}" }			\
 	--sparse				\
 	"${@}"
