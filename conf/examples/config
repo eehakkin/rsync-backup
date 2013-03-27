@@ -1,5 +1,10 @@
+# A sample conf/config file
+# =========================
+
 # Preserve ACLs.
 acls
 
 # Preserve extended attributes.
 xattrs
+
+# For more options, see rsync(1).

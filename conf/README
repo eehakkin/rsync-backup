@@ -1,3 +1,9 @@
+The conf/config file
+====================
+
+An optional configuration file containing long option names (without
+leading slashes) and optional option arguments to be passed to rsync(1).
+
 The conf/pre.d directory
 ========================
 
