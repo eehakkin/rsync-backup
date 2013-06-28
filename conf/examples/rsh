@@ -19,8 +19,9 @@ case " ${*} " in
 esac
 
 # Use some extra options.
+[ ! -f "${dir}/id_rsa"     ] || set -- -i "${dir}/id_rsa"     "${@}"
+[ ! -f "${dir}/ssh_config" ] || set -- -F "${dir}/ssh_config" "${@}"
 set -- -o ClearAllForwardings=yes -o StrictHostKeyChecking=yes "${@}"
-[ ! -f "${dir}/id_rsa" ] || set -- -i "${dir}/id_rsa" "${@}"
 
 # Execute SSH.
 cd -- / && exec ssh "${@}"
