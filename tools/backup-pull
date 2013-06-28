@@ -275,7 +275,7 @@ $(
 			--filter='clear'	\
 			${exclude}		\
 			"${@}"			\
-			-- "${arg}" "${dir}/tmp/${$}/."
+			-- "${arg%/*}/./" "${dir}/tmp/${$}/"
 		set +f
 		# Pull the backup directories.
 		for tag in "${dir}/tmp/${$}"/*
@@ -287,7 +287,7 @@ $(
 				--backup-tag-name="${tag}"	\
 				--filter='clear'		\
 				"${@}"				\
-				-- "${arg%/*}/${tag}/." ;;
+				-- "${arg%/*}/${tag}/./" ;;
 			esac
 		done
 		# Clean up.
@@ -300,7 +300,7 @@ $(
 			--backup-tag-name="${tag}"	\
 			--filter='clear'		\
 			"${@}"				\
-			-- "${arg}/."
+			-- "${arg}/./"
 		;;
 	esac
 done
