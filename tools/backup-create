@@ -262,8 +262,8 @@ fuse.s3ql ) s3qllock -- "${dir}/tmp/${$}/${tag}" ;;
 esac
 
 # Release the backup.
-sync
 ln    -s -- "${tag}" "${dir}/tmp/${$}/latest"
+sync
 mv    -f -- "${dir}/tmp/${$}"/* "${dir}/"
 rmdir    -- "${dir}/tmp/${$}"
 sync
