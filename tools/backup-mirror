@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup 0.0.20130628
+# mirror 0.0.20130628
 #
 # Copyright (C) 2010-2013 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -30,19 +30,18 @@ case ${dir} in
 * ) dir=$( dirname -- "${dir}" ) ;;
 esac
 
-short_description='create backups and do related tasks'
-valid=[:alnum:]_.-
+short_description='mirror backups and do related tasks'
+basename=${0##*[\\/]}
 
 case ${1-} in
 --help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
 Usage: ${0##*[\\/]} [<RSYNC-OPTION>]...
  or:   ${0##*[\\/]} <OPTION>...
 
-Prepare for backups, create backups and then delete old backup directories. \
+Mirror backups and then delete old backup directories. \
 For details, see \
-${0##*[\\/]}-prepare(1), \
-${0##*[\\/]}-create(1) and \
-${0##*[\\/]}-purge(1).
+${0##*[\\/]}-pull(1) and \
+${basename%-*}-purge(1).
 
 Options:
     -h, --help[=<FORMAT>]
@@ -91,18 +90,21 @@ Files:
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).
-    ${dir}/conf/pre.d/
-        An optional directory containing scripts \
-which are executed in lexical order of names \
-when preparing for backups. \
-The names of the files must consist of only characters \
-matching the pattern [${valid}].
+    ${dir}/conf/master-list
+        A file to specify the directories \
+containing source backup directories \
+to be mirrored. \
+The file must contain operand lines having the following form:
+            [[<USER>@]<HOST>:]<SRC>[/[.]]
+        These operands will be passed \
+to the ${dir}/tools/${0##*[\\/]}-pull(1) tool. \
+Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/purge-list
         An optional file to override the default patterns and ages. \
 The file must contain operand lines having the following form:
             <PATTERN>=<DAYS>
         These operands will be passed \
-to the ${dir}/tools/${0##*[\\/]}-purge(1) tool. \
+to the ${dir}/tools/${basename%-*}-purge(1) tool. \
 Empty lines and comment lines (starting with a "#") are allowed, too. \
 Backup directories matching <PATTERN> are deleted \
 if they are over <DAYS> day old.
@@ -111,34 +113,6 @@ if they are over <DAYS> day old.
 to be used as a remote shell instead of the plain ssh(1). \
 This script can be used for setting identity files and proxy commands, \
 for instance.
-    ${dir}/conf/src-list
-        A file to specify the sources \
-to be copied to a newly created backup directory \
-when creating backups. \
-The file must contain operand lines having the following form:
-            [[<USER>@]<HOST>:]<SRC>
-        These operands will be passed \
-to the ${dir}/tools/${0##*[\\/]}-create(1) tool. \
-Empty lines and comment lines (starting with a "#") are allowed, too.
-    ${dir}/conf/tag-formats
-        An optional file containing date formats \
-to be used when constructing backup directory names for backups. \
-Empty lines and comment lines (starting with a "#") are allowed, too. \
-Each date format is tried in turn in order specified \
-until a non-existing backup directory is found.
-    ${dir}/tmp/
-        A temporary directory to be used for creating new backup directories.
-    <SOURCE-DIRECTORY>/.backup-filter
-        An optional per-directory rsync(1) filter merge-file \
-which can be used for excluding files from backups. \
-Empty lines and comment lines (starting with a "#") are allowed, too.
-    ${dir}/tools/${0##*[\\/]}-create
-        Used for creating backups using rsync(1).
-    ${dir}/tools/${0##*[\\/]}-prepare
-        Used for preparing for backups by executing preparation scripts.
-    ${dir}/tools/${0##*[\\/]}-purge
-        Used for deleting old backup directories \
-based on pattern matching and age.
     $( which rsync )
         A fast and extraordinarily versatile file copying tool. \
 See also rsync(1).
@@ -149,7 +123,7 @@ __HELP__
 ;;
 --help=help2man )
 	COLUMNS=2500 exec "${0}" --help \
-	| exec sed \
+	| sed \
 		-e '/^    [^ ]/!b'	\
 		-e 'N'			\
 		-e 's/\n        /  /'	\
@@ -175,19 +149,17 @@ __HELP__
 	;;
 esac
 
-# Prepare for backups.
-"${0%backup}backup-prepare"
-
-# Create backups.
+# Mirror backups.
 set -- "${@}" --
 while read arg
 do
 	case ${arg} in
 	'' | '#'* ) continue ;;
+	*/ | */.  ) set -- "${@}" "${arg%/*}/." ;;
+	*         ) set -- "${@}" "${arg}/." ;;
 	esac
-	set -- "${@}" "${arg}"
-done < "${dir}/conf/src-list"
-"${0%backup}backup-create" "${@}"
+done < "${dir}/conf/master-list"
+"${0%backup-*}backup-mirror-pull" "${@}"
 
 # Delete old backup directories.
 if [ -f "${dir}/conf/purge-list" ]
@@ -205,5 +177,5 @@ else
 fi
 case ${#} in
 1 ) ;;
-* ) "${0%backup}backup-purge" "${@}" ;;
+* ) "${0%backup-*}backup-purge" "${@}" ;;
 esac
