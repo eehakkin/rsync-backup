@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# mirror 0.0.20130628
+# backup-mirror 0.0.20130629
 #
 # Copyright (C) 2010-2013 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -137,7 +137,9 @@ __HELP__
 	exit
 	;;
 --help=troff )
-	exec help2man -h --help=help2man -L en_US.UTF-8 -N -n "${short_description}" -- "${0}"
+	exec help2man -h --help=help2man -L en_US.UTF-8 -N -n "${short_description}" -- "${0}" \
+	| exec sed -e 's/\([[:alnum:]\\-][[:alnum:]\\-]*\)[(]\([[:digit:]]*\)[)]/\\fB\1\\fR(\2)/g'
+	exit
 	;;
 --version | -V )
 	exec sed -n \
