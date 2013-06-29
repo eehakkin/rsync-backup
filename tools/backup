@@ -102,7 +102,7 @@ matching the pattern [${valid}].
 The file must contain operand lines having the following form:
             <PATTERN>=<DAYS>
         These operands will be passed \
-to the ${dir}/tools/${0##*[\\/]}-purge(1) tool. \
+to the ${0##*[\\/]}-purge(1) tool. \
 Empty lines and comment lines (starting with a "#") are allowed, too. \
 Backup directories matching <PATTERN> are deleted \
 if they are over <DAYS> day old.
@@ -118,7 +118,7 @@ when creating backups. \
 The file must contain operand lines having the following form:
             [[<USER>@]<HOST>:]<SRC>
         These operands will be passed \
-to the ${dir}/tools/${0##*[\\/]}-create(1) tool. \
+to the ${0##*[\\/]}-create(1) tool. \
 Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/tag-formats
         An optional file containing date formats \

@@ -91,20 +91,20 @@ containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).
     ${dir}/conf/master-list
-        A file to specify the directories \
-containing source backup directories \
+        A file to specify the master directories \
+containing master backup directories \
 to be mirrored. \
 The file must contain operand lines having the following form:
             [[<USER>@]<HOST>:]<SRC>[/[.]]
         These operands will be passed \
-to the ${dir}/tools/${0##*[\\/]}-pull(1) tool. \
+to the ${0##*[\\/]}-pull(1) tool. \
 Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/purge-list
         An optional file to override the default patterns and ages. \
 The file must contain operand lines having the following form:
             <PATTERN>=<DAYS>
         These operands will be passed \
-to the ${dir}/tools/${basename%-*}-purge(1) tool. \
+to the ${basename%-*}-purge(1) tool. \
 Empty lines and comment lines (starting with a "#") are allowed, too. \
 Backup directories matching <PATTERN> are deleted \
 if they are over <DAYS> day old.

@@ -38,15 +38,16 @@ case ${1-} in
 Usage: ${0##*[\\/]} [<RSYNC-OPTION>]... [[<USER>@]<HOST>:]<SRC>[/[.]]...
  or:   ${0##*[\\/]} <OPTION>...
 
-Pull backups using rsync(1). \
-Each backup directory is pulled using the following steps:
+Pull backups \
+from master locations \
+using rsync(1).
 
-  Old temporary backup directories are deleted.
+Each backup is pulled using the following steps:
 
   A new backup directory is created in a temporary directory.
 
   Files and directories are copied \
-from the source backup directory \
+from a master backup directory \
 to the newly created backup directory \
 using rsync(1).
 
@@ -61,10 +62,10 @@ Disk usage is minimised and \
 the transfer is speeded up \
 by hard linking files \
 from old backup directories \
-to the newly created backup directory \
+to newly created backup directories \
 whenever possible \
 (when files in sources and previous backup directories are identical \
-in content and in all preserved attributes). \
+in content and in all preserved attributes).
 On the s3ql filesystem, \
 hard linking \
 is not needed and \
@@ -96,9 +97,9 @@ $( rsync --help | sed '
 
 Operands:
     [[<USER>@]<HOST>:]<SRC>/[.]
-        A directory containing source backup directories to be pulled.
+        A master directory containing master backup directories to be pulled.
     [[<USER>@]<HOST>:]<SRC>
-        A source backup directory to be pulled.
+        A master backup directory to be pulled.
 
 Files:
     ${dir}/<YEAR>

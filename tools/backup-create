@@ -38,23 +38,16 @@ case ${1-} in
 Usage: ${0##*[\\/]} [<RSYNC-OPTION>]... [[<USER>@]<HOST>:]<SRC>...
  or:   ${0##*[\\/]} <OPTION>...
 
-Create backups using rsync(1). \
+Create backups using rsync(1).
+
 Each new backup is created into a new backup directory \
 which is named according to the backup date and time. \
 These backup directories are full backup directories \
 containing direct (but possible filtered) copies \
 of original files and directories. \
-They can thus be accessed are restored directly. \
-Disk usage is minimised by hard linking files \
-from old backup directories \
-to newly created backup directories \
-whenever possible \
-(when files in sources and previous backup directories are identical \
-in content and in all preserved attributes).
+They can thus be accessed are restored directly.
 
 Backups are created using the following steps:
-
-  Old temporary backup directories are deleted.
 
   A new backup directory is created in a temporary directory.
 
@@ -74,10 +67,10 @@ Disk usage is minimised and \
 the transfer is speeded up \
 by hard linking files \
 from old backup directories \
-to the newly created backup directory \
+to newly created backup directories \
 whenever possible \
 (when files in sources and previous backup directories are identical \
-in content and in all preserved attributes). \
+in content and in all preserved attributes).
 On the s3ql filesystem, \
 hard linking \
 is not needed and \
