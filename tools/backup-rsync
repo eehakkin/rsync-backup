@@ -130,19 +130,21 @@ rsh=${dir}/conf/rsh; [ ! -x "${rsh}" ] && unset rsh
 [ ! -f "${dir}/conf/config" ] || {
 	for arg
 	do
-		while read opt optarg
+		while IFS="${IFS}=" read opt optarg
 		do
 			case ${opt} in
 			'' | '#'* ) continue ;;
 			filter    ) unset filter ;;
 			rsh       ) unset rsh ;;
 			esac
-			set -- "${@}" "--${opt}" ${optarg:+"${optarg}"}
+			set -- "${@}" "--${opt}${optarg:+=${optarg}}"
 		done
 		set -- "${@}" "${arg}"
 		shift
 	done < "${dir}/conf/config"
 }
+
+# Execute.
 exec rsync \
 	--archive				\
 	${filter+ --filter "${filter}" }	\
