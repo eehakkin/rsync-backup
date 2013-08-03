@@ -263,7 +263,7 @@ do
 		*         ) rm -fr -- "${dir}/tmp/old" ;;
 		esac
 		mkdir -m go=       -- "${dir}/tmp/${$}"
-		# Temporary extend the options with exclude options
+		# Temporary extend the options with exclude and include options
 		# read from a configuration file.
 		argc0=${#}
 		[ ! -f "${dir}/conf/config" ] || {
@@ -272,12 +272,11 @@ do
 			do
 				while IFS="${IFS}=" read opt optarg
 				do
-					case ${opt} in
-					exclude      | \
-					exclude-from ) ;;
-					*            ) continue ;;
+					case ${opt%-from} in
+					exclude | \
+					include ) set -- "${@}" \
+						"--${opt}=${optarg}" ;;
 					esac
-					set -- "${@}" "--${opt}=${optarg}"
 				done
 				set -- "${@}" "${arg2}"
 				shift
@@ -290,25 +289,27 @@ do
 			)
 		"${0%backup-*}backup-rsync" \
 			--filter='clear'			\
-			${exclude}				\
 			--exclude='/*[![:digit:][:punct:]TW]*'	\
+			--exclude='/*/*'			\
+			${exclude}				\
 			"${@}"					\
 			--include='/[[:digit:]]*/'		\
 			--exclude='/*'				\
 			--exclude='/*/*'			\
 			-- "${arg%/*}/./" "${dir}/tmp/${$}/"
+		# Drop temporary exclude and include options.
 		shift "$(( ${#} - ${argc0} ))"
 		# Pull the backup directories.
-		for tag in "${dir}/tmp/${$}"/*
+		for tag in "${dir}/tmp/${$}"/*/
 		do
-			tag=${tag##*/}
-			case ${tag} in
+			tag=${tag##"${tag%/*/}/"}
+			case ${tag%/} in
 			*[![:digit:][:punct:]TW]* ) ;;
 			[[:digit:]]* ) "${0%backup-*}backup-create" \
-				--backup-tag-name="${tag}"	\
+				--backup-tag-name="${tag%/}"	\
 				--filter='clear'		\
 				"${@}"				\
-				-- "${arg%/*}/${tag}/./" ;;
+				-- "${arg%/*}/${tag%/}/./" ;;
 			esac
 		done
 		# Clean up.
