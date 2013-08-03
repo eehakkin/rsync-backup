@@ -219,20 +219,20 @@ do
 						argtype=optarg
 						;;
 					esac
-					break
 					;;
 				* )
 					case ${arg} in
 					-??* ) # -<OPT><OPT>[...][<OPTARG>]
 						arg=-${arg#-?}
+						continue
 						;;
 					* ) # -<OPT>
 						argtype=opt
-						break
 						;;
 					esac
 					;;
 				esac
+				break
 			done
 			;;
 		esac
