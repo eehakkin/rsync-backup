@@ -168,6 +168,23 @@ __HELP__
 	;;
 esac
 
+# Extend the options with exclude and include options
+# read from a configuration file.
+[ ! -f "${dir}/conf/config" ] || {
+	for arg
+	do
+		while IFS="${IFS}=" read opt optarg
+		do
+			case ${opt%-from} in
+			exclude | \
+			include ) set -- "${@}" "--${opt}=${optarg}" ;;
+			esac
+		done
+		set -- "${@}" "${arg}"
+		shift
+	done < "${dir}/conf/config"
+}
+
 # Find out rsync options requiring an option argument.
 rsync_optarg_opts=$( LC_ALL=C rsync --help | sed '
 	/^ *-/,/^$/!d
@@ -263,25 +280,6 @@ do
 		*         ) rm -fr -- "${dir}/tmp/old" ;;
 		esac
 		mkdir -m go=       -- "${dir}/tmp/${$}"
-		# Temporary extend the options with exclude and include options
-		# read from a configuration file.
-		argc0=${#}
-		[ ! -f "${dir}/conf/config" ] || {
-			${1+:} set -- --include='/[[:digit:]]*/'
-			for arg2
-			do
-				while IFS="${IFS}=" read opt optarg
-				do
-					case ${opt%-from} in
-					exclude | \
-					include ) set -- "${@}" \
-						"--${opt}=${optarg}" ;;
-					esac
-				done
-				set -- "${@}" "${arg2}"
-				shift
-			done < "${dir}/conf/config"
-		}
 		# Find out the backup directories to be pulled.
 		exclude=$(
 			ls -- "${dir}/" \
@@ -297,8 +295,6 @@ do
 			--exclude='/*'				\
 			--exclude='/*/*'			\
 			-- "${arg%/*}/./" "${dir}/tmp/${$}/"
-		# Drop temporary exclude and include options.
-		shift "$(( ${#} - ${argc0} ))"
 		# Pull the backup directories.
 		for tag in "${dir}/tmp/${$}"/*/
 		do
