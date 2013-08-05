@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-mirror-pull 0.0.20130629
+# backup-mirror-pull 0.0.20130805
 #
 # Copyright (C) 2010-2013 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -296,18 +296,19 @@ do
 			--exclude='/*/*'			\
 			-- "${arg%/*}/./" "${dir}/tmp/${$}/"
 		# Pull the backup directories.
-		for tag in "${dir}/tmp/${$}"/*/
-		do
-			tag=${tag##"${tag%/*/}/"}
-			case ${tag%/} in
-			*[![:digit:][:punct:]TW]* ) ;;
-			[[:digit:]]* ) "${0%backup-*}backup-create" \
-				--backup-tag-name="${tag%/}"	\
-				--filter='clear'		\
-				"${@}"				\
-				-- "${arg%/*}/${tag%/}/./" ;;
-			esac
-		done
+		ls -rt -- "${dir}/tmp/${$}/" | {
+			while read tag
+			do
+				case ${tag} in
+				*[![:digit:][:punct:]TW]* ) ;;
+				[[:digit:]]* ) "${0%backup-*}backup-create" \
+					--backup-tag-name="${tag}"	\
+					--filter='clear'		\
+					"${@}"				\
+					-- "${arg%/*}/${tag}/./" ;;
+				esac
+			done
+		}
 		# Clean up.
 		rm -fr -- "${dir}/tmp/${$}"
 		;;

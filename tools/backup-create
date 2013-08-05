@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-create 0.0.20130629
+# backup-create 0.0.20130805
 #
 # Copyright (C) 2010-2013 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
