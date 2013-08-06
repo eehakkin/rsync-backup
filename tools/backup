@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup 0.0.20130805
+# backup 0.0.20130806
 #
 # Copyright (C) 2010-2013 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -151,6 +151,7 @@ __HELP__
 	COLUMNS=2500 exec "${0}" --help \
 	| exec sed \
 		-e '/^    [^ ]/!b'	\
+		-e '/[^ ]  /b'		\
 		-e 'N'			\
 		-e 's/\n        /  /'	\
 		-e 'P'			\
