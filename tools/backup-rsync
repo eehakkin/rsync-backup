@@ -146,7 +146,8 @@ rsh=${dir}/conf/rsh; [ ! -x "${rsh}" ] && unset rsh
 }
 
 # Execute.
-exec rsync \
+NOCACHE=${NOCACHE-$( which -- nocache || : )}
+exec ${NOCACHE:+ "${NOCACHE}" -n 2 } rsync \
 	--archive				\
 	${filter+ --filter="${filter}" }	\
 	--fuzzy					\
@@ -155,9 +156,11 @@ exec rsync \
 	--rsync-path='
 IONICE=$( which -- ionice || : )
 NICE=$( which -- nice || : )
+NOCACHE=$( which -- nocache || : )
 exec \
 	${IONICE:+	"${IONICE}" -c 3 --	} \
 	${NICE:+	"${NICE}" -n 10 --	} \
+	${NOCACHE:+	"${NOCACHE}" -n 2	} \
 	rsync "${@}"'				\
 	--sparse				\
 	"${@}"
