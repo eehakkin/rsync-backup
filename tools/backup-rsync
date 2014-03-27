@@ -152,5 +152,12 @@ exec rsync \
 	--fuzzy					\
 	--relative				\
 	${rsh+ --rsh="${rsh}" }			\
+	--rsync-path='
+IONICE=$( which -- ionice || : )
+NICE=$( which -- nice || : )
+exec \
+	${IONICE:+	"${IONICE}" -c 3 --	} \
+	${NICE:+	"${NICE}" -n 10 --	} \
+	rsync "${@}"'				\
 	--sparse				\
 	"${@}"
