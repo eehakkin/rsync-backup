@@ -8,6 +8,7 @@ me=$( which -- "${0}" || ls -d -- "${0}" )
 dir=$( dirname -- "${me}" )
 dir=$( readlink -f -- "${dir}" )
 case ${dir} in */.misc/* ) dir=/${dir#*/.misc/} ;; esac
+case ${dir} in */.ro/*   ) dir=${dir%%/.ro/*}/${dir#*/.ro/} ;; esac
 case ${dir} in */.rw/*   ) dir=${dir%%/.rw/*}/${dir#*/.rw/} ;; esac
 me=${dir}/$( basename -- "${me}" )
 
