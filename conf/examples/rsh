@@ -27,6 +27,8 @@ esac
 
 # Use some extra options.
 [ ! -f "${dir}/ssh/config" ] || set -- -F "${dir}/ssh/config" "${@}"
+[ ! -f "${dir}/ssh/known_hosts" ] || set -- \
+	-o UserKnownHostsFile="${dir}/ssh/known_hosts" "${@}"
 set -- -o ClearAllForwardings=yes -o StrictHostKeyChecking=yes "${@}"
 
 # Execute SSH.
