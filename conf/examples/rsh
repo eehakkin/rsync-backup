@@ -26,7 +26,15 @@ case " ${*} " in
 esac
 
 # Use some extra options.
-[ ! -f "${dir}/ssh/config" ] || set -- -F "${dir}/ssh/config" "${@}"
+if [ ! -f "${dir}/ssh/config" ]
+then
+	set -- \
+		-o ControlMaster=auto \
+		-o ControlPersist=1m \
+		"${@}"
+else
+	set -- -F "${dir}/ssh/config" "${@}"
+fi
 [ ! -f "${dir}/ssh/known_hosts" ] || set -- \
 	-o UserKnownHostsFile="${dir}/ssh/known_hosts" "${@}"
 set -- -o ClearAllForwardings=yes -o StrictHostKeyChecking=yes "${@}"
