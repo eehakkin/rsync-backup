@@ -219,21 +219,21 @@ esac
 
 # Create a protected temporary directory.
 fstype=$( find "${dir}/." -prune -printf '%F\n' )
-mkdir -m go=u-w -p -- "${dir}/tmp"
-mkdir -m go=    -p -- "${dir}/tmp/old" "${dir}/tmp/${$}"
-mv                 -- "${dir}/tmp"/[[:digit:]]* "${dir}/tmp/old/"
+mkdir -m go=u-w -p -- "${dir}/tmp" "${dir}/tmp/backup"
+mkdir -m go=    -p -- "${dir}/tmp/backup/old" "${dir}/tmp/backup/${$}"
+mv                 -- "${dir}/tmp/backup"/[[:digit:]]* "${dir}/tmp/backup/old/"
 case ${fstype} in
-fuse.s3ql ) s3qlrm -- "${dir}/tmp/old" ;;
-*         ) rm -fr -- "${dir}/tmp/old" ;;
+fuse.s3ql ) s3qlrm -- "${dir}/tmp/backup/old" ;;
+*         ) rm -fr -- "${dir}/tmp/backup/old" ;;
 esac
-mkdir -m go=       -- "${dir}/tmp/${$}"
+mkdir -m go=       -- "${dir}/tmp/backup/${$}"
 
 # Create a backup to a protected temporary directory.
 case ${fstype} in
 fuse.s3ql )
 	[ ! -d "${dir}/latest/." ] || s3qlcp -- \
 		"${dir}/latest/."		\
-		"${dir}/tmp/${$}/${tag}"
+		"${dir}/tmp/backup/${$}/${tag}"
 	set -- --delete --delete-delay --delete-excluded "${@}"
 	dest_opt=--copy-dest
 	;;
@@ -243,24 +243,24 @@ fuse.s3ql )
 esac
 dest_opts=$(
 	ls -t -- "${dir}/" \
-	| sed -n -e '/./s|^[[:digit:][:punct:]TW]*$|'"${dest_opt}"'=../../../&|p' \
+	| sed -n -e '/./s|^[[:digit:][:punct:]TW]*$|'"${dest_opt}"'=../../../../&|p' \
 	| sed -e '20q'
 	)
-"${0%backup-*}backup-rsync" ${dest_opts} "${@}" "${dir}/tmp/${$}/${tag}" || {
-	case ${?} in
-	24 ) ;; # Partial transfer due to vanished source files
-	*  ) exit 1 ;;
-	esac
-}
-chmod -- g=u-w,o= "${dir}/tmp/${$}/${tag}"
-chgrp -- users    "${dir}/tmp/${$}/${tag}"
+"${0%backup-*}backup-rsync" ${dest_opts} \
+	"${@}" "${dir}/tmp/backup/${$}/${tag}" ||
+case ${?} in
+24 ) ;; # Partial transfer due to vanished source files
+*  ) exit 1 ;;
+esac
+chmod -- g=u-w,o= "${dir}/tmp/backup/${$}/${tag}"
+chgrp -- users    "${dir}/tmp/backup/${$}/${tag}"
 case ${fstype} in
-fuse.s3ql ) s3qllock -- "${dir}/tmp/${$}/${tag}" ;;
+fuse.s3ql ) s3qllock -- "${dir}/tmp/backup/${$}/${tag}" ;;
 esac
 
 # Release the backup.
-ln    -s -- "${tag}" "${dir}/tmp/${$}/latest"
+ln    -s -- "${tag}" "${dir}/tmp/backup/${$}/latest"
 sync
-mv    -f -- "${dir}/tmp/${$}"/* "${dir}/"
-rmdir    -- "${dir}/tmp/${$}"
+mv    -f -- "${dir}/tmp/backup/${$}"/* "${dir}/"
+rmdir    -- "${dir}/tmp/backup/${$}" "${dir}/tmp/backup"
 sync

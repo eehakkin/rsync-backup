@@ -272,15 +272,13 @@ do
 	case ${arg} in
 	*/ | */. ) # [[<USER>@]<HOST>:]<SRC>/[.]
 		# Create a protected temporary directory.
-		fstype=$( find "${dir}/." -prune -printf '%F\n' )
-		mkdir -m go=u-w -p -- "${dir}/tmp"
-		mkdir -m go=    -p -- "${dir}/tmp/old" "${dir}/tmp/${$}"
-		mv                 -- "${dir}/tmp"/[[:digit:]]* "${dir}/tmp/old/"
-		case ${fstype} in
-		fuse.s3ql ) s3qlrm -- "${dir}/tmp/old" ;;
-		*         ) rm -fr -- "${dir}/tmp/old" ;;
-		esac
-		mkdir -m go=       -- "${dir}/tmp/${$}"
+		mkdir -m go=u-w -p -- \
+			"${dir}/tmp"		\
+			"${dir}/tmp/mirror"
+		mkdir -m go=    -p -- "${dir}/tmp/mirror/old" "${dir}/tmp/mirror/${$}"
+		mv                 -- "${dir}/tmp/mirror"/[[:digit:]]* "${dir}/tmp/mirror/old/"
+		rm -fr -- "${dir}/tmp/mirror/old"
+		mkdir -m go=       -- "${dir}/tmp/mirror/${$}"
 		# Find out the backup directories to be pulled.
 		exclude=$(
 			ls -- "${dir}/" \
@@ -295,9 +293,9 @@ do
 			--include='/[[:digit:]]*/'		\
 			--exclude='/*'				\
 			--exclude='/*/*'			\
-			-- "${arg%/*}/./" "${dir}/tmp/${$}/"
+			-- "${arg%/*}/./" "${dir}/tmp/mirror/${$}/"
 		# Pull the backup directories.
-		ls -rt -- "${dir}/tmp/${$}/" | {
+		ls -rt -- "${dir}/tmp/mirror/${$}/" | {
 			while read tag
 			do
 				case ${tag} in
@@ -311,7 +309,8 @@ do
 			done
 		}
 		# Clean up.
-		rm -fr -- "${dir}/tmp/${$}"
+		rm -fr -- "${dir}/tmp/mirror/${$}"
+		rmdir  -- "${dir}/tmp/mirror"
 		;;
 	* ) # [[<USER>@]<HOST>:]<SRC>
 		# Pull a backup directory.
