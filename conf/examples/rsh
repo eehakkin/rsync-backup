@@ -31,6 +31,7 @@ then
 	set -- \
 		-o ControlMaster=auto \
 		-o ControlPersist=1m \
+		-o VerifyHostKeyDNS=yes \
 		"${@}"
 else
 	set -- -F "${dir}/ssh/config" "${@}"
