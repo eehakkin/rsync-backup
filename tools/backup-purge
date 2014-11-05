@@ -136,11 +136,6 @@ __HELP__
 -- ) shift ;;
 esac
 
-on_ac_power > /dev/null 2>&1 && :
-case ${?} in
-1 ) echo "${0}: deferred while on battery power." >&2; exit ;;
-esac
-
 case ${#} in
 0 ) set -- ${default_args} ;;
 esac
@@ -186,6 +181,12 @@ case ${fstype} in
 fuse.s3ql ) rm_fr=s3qlrm ;;
 *         ) rm_fr='rm -fr' ;;
 esac
+
+on_ac_power > /dev/null 2>&1 && :
+case ${?} in
+1 ) echo "${0}: deferred while on battery power." >&2; rm_fr="echo ${rm_fr}" ;;
+esac
+
 exec find \
 	"${dir}/."		\
 	! -name .		\
