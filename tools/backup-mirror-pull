@@ -274,11 +274,16 @@ do
 		# Create a protected temporary directory.
 		mkdir -m go=u-w -p -- \
 			"${dir}/tmp"		\
-			"${dir}/tmp/mirror"
-		mkdir -m go=    -p -- "${dir}/tmp/mirror/old" "${dir}/tmp/mirror/${$}"
-		mv                 -- "${dir}/tmp/mirror"/[[:digit:]]* "${dir}/tmp/mirror/old/"
-		rm -fr -- "${dir}/tmp/mirror/old"
-		mkdir -m go=       -- "${dir}/tmp/mirror/${$}"
+			"${dir}/tmp/mirror"	\
+			"${dir}/tmp/mirror-"
+		for old in "${dir}/tmp/mirror-" "${dir}/tmp/mirror"
+		do
+			case ${old} in
+			*[!-] ) mv -- "${old}" "${old}-" ;;
+			esac
+			rm -fr -- "${old%-}-"
+		done
+		mkdir -m go= -- "${dir}/tmp/mirror" "${dir}/tmp/mirror/${$}"
 		# Find out the backup directories to be pulled.
 		exclude=$(
 			ls -- "${dir}/" \
@@ -309,8 +314,8 @@ do
 			done
 		}
 		# Clean up.
-		rm -fr -- "${dir}/tmp/mirror/${$}"
-		rmdir  -- "${dir}/tmp/mirror"
+		mv     -- "${dir}/tmp/mirror" "${dir}/tmp/mirror-"
+		rm -fr -- "${dir}/tmp/mirror-"
 		;;
 	* ) # [[<USER>@]<HOST>:]<SRC>
 		# Pull a backup directory.

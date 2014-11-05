@@ -219,14 +219,18 @@ esac
 
 # Create a protected temporary directory.
 fstype=$( find "${dir}/." -prune -printf '%F\n' )
-mkdir -m go=u-w -p -- "${dir}/tmp" "${dir}/tmp/backup"
-mkdir -m go=    -p -- "${dir}/tmp/backup/old" "${dir}/tmp/backup/${$}"
-mv                 -- "${dir}/tmp/backup"/[[:digit:]]* "${dir}/tmp/backup/old/"
-case ${fstype} in
-fuse.s3ql ) s3qlrm -- "${dir}/tmp/backup/old" ;;
-*         ) rm -fr -- "${dir}/tmp/backup/old" ;;
-esac
-mkdir -m go=       -- "${dir}/tmp/backup/${$}"
+mkdir -m go=u-w -p -- "${dir}/tmp" "${dir}/tmp/backup" "${dir}/tmp/backup-"
+for old in "${dir}/tmp/backup-" "${dir}/tmp/backup"
+do
+	case ${old} in
+	*[!-] ) mv -- "${old}" "${old}-" ;;
+	esac
+	case ${fstype} in
+	fuse.s3ql ) s3qlrm -- "${old%-}-" ;;
+	*         ) rm -fr -- "${old%-}-" ;;
+	esac
+done
+mkdir -m go= -- "${dir}/tmp/backup" "${dir}/tmp/backup/${$}"
 
 # Create a backup to a protected temporary directory.
 case ${fstype} in
