@@ -71,7 +71,7 @@ to newly created backup directories \
 whenever possible \
 (when files in sources and previous backup directories are identical \
 in content and in all preserved attributes).
-On the s3ql filesystem, \
+On the btrfs and s3ql filesystems, \
 hard linking \
 is not needed and \
 is therefore not used \
@@ -233,18 +233,20 @@ done
 mkdir -m go= -- "${dir}/tmp/backup" "${dir}/tmp/backup/${$}"
 
 # Create a backup to a protected temporary directory.
-case ${fstype} in
-fuse.s3ql )
-	[ ! -d "${dir}/latest/." ] || s3qlcp -- \
+dest_opt=--link-dest
+if
+	case ${fstype} in
+	btrfs     ) cp_a='cp --archive --reflink=always' ;;
+	fuse.s3ql ) cp_a=s3qlcp ;;
+	*         ) false ;;
+	esac
+then
+	[ ! -d "${dir}/latest/." ] || ${cp_a} -- \
 		"${dir}/latest/."		\
 		"${dir}/tmp/backup/${$}/${tag}"
 	set -- --delete --delete-delay --delete-excluded "${@}"
 	dest_opt=--copy-dest
-	;;
-* )
-	dest_opt=--link-dest
-	;;
-esac
+fi
 dest_opts=$(
 	ls -t -- "${dir}/" \
 	| sed -n -e '/./s|^[[:digit:][:punct:]TW]*$|'"${dest_opt}"'=../../../../&|p' \

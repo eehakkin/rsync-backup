@@ -34,8 +34,8 @@ files from old backup directories to newly created backup directories
 whenever possible (when files in sources and previous backup directories
 are identical in content and in all preserved attributes).
 
-On the s3ql filesystem, hard linking is not needed and is therefore not
-used for disk usage minimisation.
+On the btrfs and s3ql filesystems, hard linking is not needed and is
+therefore not used for disk usage minimisation.
 
 ### **backup-mirror**
 
@@ -50,8 +50,8 @@ files from old backup directories to newly created backup directories
 whenever possible (when files in sources and previous backup directories
 are identical in content and in all preserved attributes).
 
-On the s3ql filesystem, hard linking is not needed and is therefore not
-used for disk usage minimisation.
+On the btrfs and s3ql filesystems, hard linking is not needed and is
+therefore not used for disk usage minimisation.
 
 ### **backup-prepare**
 
