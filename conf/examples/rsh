@@ -11,6 +11,12 @@ case ${dir} in */.misc/* ) dir=/${dir#*/.misc/} ;; esac
 case ${dir} in */.rw/*   ) dir=${dir%%/.rw/*}/${dir#*/.rw/} ;; esac
 me=${dir}/$( basename -- "${me}" )
 
+# Use identity files.
+for identity_file in "${dir}/ssh"/id_*[9a]
+do
+	[ ! -f "${identity_file}" ] || set -- -i "${identity_file}" "${@}"
+done
+
 # Use a proxy command for root.
 case " ${*} " in
 *' -l root '* ) set -- -o ProxyCommand="\
@@ -19,7 +25,6 @@ case " ${*} " in
 esac
 
 # Use some extra options.
-[ ! -f "${dir}/ssh/id_rsa" ] || set -- -i "${dir}/ssh/id_rsa" "${@}"
 [ ! -f "${dir}/ssh/config" ] || set -- -F "${dir}/ssh/config" "${@}"
 set -- -o ClearAllForwardings=yes -o StrictHostKeyChecking=yes "${@}"
 
