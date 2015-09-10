@@ -150,7 +150,8 @@ __HELP__
 		-e '/^##/{2!q;}'			\
 		-- "${me}"
 	;;
--- ) shift ;;
+--  ) shift ;;
+-?* ) getopts '' OPT "${@}"; exit 1 ;;
 esac
 
 case ${#} in
