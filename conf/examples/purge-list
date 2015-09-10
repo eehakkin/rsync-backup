@@ -1,14 +1,14 @@
 # The defaults to be used if the conf/purge-list file does not exist
 # ==================================================================
 
-# Keep hourly, minutely and secondly backups for 1 day.
-hourly=1
+# Keep hourly, minutely and secondly backups for at most 1 day.
+hourly=0
 
-# Keep daily backups for 1 week (for 7 days).
+# Keep daily backups for at least 1 week (for 7 days).
 daily=7
 
-# Keep weekly backups for 1 month (for 31 days).
+# Keep weekly backups for at least 1 month (for 31 days).
 weekly=31
 
-# Keep monthly backups for 1 year (for 366 days).
+# Keep monthly backups for at least 1 year (for 366 days).
 monthly=366

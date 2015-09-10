@@ -1,8 +1,8 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-purge 0.0.20140327
+# backup-purge 0.0.20150910
 #
-# Copyright (C) 2010-2014 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010-2015 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -31,7 +31,7 @@ case ${dir} in
 esac
 
 short_description='delete old backup directories'
-default_args='hourly=1 daily=7 weekly=31 monthly=366'
+default_args='hourly=0 daily=7 weekly=31 monthly=366'
 
 case ${1-} in
 --help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
@@ -39,10 +39,10 @@ Usage: ${0##*[\\/]} [<OPTION>]... [<PATTERN>=<DAYS>]...
 
 Delete old backup directories based on pattern matching and age. \
 The default is to keep \
-hourly backups over one day, \
-daily backups over one week, \
-weekly backups over one month, \
-monthly backups over one year and \
+hourly backups for at most one day, \
+daily backups for at least one week, \
+weekly backups for at least one month, \
+monthly backups for at least one year and \
 yearly backups forever \
 (thus the default operands are ${default_args}).
 
