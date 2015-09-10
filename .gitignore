@@ -1,0 +1,8 @@
+/[[:digit:]][[:digit:]][[:digit:]][[:digit:]]*/
+/conf/config
+/conf/pre.d/
+/conf/rsh
+/conf/*-formats
+/conf/*-list
+/latest
+/tmp/
