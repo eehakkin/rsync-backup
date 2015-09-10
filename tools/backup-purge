@@ -31,7 +31,7 @@ case ${dir} in
 esac
 
 short_description='delete old backup directories'
-default_args='hourly=0 daily=7 weekly=31 monthly=366'
+default_args='hourly=0 fake-daily=0 daily=7 fake-weekly=7 weekly=31 fake-monthly=31 monthly=366 fake-yearly=366'
 
 case ${1-} in
 --help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
@@ -58,32 +58,49 @@ Operands:
 if they are over <DAYS> day old.
 
 Special patterns:
-    yearly   [0-9][0-9][0-9][0-9]
-             (for <YEAR>)
-    monthly  [0-9][0-9][0-9][0-9][0-9][0-9]
-             (for <YEAR><MONTH>) and
-             [0-9][0-9][0-9][0-9]-[0-9][0-9]
-             (for <YEAR>-<MONTH>)
-    weekly   [0-9][0-9][0-9][0-9]W[0-9][0-9]
-             (for <YEAR>W<WEEK>) and
-             [0-9][0-9][0-9][0-9]-W[0-9][0-9]
-             (for <YEAR>-W<WEEK>)
-    daily    [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]
-             (for <YEAR><MONTH><DAY>),
-             [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]
-             (for <YEAR>-<MONTH>-<DAY>),
-             [0-9][0-9][0-9][0-9]W[0-9][0-9][0-9]
-             (for <YEAR>W<WEEK><DAY>) and
-             [0-9][0-9][0-9][0-9]-W[0-9][0-9]-[0-9]
-             (for <YEAR>-W<WEEK>-<DAY>)
-    hourly   [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]T[0-9][0-9]*
-             (for <YEAR><MONTH><DAY>T<HOUR>*),
-             [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]*
-             (for <YEAR>-<MONTH>-<DAY>T<HOUR>*),
-             [0-9][0-9][0-9][0-9]W[0-9][0-9][0-9]T[0-9][0-9]*
-             (for <YEAR>W<WEEK><DAY>T<HOUR>*) and
-             [0-9][0-9][0-9][0-9]-W[0-9][0-9]-[0-9]T[0-9][0-9]*
-             (for <YEAR>-W<WEEK>-<DAY>T<HOUR>*)
+    yearly        [0-9][0-9][0-9][0-9]
+                  (for <YEAR>)
+    monthly       [0-9][0-9][0-9][0-9][0-9][0-9]
+                  (for <YEAR><MONTH>) and
+                  [0-9][0-9][0-9][0-9]-[0-9][0-9]
+                  (for <YEAR>-<MONTH>)
+    weekly        [0-9][0-9][0-9][0-9]W[0-9][0-9]
+                  (for <YEAR>W<WEEK>) and
+                  [0-9][0-9][0-9][0-9]-W[0-9][0-9]
+                  (for <YEAR>-W<WEEK>)
+    daily         [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]
+                  (for <YEAR><MONTH><DAY>),
+                  [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]
+                  (for <YEAR>-<MONTH>-<DAY>),
+                  [0-9][0-9][0-9][0-9]W[0-9][0-9][0-9]
+                  (for <YEAR>W<WEEK><DAY>) and
+                  [0-9][0-9][0-9][0-9]-W[0-9][0-9]-[0-9]
+                  (for <YEAR>-W<WEEK>-<DAY>)
+    hourly        [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]T[0-9][0-9]*
+                  (for <YEAR><MONTH><DAY>T<HOUR>*),
+                  [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]*
+                  (for <YEAR>-<MONTH>-<DAY>T<HOUR>*),
+                  [0-9][0-9][0-9][0-9]W[0-9][0-9][0-9]T[0-9][0-9]*
+                  (for <YEAR>W<WEEK><DAY>T<HOUR>*) and
+                  [0-9][0-9][0-9][0-9]-W[0-9][0-9]-[0-9]T[0-9][0-9]*
+                  (for <YEAR>-W<WEEK>-<DAY>T<HOUR>*)
+    fake-yearly   9999
+    fake-monthly  [0-9][0-9][0-9][0-9]99
+                  (for <YEAR>99) and
+                  [0-9][0-9][0-9][0-9]-99
+                  (for <YEAR>-99)
+    fake-weekly   [0-9][0-9][0-9][0-9]W99
+                  (for <YEAR>W99) and
+                  [0-9][0-9][0-9][0-9]-W99
+                  (for <YEAR>-W99)
+    fake-daily    [0-9][0-9][0-9][0-9][0-9][0-9]99
+                  (for <YEAR><MONTH>99),
+                  [0-9][0-9][0-9][0-9]-[0-9][0-9]-99
+                  (for <YEAR>-<MONTH>-99),
+                  [0-9][0-9][0-9][0-9]W[0-9][0-9]9
+                  (for <YEAR>W<WEEK>9) and
+                  [0-9][0-9][0-9][0-9]-W[0-9][0-9]-9
+                  (for <YEAR>-W<WEEK>-9)
 
 Files:
     ${dir%/*/..}/<YEAR>
@@ -149,28 +166,43 @@ year=${digit}${digit}${digit}${digit}
 for arg
 do
 	case ${arg%=*} in
-	yearly  ) set -- "${@}" -o -name "${year}" -mtime +"${arg##*=}" ;;
-	monthly ) set -- "${@}" -o \( \
+	yearly       ) set -- "${@}" -o -name "${year}" -mtime +"${arg##*=}" ;;
+	fake-yearly  ) set -- "${@}" -o -name "9999" -mtime +"${arg##*=}" ;;
+	monthly      ) set -- "${@}" -o \( \
 		-name "${year}${month}" -o \
 		-name "${year}-${month}" \
 		\) -mtime +"${arg##*=}" ;;
-	weekly  ) set -- "${@}" -o \( \
+	fake-monthly ) set -- "${@}" -o \( \
+		-name "${year}99" -o \
+		-name "${year}-99" \
+		\) -mtime +"${arg##*=}" ;;
+	weekly       ) set -- "${@}" -o \( \
 		-name "${year}W${week}" -o \
 		-name "${year}-W${week}" \
 		\) -mtime +"${arg##*=}" ;;
-	daily   ) set -- "${@}" -o \( \
+	fake-weekly  ) set -- "${@}" -o \( \
+		-name "${year}W99" -o \
+		-name "${year}-W99" \
+		\) -mtime +"${arg##*=}" ;;
+	daily        ) set -- "${@}" -o \( \
 		-name "${year}${month}${day}" -o \
 		-name "${year}-${month}-${day}" -o \
 		-name "${year}W${week}${digit}" -o \
 		-name "${year}-W${week}-${digit}" \
 		\) -mtime +"${arg##*=}" ;;
-	hourly  ) set -- "${@}" -o \( \
+	fake-daily   ) set -- "${@}" -o \( \
+		-name "${year}${month}99" -o \
+		-name "${year}-${month}-99" -o \
+		-name "${year}W${week}9" -o \
+		-name "${year}-W${week}-9" \
+		\) -mtime +"${arg##*=}" ;;
+	hourly       ) set -- "${@}" -o \( \
 		-name "${year}${month}${day}T${hour}*" -o \
 		-name "${year}-${month}-${day}T${hour}*" -o \
 		-name "${year}W${week}${digit}T${hour}*" -o \
 		-name "${year}-W${week}-${digit}T${hour}*" \
 		\) -mtime +"${arg##*=}" ;;
-	*       ) set -- "${@}" -o -name "${digit}*" -name "${arg%=*}" -mtime +"${arg##*=}" ;;
+	*            ) set -- "${@}" -o -name "${digit}*" -name "${arg%=*}" -mtime +"${arg##*=}" ;;
 	esac
 	shift
 done
