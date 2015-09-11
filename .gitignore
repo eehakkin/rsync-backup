@@ -2,6 +2,7 @@
 /conf/config
 /conf/pre.d/
 /conf/rsh
+/conf/ssh/
 /conf/*-formats
 /conf/*-list
 /latest
