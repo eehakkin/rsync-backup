@@ -1,0 +1,9 @@
+# Do not create yearly nor monthly backups.
+
+#%Y
+#%Y%m
+%GW%V
+%Y%m%d
+%Y%m%dT%H
+%Y%m%dT%H%M
+%Y%m%dT%H%M%S
