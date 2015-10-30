@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-purge 0.0.20150910
+# backup-purge 0.0.20151030
 #
 # Copyright (C) 2010-2015 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -33,8 +33,13 @@ esac
 short_description='delete old backup directories'
 default_args='hourly=0 fake-daily=0 daily=7 fake-weekly=7 weekly=31 fake-monthly=31 monthly=366 fake-yearly=366'
 
-case ${1-} in
---help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
+# Parse options.
+dry_run=
+while :
+do
+	case ${1-} in
+	--dry-run | -n ) dry_run=+; shift ;;
+	--help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
 Usage: ${0##*[\\/]} [<OPTION>]... [<PATTERN>=<DAYS>]...
 
 Delete old backup directories based on pattern matching and age. \
@@ -47,6 +52,8 @@ yearly backups forever \
 (thus the default operands are ${default_args}).
 
 Options:
+    -n, --dry-run
+        Perform a trial run with no changes made.
     -h, --help[=<FORMAT>]
         Show this help message and exit.
     -V, --version
@@ -121,38 +128,40 @@ Files:
         A secondly backup directory.
 __HELP__
 ;;
---help=help2man )
-	COLUMNS=2500 exec "${0}" --help \
-	| sed \
-		-e '/^    [^ ]/!b'	\
-		-e '/[^ ]  /b'		\
-		-e 'N'			\
-		-e 's/\n        /  /'	\
-		-e 'P'			\
-		-e 'D'
-	exit
-	;;
---help=man )
-	exec "${0}" --help=troff \
-	| exec man -l -- -
-	exit
-	;;
---help=troff )
-	exec help2man -h --help=help2man -L en_US.UTF-8 -N -n "${short_description}" -- "${0}" \
-	| exec sed -e 's/\([[:alnum:]\\-][[:alnum:]\\-]*\)[(]\([[:digit:]]*\)[)]/\\fB\1\\fR(\2)/g'
-	exit
-	;;
---version | -V )
-	exec sed -n \
-		-e '/^[^#]/q'				\
-		-e "3s/^# [^ ]* /# ${0##*[\\/]} /"	\
-		-e 's/^#\( \(.*\)\)*$/\2/p'		\
-		-e '/^##/{2!q;}'			\
-		-- "${me}"
-	;;
---  ) shift ;;
--?* ) getopts '' OPT "${@}"; exit 1 ;;
-esac
+	--help=help2man )
+		COLUMNS=2500 exec "${0}" --help \
+		| sed \
+			-e '/^    [^ ]/!b'	\
+			-e '/[^ ]  /b'		\
+			-e 'N'			\
+			-e 's/\n        /  /'	\
+			-e 'P'			\
+			-e 'D'
+		exit
+		;;
+	--help=man )
+		exec "${0}" --help=troff \
+		| exec man -l -- -
+		exit
+		;;
+	--help=troff )
+		exec help2man -h --help=help2man -L en_US.UTF-8 -N -n "${short_description}" -- "${0}" \
+		| exec sed -e 's/\([[:alnum:]\\-][[:alnum:]\\-]*\)[(]\([[:digit:]]*\)[)]/\\fB\1\\fR(\2)/g'
+		exit
+		;;
+	--version | -V )
+		exec sed -n \
+			-e '/^[^#]/q'				\
+			-e "3s/^# [^ ]* /# ${0##*[\\/]} /"	\
+			-e 's/^#\( \(.*\)\)*$/\2/p'		\
+			-e '/^##/{2!q;}'			\
+			-- "${me}"
+		;;
+	--  ) shift; break ;;
+	-?* ) getopts '' OPT "${@}"; exit 1 ;;
+	*   ) break ;;
+	esac
+done
 
 case ${#} in
 0 ) set -- ${default_args} ;;
@@ -217,14 +226,14 @@ esac
 
 on_ac_power > /dev/null 2>&1 && :
 case ${?} in
-1 ) echo "${0}: deferred while on battery power." >&2; rm_fr="echo ${rm_fr}" ;;
+1 ) echo "${0}: deferred while on battery power." >&2; dry_run=+ ;;
 esac
 
 exec find \
-	"${dir}/."		\
-	! -name .		\
-	-prune			\
-	-type d			\
-	\( "${@}" \)		\
-	-exec ${rm_fr} -- {} +	\
+	"${dir}/."				\
+	! -name .				\
+	-prune					\
+	-type d					\
+	\( "${@}" \)				\
+	-exec ${dry_run:+echo} ${rm_fr} -- {} +	\
 	>&2
