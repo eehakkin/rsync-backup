@@ -1,24 +1,27 @@
 # A sample conf/src-list file
 # ===========================
 
-# Backup the local /etc, /home and /var/spool directories.
+# Backup the local /etc, /home, /var/backups and /var/spool directories.
 /etc
 /home
+/var/backups
 /var/spool
 
 # An alternative sample conf/src-list file
 # ========================================
 
-# Backup remote /etc, /home and /var/spool directories.
+# Backup remote /etc, /home, /var/backups and /var/spool directories.
 remote.example.com:/etc
 remote.example.com:/home
+remote.example.com:/var/backups
 remote.example.com:/var/spool
 
 # An alternative sample conf/src-list file
 # ========================================
 
-# Backup remote /etc, /home and /var/spool directories using a different
-# remote user.
+# Backup remote /etc, /home, /var/backups and /var/spool directories using
+# a different remote user.
 backup@remote.example.com:/etc
 backup@remote.example.com:/home
+backup@remote.example.com:/var/backups
 backup@remote.example.com:/var/spool

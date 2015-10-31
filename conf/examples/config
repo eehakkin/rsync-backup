@@ -4,10 +4,12 @@
 # Preserve ACLs.
 acls
 
-# limit I/O bandwidth; KBytes per second
-bwlimit		75
+# Limit I/O bandwidth.
+bwlimit		75KiB
 
-# don't cross filesystem boundaries
+# Store privileged attrs using xattrs.
+
+# Don't cross filesystem boundaries.
 one-file-system
 
 # Preserve extended attributes.

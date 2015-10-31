@@ -2,7 +2,8 @@ The conf/config file
 ====================
 
 An optional configuration file containing long option names (without
-leading slashes) and optional option arguments to be passed to rsync(1).
+leading slashes) and optional option arguments to be passed to rsync(1)
+by the backup-rsync(1) tool.
 
 The conf/pre.d directory
 ========================
@@ -21,7 +22,7 @@ must contain operand lines having the following form:
 These operands will be passed to the backup-purge(1) tool by the
 backup(1) tool. Empty lines and comment lines (starting with a "#") are
 allowed, too. Backup directories matching <PATTERN> are deleted if they
-are over <DAYS> day old. Special patterns:
+are over <DAYS> days old. Special patterns:
    yearly        [0-9][0-9][0-9][0-9]
                  (for <YEAR>)
    monthly       [0-9][0-9][0-9][0-9][0-9][0-9]

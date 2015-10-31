@@ -1,4 +1,5 @@
-# Do not create yearly, monthly nor weekly backups.
+# Do not create yearly, monthly nor weekly backups but only daily etc. backups.
+# By default, daily backups  are kept for at least 1 week.
 
 #%Y
 #%Y%m
