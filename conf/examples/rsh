@@ -11,21 +11,23 @@ case ${dir} in */.misc/* ) dir=/${dir#*/.misc/} ;; esac
 case ${dir} in */.ro/*   ) dir=${dir%%/.ro/*}/${dir#*/.ro/} ;; esac
 case ${dir} in */.rw/*   ) dir=${dir%%/.rw/*}/${dir#*/.rw/} ;; esac
 me=${dir}/$( basename -- "${me}" )
+rsh=ssh
 
 # Use identity files.
 for identity_file in "${dir}/ssh"/id_*[9a]
 do
-	[ ! -f "${identity_file}" ] || set -- -i "${identity_file}" "${@}"
+	[ ! -f "${identity_file}" ] || {
+		set -- -i "${identity_file}" "${@}"
+		rsh=${me}
+	}
 done
 
-# Use a proxy command for root.
-case " ${*} " in
-*' -l root '* ) set -- -o ProxyCommand="\
-'${me}' -l '${SUDO_USER:-backup}' -p '%p' -W 'localhost:%p' -- '%h'\
-" "${@}" ;;
-esac
-
 # Use some extra options.
+[ ! -f "${dir}/ssh/known_hosts" ] || {
+	set -- -o UserKnownHostsFile="${dir}/ssh/known_hosts" "${@}"
+	rsh=${me}
+}
+set -- -o ClearAllForwardings=yes -o StrictHostKeyChecking=yes "${@}"
 if [ ! -f "${dir}/ssh/config" ]
 then
 	set -- \
@@ -35,10 +37,15 @@ then
 		"${@}"
 else
 	set -- -F "${dir}/ssh/config" "${@}"
+	rsh=${me}
 fi
-[ ! -f "${dir}/ssh/known_hosts" ] || set -- \
-	-o UserKnownHostsFile="${dir}/ssh/known_hosts" "${@}"
-set -- -o ClearAllForwardings=yes -o StrictHostKeyChecking=yes "${@}"
+
+# Use a proxy command for root.
+case " ${*} " in
+*' -l root '* ) set -- -o ProxyCommand="\
+'${rsh}' -l '${SUDO_USER:-backup}' -p '%p' -W 'localhost:%p' -- '%h'\
+" "${@}" ;;
+esac
 
 # Execute SSH.
 cd -- / && exec ssh "${@}"
