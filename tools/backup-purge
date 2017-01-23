@@ -1,8 +1,8 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-purge 0.0.20151030
+# backup-purge 0.0.20170123
 #
-# Copyright (C) 2010-2015 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010-2017 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -32,9 +32,9 @@ esac
 
 short_description='delete old backup directories'
 default_args='hourly=0 fake-daily=0 daily=7 fake-weekly=7 weekly=31 fake-monthly=31 monthly=366 fake-yearly=366'
+dry_run=
 
 # Parse options.
-dry_run=
 while :
 do
 	case ${1-} in
@@ -127,7 +127,7 @@ Files:
     ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[:]<MINUTE>[:]<SECOND>
         A secondly backup directory.
 __HELP__
-;;
+		;;
 	--help=help2man )
 		COLUMNS=2500 exec "${0}" --help \
 		| sed \
