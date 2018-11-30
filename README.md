@@ -7,9 +7,9 @@ Commands
 --------
 
  * **backup**:             create backups and do related tasks
+ * **backup-copy**:        copy backups
  * **backup-create**:      create backups
  * **backup-mirror**:      mirror backups and do related tasks
- * **backup-mirror-pull**: pull backups
  * **backup-nice**:        run a backup command nicely
  * **backup-prepare**:     prepare for backups
  * **backup-purge**:       delete old backup directories
@@ -19,6 +19,18 @@ Commands
 
 Prepare for backups, create backups and then delete old backup
 directories.
+
+### **backup-copy**
+
+Copy backups from master locations using rsync(1).
+
+Disk usage is minimised and the transfer is speeded up by hard linking
+files from old backup directories to newly created backup directories
+whenever possible (when files in sources and previous backup directories
+are identical in content and in all preserved attributes).
+
+On the btrfs and s3ql filesystems, hard linking is not needed and is
+therefore not used for disk usage minimisation.
 
 ### **backup-create**
 
@@ -40,19 +52,7 @@ therefore not used for disk usage minimisation.
 
 ### **backup-mirror**
 
-Mirror backups and then delete old backup directories.
-
-### **backup-mirror-pull**
-
-Pull backups from master locations using rsync(1).
-
-Disk usage is minimised and the transfer is speeded up by hard linking
-files from old backup directories to newly created backup directories
-whenever possible (when files in sources and previous backup directories
-are identical in content and in all preserved attributes).
-
-On the btrfs and s3ql filesystems, hard linking is not needed and is
-therefore not used for disk usage minimisation.
+Copy backups and then delete old backup directories.
 
 ### **backup-nice**
 

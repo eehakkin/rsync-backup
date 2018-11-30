@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-mirror-pull 0.0.20181130
+# backup-copy 0.0.20181130
 #
 # Copyright (C) 2010-2018 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -31,7 +31,7 @@ case ${dir} in
 esac
 
 basename=${0##*[\\/]}
-short_description='pull backups'
+short_description='copy backups'
 
 
 
@@ -43,11 +43,11 @@ do
 Usage: ${basename} [<RSYNC-OPTION>]... [[<USER>@]<HOST>:]<SRC>[/[.]]...
  or:   ${basename} <OPTION>...
 
-Pull backups \
+Copy backups \
 from master locations \
 using rsync(1).
 
-Each backup is pulled using the following steps:
+Each backup is copied using the following steps:
 
   A new backup directory is created in a temporary directory.
 
@@ -102,9 +102,9 @@ $( rsync --help | sed '
 
 Operands:
     [[<USER>@]<HOST>:]<SRC>/[.]
-        A master directory containing master backup directories to be pulled.
+        A master directory containing master backup directories to be copied.
     [[<USER>@]<HOST>:]<SRC>
-        A master backup directory to be pulled.
+        A master backup directory to be copied.
 
 Files:
     ${dir}/<YEAR>
@@ -291,7 +291,7 @@ do
 			rm -fr -- "${old%-}-"
 		done
 		mkdir -m go= -- "${dir}/tmp/mirror" "${dir}/tmp/mirror/${$}"
-		# Find out the backup directories to be pulled.
+		# Find out the backup directories to be copied.
 		exclude=$(
 			ls -- "${dir}/" \
 			| sed -n -e '/./s|^[[:digit:][:punct:]TW]*$|--exclude=/&/|p'
@@ -306,7 +306,7 @@ do
 			--exclude='/*'				\
 			--exclude='/*/*'			\
 			-- "${arg%/*}/./" "${dir}/tmp/mirror/${$}/"
-		# Pull the backup directories.
+		# Copy the backup directories.
 		ls -rt -- "${dir}/tmp/mirror/${$}/" | {
 			while read tag
 			do
@@ -325,7 +325,7 @@ do
 		rm -fr -- "${dir}/tmp/mirror-"
 		;;
 	* ) # [[<USER>@]<HOST>:]<SRC>
-		# Pull a backup directory.
+		# Copy a backup directory.
 		tag=$( basename -- "${arg}" )
 		"${0%backup-*}backup-create" \
 			--backup-tag-name="${tag}"	\

@@ -43,9 +43,9 @@ do
 Usage: ${basename} [<RSYNC-OPTION>]...
  or:   ${basename} <OPTION>...
 
-Mirror backups and then delete old backup directories. \
+Copy backups and then delete old backup directories. \
 For details, see \
-${basename}-pull(1) and \
+${basename%-*}-copy(1) and \
 ${basename%-*}-purge(1).
 
 Options:
@@ -102,7 +102,7 @@ to be mirrored. \
 The file must contain operand lines having the following form:
             [[<USER>@]<HOST>:]<SRC>[/[.]]
         These operands will be passed \
-to the ${basename}-pull(1) tool. \
+to the ${basename%-*}-copy(1) tool. \
 Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/purge-list
         An optional file to override the default patterns and ages. \
@@ -167,7 +167,7 @@ do
 	*         ) set -- "${@}" "${arg}/." ;;
 	esac
 done < "${dir}/conf/master-list"
-"${0%backup-*}backup-mirror-pull" "${@}"
+"${0%backup-*}backup-copy" "${@}"
 
 # Delete old backup directories.
 "${0%backup}backup-purge"
