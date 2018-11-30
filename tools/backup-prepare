@@ -94,6 +94,12 @@ __HELP__
 	esac
 done
 
+# Parse operands.
+case ${#} in
+0 ) ;;
+* ) "${0}" --help >&2; exit 1 ;;
+esac
+
 # Prepare for backup.
 for file in "${dir}"/conf/pre.d/*
 do
