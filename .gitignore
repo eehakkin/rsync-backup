@@ -1,8 +1,8 @@
 /[[:digit:]][[:digit:]][[:digit:]][[:digit:]]*/
-/conf/config
 /conf/pre.d/
 /conf/rsh
 /conf/ssh/
+/conf/*-config
 /conf/*-formats
 /conf/*-list
 /latest

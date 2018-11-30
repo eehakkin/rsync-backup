@@ -91,8 +91,16 @@ Files:
         A secondly backup directory.
     ${dir}/latest
         A symbolic link to the latest backup directory.
-    ${dir}/conf/config
+    ${dir}/conf/create-config
         An optional configuration file \
+used by ${basename}-create(1) \
+containing long option names (without leading slashes) and \
+optional option arguments \
+to be passed to rsync(1).
+    ${dir}/conf/rsync-config
+        An optional configuration file \
+used by ${basename}-rsync(1) \
+used by ${basename}-copy(1) and ${basename}-create(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).

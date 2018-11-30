@@ -1,5 +1,5 @@
-# A sample conf/config file
-# =========================
+# A sample conf/rsync-config file
+# ===============================
 
 # Preserve ACLs.
 acls
@@ -8,6 +8,7 @@ acls
 bwlimit		75KiB
 
 # Store privileged attrs using xattrs.
+fake-super
 
 # Don't cross filesystem boundaries.
 one-file-system

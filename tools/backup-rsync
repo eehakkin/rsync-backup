@@ -75,7 +75,7 @@ Operands:
         A destination.
 
 Files:
-    ${dir}/conf/config
+    ${dir}/conf/rsync-config
         An optional configuration file \
 containing long option names (without leading slashes) and \
 optional option arguments \
@@ -130,8 +130,17 @@ __HELP__
 	break
 done
 
+# Parse an internal configuration name option.
+unset config_name
+case ${1-} in
+--backup-config-name=* ) config_name=${1#*=}; shift ;;
+esac
+
 # Construct default option arguments.
-filter='dir-merge /.backup-filter'
+case ${config_name-rsync} in
+create ) filter='dir-merge /.backup-filter' ;;
+*      ) unset filter ;;
+esac
 rsh=${dir}/conf/rsh; [ ! -x "${rsh}" ] && unset rsh
 rsync_path="\
 IONICE=\$( which -- ionice || : ) && \
@@ -143,24 +152,27 @@ exec \
 \${NOCACHE:+ \"\${NOCACHE}\" -n 2 -- } \
 rsync"
 
-# Extend the options with ones read from a configuration file.
-[ ! -f "${dir}/conf/config" ] || {
-	for arg
-	do
-		while IFS="${IFS}=" read opt optarg
+# Extend the options with ones read from configuration files.
+for config_name in ${config_name+ "${config_name}" } rsync
+do
+	[ ! -f "${dir}/conf/${config_name}-config" ] || {
+		for arg
 		do
-			case ${opt} in
-			'' | '#'*  ) continue ;;
-			filter     ) unset filter ;;
-			rsh        ) unset rsh ;;
-			rsync-path ) unset rsync_path ;;
-			esac
-			set -- "${@}" "--${opt}${optarg:+=${optarg}}"
-		done
-		set -- "${@}" "${arg}"
-		shift
-	done < "${dir}/conf/config"
-}
+			while IFS="${IFS}=" read opt optarg
+			do
+				case ${opt} in
+				'' | '#'*  ) continue ;;
+				filter     ) unset filter ;;
+				rsh        ) unset rsh ;;
+				rsync-path ) unset rsync_path ;;
+				esac
+				set -- "${@}" "--${opt}${optarg:+=${optarg}}"
+			done
+			set -- "${@}" "${arg}"
+			shift
+		done < "${dir}/conf/${config_name}-config"
+	}
+done
 
 # Execute.
 exec "${0%backup-*}backup-nice" -- rsync \

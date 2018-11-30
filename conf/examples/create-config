@@ -1,0 +1,7 @@
+# A sample conf/create-config file
+# ================================
+
+# Use a custom per-directory merge-file.
+filter	dir-merge /.local-backup-filter
+
+# For more options, see rsync(1).

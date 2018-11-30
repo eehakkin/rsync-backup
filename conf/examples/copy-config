@@ -1,0 +1,7 @@
+# A sample conf/copy-config file
+# ==============================
+
+# Exclude hourly backups.
+exclude	/[[:digit:]][[:digit:]][[:digit:]][[:digit:]]*T*/
+
+# For more options, see rsync(1).
