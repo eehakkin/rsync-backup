@@ -133,6 +133,15 @@ done
 # Construct default option arguments.
 filter='dir-merge /.backup-filter'
 rsh=${dir}/conf/rsh; [ ! -x "${rsh}" ] && unset rsh
+rsync_path="\
+IONICE=\$( which -- ionice || : ) && \
+NICE=\$( which -- nice || : ) && \
+NOCACHE=\$( which -- nocache || : ) && \
+exec \
+\${IONICE:+ \"\${IONICE}\" -c 3 -- } \
+\${NICE:+ \"\${NICE}\" -n 99 -- } \
+\${NOCACHE:+ \"\${NOCACHE}\" -n 2 -- } \
+rsync"
 
 # Extend the options with ones read from a configuration file.
 [ ! -f "${dir}/conf/config" ] || {
@@ -141,9 +150,10 @@ rsh=${dir}/conf/rsh; [ ! -x "${rsh}" ] && unset rsh
 		while IFS="${IFS}=" read opt optarg
 		do
 			case ${opt} in
-			'' | '#'* ) continue ;;
-			filter    ) unset filter ;;
-			rsh       ) unset rsh ;;
+			'' | '#'*  ) continue ;;
+			filter     ) unset filter ;;
+			rsh        ) unset rsh ;;
+			rsync-path ) unset rsync_path ;;
 			esac
 			set -- "${@}" "--${opt}${optarg:+=${optarg}}"
 		done
@@ -154,19 +164,11 @@ rsh=${dir}/conf/rsh; [ ! -x "${rsh}" ] && unset rsh
 
 # Execute.
 exec "${0%backup-*}backup-nice" -- rsync \
-	--archive				\
-	${filter+ --filter="${filter}" }	\
-	--fuzzy					\
-	--relative				\
-	${rsh+ --rsh="${rsh}" }			\
-	--rsync-path='
-IONICE=$( which -- ionice || : )
-NICE=$( which -- nice || : )
-NOCACHE=$( which -- nocache || : )
-exec \
-	${IONICE:+	"${IONICE}" -c 3 --	} \
-	${NICE:+	"${NICE}" -n 99 --	} \
-	${NOCACHE:+	"${NOCACHE}" -n 2	} \
-	rsync "${@}"'				\
-	--sparse				\
+	--archive					\
+	${filter+ --filter="${filter}" }		\
+	--fuzzy						\
+	--relative					\
+	${rsh+ --rsh="${rsh}" }				\
+	${rsync_path+ --rsync-path="${rsync_path}" }	\
+	--sparse					\
 	"${@}"
