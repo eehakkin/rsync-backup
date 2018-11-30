@@ -100,6 +100,17 @@ case ${#} in
 * ) "${0}" --help >&2; exit 1 ;;
 esac
 
+# Parse SSH_ORIGINAL_COMMAND.
+case ${SSH_ORIGINAL_COMMAND++} in
++ )
+	# Do nothing if SSH_ORIGINAL_COMMAND does not contain me.
+	case ${SSH_ORIGINAL_COMMAND} in
+	*[\\/]"${basename}"[${IFS}\;\&]* ) ;;
+	* ) exit 0 ;;
+	esac
+	;;
+esac
+
 # Prepare for backup.
 for file in "${dir}"/conf/pre.d/*
 do

@@ -130,6 +130,63 @@ __HELP__
 	break
 done
 
+# Parse SSH_ORIGINAL_COMMAND.
+case ${SSH_ORIGINAL_COMMAND++} in
++ )
+	# Check if SSH_ORIGINAL_COMMAND matches the supplied arguments and
+	# extend the options and the operands with ones from
+	# SSH_ORIGINAL_COMMAND.
+	args=
+	for arg
+	do
+		args="${args} ${arg}"
+	done
+	extra_args=${SSH_ORIGINAL_COMMAND#*[\\/]"${basename}${args} "}
+	if
+		case ${SSH_ORIGINAL_COMMAND} in
+		*"${0}${args}" ) extra_args= ;;
+		*"${0}${args} ${extra_args}" ) ;;
+		* ) false ;;
+		esac &&
+		case ${args} in
+		' --server --sender -s'*          | \
+		' --server --sender -'[!s]*' . '* )
+			# Require exact argument match.
+			[ -z "${extra_args}" ]
+			;;
+		' --server --sender -'[!s]*' .' )
+			# Allow extra operands but not extra options.
+			(
+				for arg in ${extra_args}
+				do
+					case ${arg} in
+					( -* ) exit 1 ;;
+					esac
+				done
+			)
+			;;
+		' --server --sender' )
+			# Allow extra options and operands.
+			;;
+		* )
+			# Allow extra options and operands.
+			case "${args} ${extra_args}" in
+			' --server sender '* ) ;;
+			* ) false ;;
+			esac
+			;;
+		esac
+	then
+		exec "${0%backup-*}backup-nice" -- rsync "${@}" ${extra_args}
+	fi
+	printf "%s: SSH_ORIGINAL_COMMAND='%s' does not match '%s'\n" \
+		"${basename}" \
+		"${SSH_ORIGINAL_COMMAND}" \
+		"${0}${args}" >&2
+	exit 1
+	;;
+esac
+
 # Parse an internal configuration name option.
 unset config_name
 case ${1-} in
