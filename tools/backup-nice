@@ -1,0 +1,103 @@
+#! /bin/sh -Ceu
+###########################################################################
+# backup-rsync 0.0.20181130
+#
+# Copyright (C) 2018 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 3
+# as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###########################################################################
+# Try to be nice.
+{
+	ionice -c 3  -p "${$}"
+	renice -n 99 -p "${$}"
+} > /dev/null 2>&1 || :
+
+# Locate the script.
+me=$( which -- "${0}" || ls -d -- "${0}" )
+dir=$( dirname -- "${me}" )
+case ${dir} in
+. ) dir=.. ;;
+* ) dir=$( dirname -- "${dir}" ) ;;
+esac
+
+basename=${0##*[\\/]}
+short_description='run a command nicely'
+
+
+
+# Parse options.
+while :
+do
+	case ${1-} in
+	--help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
+Usage: ${basename} <COMMAND> [<ARG>]...
+ or:   ${basename} <OPTION>...
+
+Run a command \
+with idle I/O priority (whose impact on normal system activity should be zero),
+with an adjusted niceness (which affect process scheduling) and
+with minimized effect on file system cache.
+
+Options:
+    -h, --help[=<FORMAT>]
+        Show this help message and exit.
+    -V, --version
+        Show version information and exit.
+
+Operands:
+    <COMMAND> [<ARG>]...
+        A command to be executed.
+__HELP__
+		;;
+	--help=help2man )
+		COLUMNS=2500 exec "${0}" --help \
+		| sed \
+			-e '/^    [^ ]/!b'	\
+			-e '/[^ ]  /b'		\
+			-e 'N'			\
+			-e 's/\n        /  /'	\
+			-e 'P'			\
+			-e 'D'
+		exit
+		;;
+	--help=man )
+		exec "${0}" --help=troff \
+		| exec man -l -- -
+		exit
+		;;
+	--help=troff )
+		exec help2man -h --help=help2man -L en_US.UTF-8 -N -n "${short_description}" -- "${0}" \
+		| exec sed -e 's/\([[:alnum:]\\-][[:alnum:]\\-]*\)[(]\([[:digit:]]*\)[)]/\\fB\1\\fR(\2)/g'
+		exit
+		;;
+	--version | -V )
+		exec sed -n \
+			-e '/^[^#]/q'				\
+			-e "3s/^# [^ ]* /# ${basename} /"	\
+			-e 's/^#\( \(.*\)\)*$/\2/p'		\
+			-e '/^##/{2!q;}'			\
+			-- "${me}"
+		;;
+	--  ) shift; break ;;
+	-?* ) getopts '' OPT "${@}"; exit 1 ;;
+	*   ) break ;;
+	esac
+done
+
+# Execute.
+NICE=${NICE-$( which -- nice || : )}
+NOCACHE=${NOCACHE-$( which -- nocache || : )}
+exec \
+	${NICE:+	"${NICE}" -n 19 --	} \
+	${NOCACHE:+	"${NOCACHE}" -n 2 --	} \
+	"${@}"

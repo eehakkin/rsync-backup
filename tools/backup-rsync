@@ -153,8 +153,7 @@ rsh=${dir}/conf/rsh; [ ! -x "${rsh}" ] && unset rsh
 }
 
 # Execute.
-NOCACHE=${NOCACHE-$( which -- nocache || : )}
-exec ${NOCACHE:+ "${NOCACHE}" -n 2 } rsync \
+exec "${0%backup-*}backup-nice" -- rsync \
 	--archive				\
 	${filter+ --filter="${filter}" }	\
 	--fuzzy					\

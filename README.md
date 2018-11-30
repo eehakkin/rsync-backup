@@ -10,6 +10,7 @@ Commands
  * **backup-create**:      create backups
  * **backup-mirror**:      mirror backups and do related tasks
  * **backup-mirror-pull**: pull backups
+ * **backup-nice**:        run a backup command nicely
  * **backup-prepare**:     prepare for backups
  * **backup-purge**:       delete old backup directories
  * **backup-rsync**:       a backup-oriented file-copying tool
@@ -52,6 +53,12 @@ are identical in content and in all preserved attributes).
 
 On the btrfs and s3ql filesystems, hard linking is not needed and is
 therefore not used for disk usage minimisation.
+
+### **backup-nice**
+
+Run a backup command with idle I/O priority (whose impact on normal
+system activity should be zero), with an adjusted niceness (which affect
+process scheduling) and with minimized effect on file system cache.
 
 ### **backup-prepare**
 
