@@ -19,7 +19,7 @@
 # Try to be nice.
 {
 	ionice -c 3  -p "${$}"
-	renice -n 10 -p "${$}"
+	renice -n 99 -p "${$}"
 } > /dev/null 2>&1 || :
 
 # Locate the script.
@@ -166,7 +166,7 @@ NICE=$( which -- nice || : )
 NOCACHE=$( which -- nocache || : )
 exec \
 	${IONICE:+	"${IONICE}" -c 3 --	} \
-	${NICE:+	"${NICE}" -n 10 --	} \
+	${NICE:+	"${NICE}" -n 99 --	} \
 	${NOCACHE:+	"${NOCACHE}" -n 2	} \
 	rsync "${@}"'				\
 	--sparse				\
