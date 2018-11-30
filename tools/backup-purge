@@ -127,6 +127,13 @@ Files:
         A minutely backup directory.
     ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[:]<MINUTE>[:]<SECOND>
         A secondly backup directory.
+    ${dir}/conf/purge-list
+        An optional file to override the default patterns and ages. \
+The file must contain operand lines having the following form:
+            <PATTERN>=<DAYS>
+        Empty lines and comment lines (starting with a "#") are allowed, too. \
+Backup directories matching <PATTERN> are deleted \
+if they are over <DAYS> day old.
 __HELP__
 		;;
 	--help=help2man )
@@ -165,7 +172,24 @@ __HELP__
 done
 
 case ${#} in
-0 ) set -- ${default_args} ;;
+0 )
+	if [ -f "${dir}/conf/purge-list" ]
+	then
+		set --
+		while read arg
+		do
+			case ${arg} in
+			'' | '#'* ) continue ;;
+			esac
+			set -- "${@}" "${arg}"
+		done < "${dir}/conf/purge-list"
+	else
+		set -- ${default_args}
+	fi
+	case ${#} in
+	0 ) exit ;;
+	esac
+	;;
 esac
 
 digit=[[:digit:]]

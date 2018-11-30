@@ -108,9 +108,7 @@ Empty lines and comment lines (starting with a "#") are allowed, too.
         An optional file to override the default patterns and ages. \
 The file must contain operand lines having the following form:
             <PATTERN>=<DAYS>
-        These operands will be passed \
-to the ${basename%-*}-purge(1) tool. \
-Empty lines and comment lines (starting with a "#") are allowed, too. \
+        Empty lines and comment lines (starting with a "#") are allowed, too. \
 Backup directories matching <PATTERN> are deleted \
 if they are over <DAYS> day old.
     ${dir}/conf/rsh
@@ -172,20 +170,4 @@ done < "${dir}/conf/master-list"
 "${0%backup-*}backup-mirror-pull" "${@}"
 
 # Delete old backup directories.
-if [ -f "${dir}/conf/purge-list" ]
-then
-	set -- --
-	while read arg
-	do
-		case ${arg} in
-		'' | '#'* ) continue ;;
-		esac
-		set -- "${@}" "${arg}"
-	done < "${dir}/conf/purge-list"
-else
-	set --
-fi
-case ${#} in
-1 ) ;;
-* ) "${0%backup-*}backup-purge" "${@}" ;;
-esac
+"${0%backup}backup-purge"
