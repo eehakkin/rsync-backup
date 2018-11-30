@@ -1,8 +1,8 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-prepare 0.0.20170123
+# backup-prepare 0.0.20181130
 #
-# Copyright (C) 2010-2017 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010-2014, 2018 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -30,6 +30,7 @@ case ${dir} in
 * ) dir=$( dirname -- "${dir}" ) ;;
 esac
 
+basename=${0##*[\\/]}
 short_description='prepare for backups'
 valid=[:alnum:]_.-
 
@@ -39,7 +40,7 @@ while :
 do
 	case ${1-} in
 	--help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
-Usage: ${0##*[\\/]} [<OPTION>]...
+Usage: ${basename} [<OPTION>]...
 
 Prepare for backups by executing preparation scripts. \
 This can be used for dumping database snapshots to files, for instance.
@@ -82,7 +83,7 @@ __HELP__
 	--version | -V )
 		exec sed -n \
 			-e '/^[^#]/q'				\
-			-e "3s/^# [^ ]* /# ${0##*[\\/]} /"	\
+			-e "3s/^# [^ ]* /# ${basename} /"	\
 			-e 's/^#\( \(.*\)\)*$/\2/p'		\
 			-e '/^##/{2!q;}'			\
 			-- "${me}"

@@ -1,8 +1,8 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-mirror 0.0.20170123
+# backup-mirror 0.0.20181130
 #
-# Copyright (C) 2010-2017 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010-2018 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -30,8 +30,9 @@ case ${dir} in
 * ) dir=$( dirname -- "${dir}" ) ;;
 esac
 
-short_description='mirror backups and do related tasks'
 basename=${0##*[\\/]}
+short_description='mirror backups and do related tasks'
+
 
 
 # Parse options.
@@ -39,12 +40,12 @@ while :
 do
 	case ${1-} in
 	--help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
-Usage: ${0##*[\\/]} [<RSYNC-OPTION>]...
- or:   ${0##*[\\/]} <OPTION>...
+Usage: ${basename} [<RSYNC-OPTION>]...
+ or:   ${basename} <OPTION>...
 
 Mirror backups and then delete old backup directories. \
 For details, see \
-${0##*[\\/]}-pull(1) and \
+${basename}-pull(1) and \
 ${basename%-*}-purge(1).
 
 Options:
@@ -101,7 +102,7 @@ to be mirrored. \
 The file must contain operand lines having the following form:
             [[<USER>@]<HOST>:]<SRC>[/[.]]
         These operands will be passed \
-to the ${0##*[\\/]}-pull(1) tool. \
+to the ${basename}-pull(1) tool. \
 Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/purge-list
         An optional file to override the default patterns and ages. \
@@ -149,7 +150,7 @@ __HELP__
 	--version | -V )
 		exec sed -n \
 			-e '/^[^#]/q'				\
-			-e "3s/^# [^ ]* /# ${0##*[\\/]} /"	\
+			-e "3s/^# [^ ]* /# ${basename} /"	\
 			-e 's/^#\( \(.*\)\)*$/\2/p'		\
 			-e '/^##/{2!q;}'			\
 			-- "${me}"

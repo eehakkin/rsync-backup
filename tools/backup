@@ -1,8 +1,8 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup 0.0.20170123
+# backup 0.0.20181130
 #
-# Copyright (C) 2010-2017 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010-2018 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -30,6 +30,7 @@ case ${dir} in
 * ) dir=$( dirname -- "${dir}" ) ;;
 esac
 
+basename=${0##*[\\/]}
 short_description='create backups and do related tasks'
 valid=[:alnum:]_.-
 
@@ -39,14 +40,14 @@ while :
 do
 	case ${1-} in
 	--help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
-Usage: ${0##*[\\/]} [<RSYNC-OPTION>]...
- or:   ${0##*[\\/]} <OPTION>...
+Usage: ${basename} [<RSYNC-OPTION>]...
+ or:   ${basename} <OPTION>...
 
 Prepare for backups, create backups and then delete old backup directories. \
 For details, see \
-${0##*[\\/]}-prepare(1), \
-${0##*[\\/]}-create(1) and \
-${0##*[\\/]}-purge(1).
+${basename}-prepare(1), \
+${basename}-create(1) and \
+${basename}-purge(1).
 
 Options:
     -h, --help[=<FORMAT>]
@@ -106,7 +107,7 @@ matching the pattern [${valid}].
 The file must contain operand lines having the following form:
             <PATTERN>=<DAYS>
         These operands will be passed \
-to the ${0##*[\\/]}-purge(1) tool. \
+to the ${basename}-purge(1) tool. \
 Empty lines and comment lines (starting with a "#") are allowed, too. \
 Backup directories matching <PATTERN> are deleted \
 if they are over <DAYS> day old.
@@ -122,7 +123,7 @@ when creating backups. \
 The file must contain operand lines having the following form:
             [[<USER>@]<HOST>:]<SRC>
         These operands will be passed \
-to the ${0##*[\\/]}-create(1) tool. \
+to the ${basename}-create(1) tool. \
 Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/tag-formats
         An optional file containing date formats \
@@ -136,11 +137,11 @@ until a non-existing backup directory is found.
         An optional per-directory rsync(1) filter merge-file \
 which can be used for excluding files from backups. \
 Empty lines and comment lines (starting with a "#") are allowed, too.
-    ${dir}/tools/${0##*[\\/]}-create
+    ${dir}/tools/${basename}-create
         Used for creating backups using rsync(1).
-    ${dir}/tools/${0##*[\\/]}-prepare
+    ${dir}/tools/${basename}-prepare
         Used for preparing for backups by executing preparation scripts.
-    ${dir}/tools/${0##*[\\/]}-purge
+    ${dir}/tools/${basename}-purge
         Used for deleting old backup directories \
 based on pattern matching and age.
     $( which rsync )
@@ -175,7 +176,7 @@ __HELP__
 	--version | -V )
 		exec sed -n \
 			-e '/^[^#]/q'				\
-			-e "3s/^# [^ ]* /# ${0##*[\\/]} /"	\
+			-e "3s/^# [^ ]* /# ${basename} /"	\
 			-e 's/^#\( \(.*\)\)*$/\2/p'		\
 			-e '/^##/{2!q;}'			\
 			-- "${me}"
