@@ -1,8 +1,8 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-mirror 0.0.20181130
+# backup-mirror 0.0.20190531
 #
-# Copyright (C) 2010-2018 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010-2019 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -178,4 +178,4 @@ done < "${dir}/conf/master-list"
 "${0%backup-*}backup-copy" "${@}"
 
 # Delete old backup directories.
-"${0%backup}backup-purge"
+"${0%backup-*}backup-purge"
