@@ -1,7 +1,21 @@
 # A sample conf/copy-config file
 # ==============================
 
-# Exclude hourly backups.
+# Exclude hourly, minutely and secondly backups:
+#  * <YEAR><MONTH><DAY>T<HOUR>[<MINUTE>[<SECOND>]]
+#  * <YEAR>-<MONTH>-<DAY>T<HOUR>[:<MINUTE>[:<SECOND>]]
+#  * <YEAR>W<WEEK><DAY>T<HOUR>[<MINUTE>[<SECOND>]]
+#  * <YEAR>-W<WEEK>-<DAY>T<HOUR>[:<MINUTE>[:<SECOND>]]
 exclude	/[[:digit:]][[:digit:]][[:digit:]][[:digit:]]*T*/
+
+# Exclude daily backups:
+#  * <YEAR><MONTH><DAY>
+exclude	/[[:digit:]][[:digit:]][[:digit:]][[:digit:]][[:digit:]][[:digit:]][[:digit:]][[:digit:]]/
+#  * <YEAR>-<MONTH>-<DAY>
+exclude	/[[:digit:]][[:digit:]][[:digit:]][[:digit:]]-[[:digit:]][[:digit:]]-[[:digit:]][[:digit:]]/
+#  * <YEAR>W<WEEK><DAY>
+exclude	/[[:digit:]][[:digit:]][[:digit:]][[:digit:]]W[[:digit:]][[:digit:]][[:digit:]]/
+#  * <YEAR>-W<WEEK>-<DAY>
+exclude	/[[:digit:]][[:digit:]][[:digit:]][[:digit:]]-W[[:digit:]][[:digit:]]-[[:digit:]]/
 
 # For more options, see rsync(1).

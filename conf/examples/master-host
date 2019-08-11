@@ -1,0 +1,11 @@
+# A sample conf/master-host file
+# ==============================
+
+# Mirror remote backup directories.
+remote.example.com
+
+# An alternative sample conf/master-host file
+# ===========================================
+
+# Mirror remote backup directories using a different remote user.
+backup@remote.example.com

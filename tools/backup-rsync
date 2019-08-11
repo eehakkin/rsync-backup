@@ -1,8 +1,8 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-rsync 0.0.20181130
+# backup-rsync 0.0.20190811
 #
-# Copyright (C) 2010-2018 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010-2019 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -41,6 +41,8 @@ do
 	case ${1-} in
 	--help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
 Usage: ${basename} [<RSYNC-OPTION>]... [[<USER>@]<HOST>:]<SRC>... <DEST>
+ or:   ${basename} [<RSYNC-OPTION>]... [<USER>@]<HOST>::<SRC>... <DEST>
+ or:   ${basename} [<RSYNC-OPTION>]... rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>... <DEST>
  or:   ${basename} <OPTION>...
 
 Copy files using rsync(1).
@@ -69,8 +71,13 @@ $( rsync --help | sed '
 ' )
 
 Operands:
-    [[<USER>@]<HOST>:]<SRC>
-        A source to be copied.
+    <SRC>
+        A local source to be copied.
+    [<USER>@]<HOST>:<SRC>
+        A remote shell source to be copied.
+    [<USER>@]<HOST>::<SRC>
+    rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
+        A rsync daemon source to be copied.
     <DEST>
         A destination.
 

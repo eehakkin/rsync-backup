@@ -1,0 +1,71 @@
+# A sample conf/src-prefix file
+# =============================
+
+# Mirror chroot backup directories.
+/srv/chroot/distro
+
+# An alternative sample conf/src-prefix file
+# ==========================================
+
+# Mirror remote backup directories via a remote shell.
+remote.example.com:
+
+# An alternative sample conf/src-prefix file
+# ==========================================
+
+# Mirror remote chroot backup directories via a remote shell.
+remote.example.com:/srv/chroot/distro
+
+# An alternative sample conf/src-prefix file
+# ==========================================
+
+# Mirror remote backup directories via a remote shell using a different
+# remote user.
+backup@remote.example.com:
+
+# An alternative sample conf/src-prefix file
+# ==========================================
+
+# Mirror remote chroot backup directories via a remote shell using a
+# different remote user.
+backup@remote.example.com:/srv/chroot/distro
+
+# An alternative sample conf/src-prefix file
+# ==========================================
+
+# Mirror remote backup directories via an rsync daemon.
+remote.example.com::module
+
+# An alternative sample conf/src-prefix file
+# ==========================================
+
+# Mirror remote backup directories via an rsync daemon.
+rsync://remote.example.com/module
+
+# An alternative sample conf/src-prefix file
+# ==========================================
+
+# Mirror remote backup directories via an rsync daemon using a
+# non-standard port.
+rsync://remote.example.com:12345/module
+
+# An alternative sample conf/src-prefix file
+# ==========================================
+
+# Mirror remote backup directories via an rsync daemon using a different
+# remote user.
+backup@remote.example.com::module
+
+# An alternative sample conf/src-prefix file
+# ==========================================
+
+# Mirror remote backup directories via an rsync daemon using a different
+# remote user.
+rsync://backup@remote.example.com/module
+
+# An alternative sample conf/src-prefix file
+# ==========================================
+
+# Mirror remote backup directories via an rsync daemon using a
+# non-standard port and a different remote user.
+rsync://backup@remote.example.com:12345/module

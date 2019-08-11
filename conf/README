@@ -1,9 +1,16 @@
-The conf/config file
-====================
+The conf/copy-config file
+=========================
 
 An optional configuration file containing long option names (without
 leading slashes) and optional option arguments to be passed to rsync(1)
-by the backup-rsync(1) tool.
+by the backup-copy(1) tool.
+
+The conf/create-config file
+===========================
+
+An optional configuration file containing long option names (without
+leading slashes) and optional option arguments to be passed to rsync(1)
+by the backup-create(1) tool.
 
 The conf/pre.d directory
 ========================
@@ -64,15 +71,44 @@ An optional script to be used as a remote shell instead of the plain
 ssh(1). This script can be used for setting identity files and proxy
 commands, for instance.
 
+The conf/rsync-config file
+==========================
+
+An optional configuration file containing long option names (without
+leading slashes) and optional option arguments to be passed to rsync(1)
+by the backup-rsync(1) tool used by the backup-copy(1) tool and by the
+backup-create(1) tool.
+
+The conf/src-host file
+======================
+
+An optional file to specify the source host if the source host is not
+specified in the conf/src-list file or in the conf/src-prefix file. The
+file must contain a line having the following form:
+    [<USER>@]<HOST>
+
 The conf/src-list file
 ======================
 
 A file to specify the sources to be used when creating backups. The file
-must contain operand lines having the following form:
+must contain operand lines having any the following forms:
     [[<USER>@]<HOST>:]<SRC>
+    [<USER>@]<HOST>::<SRC>
+    rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
 These operands will be passed to the backup-create(1) tool by the
 backup(1) tool. Empty lines and comment lines (starting with a "#") are
 allowed, too.
+
+The conf/src-prefix file
+======================
+
+An optional file to specify the source prefix if the source prefix is
+not specified in the conf/src-list file. The file must contain a line
+having one of the following forms:
+    <DIR>
+    [<USER>@]<HOST>:[<DIR>]
+    [<USER>@]<HOST>::[<MODULE>]
+    rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>]
 
 The conf/tag-formats file
 =========================

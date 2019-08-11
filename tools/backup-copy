@@ -1,8 +1,8 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-copy 0.0.20181130
+# backup-copy 0.0.20190811
 #
-# Copyright (C) 2010-2018 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010-2019 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -41,6 +41,8 @@ do
 	case ${1-} in
 	--help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
 Usage: ${basename} [<RSYNC-OPTION>]... [[<USER>@]<HOST>:]<SRC>[/[.]]...
+ or:   ${basename} [<RSYNC-OPTION>]... [<USER>@]<HOST>::<SRC>[/[.]]...
+ or:   ${basename} [<RSYNC-OPTION>]... rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>[/[.]]...
  or:   ${basename} <OPTION>...
 
 Copy backups \
@@ -101,10 +103,20 @@ $( rsync --help | sed '
 ' )
 
 Operands:
-    [[<USER>@]<HOST>:]<SRC>/[.]
-        A master directory containing master backup directories to be copied.
-    [[<USER>@]<HOST>:]<SRC>
-        A master backup directory to be copied.
+    <SRC>/[.]
+        A local master directory containing master backup directories to be copied.
+    <SRC>
+        A local master backup directory to be copied.
+    [<USER>@]<HOST>:<SRC>/[.]
+        A remote master directory containing master backup directories to be copied via a remote shell.
+    [<USER>@]<HOST>:<SRC>
+        A remote master backup directory to be copied a remote shell.
+    [<USER>@]<HOST>::<SRC>/[.]
+    rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>/[.]
+        A remote master directory containing master backup directories to be copied via an rsync daemon.
+    [<USER>@]<HOST>::<SRC>
+    rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
+        A remote master backup directory to be copied via an rsync daemon.
 
 Files:
     ${dir}/<YEAR>
@@ -267,20 +279,20 @@ do
 	esac
 	# Parse an operand.
 	case ${arg} in
-	*/ | */. ) # [[<USER>@]<HOST>:]<SRC>/[.]
+	*/ | */. ) # [<PREFIX>]<SRC>/[.]
 		# Create a protected temporary directory.
 		mkdir -m go=u-w -p -- \
 			"${dir}/tmp"		\
-			"${dir}/tmp/mirror"	\
-			"${dir}/tmp/mirror-"
-		for old in "${dir}/tmp/mirror-" "${dir}/tmp/mirror"
+			"${dir}/tmp/copy"	\
+			"${dir}/tmp/copy-"
+		for old in "${dir}/tmp/copy-" "${dir}/tmp/copy"
 		do
 			case ${old} in
 			*[!-] ) mv -- "${old}" "${old}-" ;;
 			esac
 			rm -fr -- "${old%-}-"
 		done
-		mkdir -m go= -- "${dir}/tmp/mirror" "${dir}/tmp/mirror/${$}"
+		mkdir -m go= -- "${dir}/tmp/copy" "${dir}/tmp/copy/${$}"
 		# Find out the backup directories to be copied.
 		exclude=$(
 			ls -- "${dir}/" \
@@ -295,9 +307,9 @@ do
 			--include='/[[:digit:]]*/'		\
 			--exclude='/*'				\
 			--exclude='/*/*'			\
-			-- "${arg%/*}/./" "${dir}/tmp/mirror/${$}/"
+			-- "${arg%/*}/./" "${dir}/tmp/copy/${$}/"
 		# Copy the backup directories.
-		ls -rt -- "${dir}/tmp/mirror/${$}/" | {
+		ls -rt -- "${dir}/tmp/copy/${$}/" | {
 			while read tag
 			do
 				case ${tag} in
@@ -311,10 +323,10 @@ do
 			done
 		}
 		# Clean up.
-		mv     -- "${dir}/tmp/mirror" "${dir}/tmp/mirror-"
-		rm -fr -- "${dir}/tmp/mirror-"
+		mv     -- "${dir}/tmp/copy" "${dir}/tmp/copy-"
+		rm -fr -- "${dir}/tmp/copy-"
 		;;
-	* ) # [[<USER>@]<HOST>:]<SRC>
+	* ) # [<PREFIX>]<SRC>
 		# Copy a backup directory.
 		tag=$( basename -- "${arg}" )
 		"${0%backup-*}backup-create" \

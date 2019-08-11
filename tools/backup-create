@@ -1,8 +1,8 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-create 0.0.20181130
+# backup-create 0.0.20190811
 #
-# Copyright (C) 2010-2018 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010-2019 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -41,6 +41,8 @@ do
 	case ${1-} in
 	--help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
 Usage: ${basename} [<RSYNC-OPTION>]... [[<USER>@]<HOST>:]<SRC>...
+ or:   ${basename} [<RSYNC-OPTION>]... [<USER>@]<HOST>::<SRC>...
+ or:   ${basename} [<RSYNC-OPTION>]... rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>...
  or:   ${basename} <OPTION>...
 
 Create backups using rsync(1).
@@ -106,8 +108,13 @@ $( rsync --help | sed '
 ' )
 
 Operands:
-    [[<USER>@]<HOST>:]<SRC>
-        A source to be copied to a newly created backup directory.
+    <SRC>
+        A local source to be copied to a newly created backup directory.
+    [<USER>@]<HOST>:<SRC>
+        A remote shell source to be copied to a newly created backup directory.
+    [<USER>@]<HOST>::<SRC>
+    rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
+        A rsync daemon source to be copied to a newly created backup directory.
 
 Files:
     ${dir}/<YEAR>
@@ -239,8 +246,8 @@ esac
 
 # Create a protected temporary directory.
 fstype=$( find "${dir}/." -prune -printf '%F\n' )
-mkdir -m go=u-w -p -- "${dir}/tmp" "${dir}/tmp/backup" "${dir}/tmp/backup-"
-for old in "${dir}/tmp/backup-" "${dir}/tmp/backup"
+mkdir -m go=u-w -p -- "${dir}/tmp" "${dir}/tmp/create" "${dir}/tmp/create-"
+for old in "${dir}/tmp/create-" "${dir}/tmp/create"
 do
 	case ${old} in
 	*[!-] ) mv -- "${old}" "${old}-" ;;
@@ -250,7 +257,7 @@ do
 	*         ) rm -fr -- "${old%-}-" ;;
 	esac
 done
-mkdir -m go= -- "${dir}/tmp/backup" "${dir}/tmp/backup/${$}"
+mkdir -m go= -- "${dir}/tmp/create" "${dir}/tmp/create/${$}"
 
 # Create a backup to a protected temporary directory.
 dest_opt=--link-dest
@@ -263,7 +270,7 @@ if
 then
 	[ ! -d "${dir}/latest/." ] || ${cp_a} -- \
 		"${dir}/latest/."		\
-		"${dir}/tmp/backup/${$}/${tag}"
+		"${dir}/tmp/create/${$}/${tag}"
 	set -- --delete --delete-delay --delete-excluded "${@}"
 	dest_opt=--copy-dest
 fi
@@ -276,20 +283,20 @@ dest_opts=$(
 	--backup-config-name="${config_name-create}" \
 	${dest_opts} \
 	"${@}" \
-	"${dir}/tmp/backup/${$}/${tag}" ||
+	"${dir}/tmp/create/${$}/${tag}" ||
 case ${?} in
 24 ) ;; # Partial transfer due to vanished source files
 *  ) exit 1 ;;
 esac
-chmod -- g=u-w,o= "${dir}/tmp/backup/${$}/${tag}"
-chgrp -- users    "${dir}/tmp/backup/${$}/${tag}"
+chmod -- g=u-w,o= "${dir}/tmp/create/${$}/${tag}"
+chgrp -- users    "${dir}/tmp/create/${$}/${tag}"
 case ${fstype} in
-fuse.s3ql ) s3qllock -- "${dir}/tmp/backup/${$}/${tag}" ;;
+fuse.s3ql ) s3qllock -- "${dir}/tmp/create/${$}/${tag}" ;;
 esac
 
 # Release the backup.
-ln    -s -- "${tag}" "${dir}/tmp/backup/${$}/latest"
+ln    -s -- "${tag}" "${dir}/tmp/create/${$}/latest"
 sync
-mv    -f -- "${dir}/tmp/backup/${$}"/* "${dir}/"
-rmdir    -- "${dir}/tmp/backup/${$}" "${dir}/tmp/backup"
+mv    -f -- "${dir}/tmp/create/${$}"/* "${dir}/"
+rmdir    -- "${dir}/tmp/create/${$}" "${dir}/tmp/create"
 sync

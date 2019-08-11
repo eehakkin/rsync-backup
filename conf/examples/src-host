@@ -1,0 +1,11 @@
+# A sample conf/src-host file
+# ===========================
+
+# Backup a remote host.
+remote.example.com
+
+# An alternative sample conf/src-host file
+# ========================================
+
+# Backup a remote host using a different remote user.
+backup@remote.example.com

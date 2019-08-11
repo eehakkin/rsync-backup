@@ -1,8 +1,8 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-rsync 0.0.20181130
+# backup-rsync 0.0.20190811
 #
-# Copyright (C) 2018 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2018-2019 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -31,7 +31,7 @@ case ${dir} in
 esac
 
 basename=${0##*[\\/]}
-short_description='run a command nicely'
+short_description='run a backup command nicely'
 
 
 
@@ -43,7 +43,7 @@ do
 Usage: ${basename} <COMMAND> [<ARG>]...
  or:   ${basename} <OPTION>...
 
-Run a command \
+Run a backup command \
 with idle I/O priority (whose impact on normal system activity should be zero),
 with an adjusted niceness (which affect process scheduling) and
 with minimized effect on file system cache.
@@ -56,7 +56,7 @@ Options:
 
 Operands:
     <COMMAND> [<ARG>]...
-        A command to be executed.
+        A backup command to be executed.
 __HELP__
 		;;
 	--help=help2man )
@@ -95,9 +95,11 @@ __HELP__
 done
 
 # Execute.
+IONICE=${IONICE-$( which -- ionice || : )}
 NICE=${NICE-$( which -- nice || : )}
 NOCACHE=${NOCACHE-$( which -- nocache || : )}
 exec \
-	${NICE:+	"${NICE}" -n 19 --	} \
+	${IONICE:+	"${IONICE}" -c 3 --	} \
+	${NICE:+	"${NICE}" -n 99 --	} \
 	${NOCACHE:+	"${NOCACHE}" -n 2 --	} \
 	"${@}"
