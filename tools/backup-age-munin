@@ -1,0 +1,138 @@
+#! /bin/sh -Ce
+# -*- sh -*-
+###########################################################################
+# backup-age-munin 0.0.20190820
+#
+# Copyright (C) 2019 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 3
+# as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###########################################################################
+
+: << '=cut'
+=encoding UTF-8
+
+=cut
+
+# Locate the script.
+me=$( which -- "${0}" || ls -d -- "${0}" )
+me=$( readlink -f -- "${me}" || ls -d -- "${me}" )
+dir=$( dirname -- "${me}" )
+case ${dir} in
+. ) dir=.. ;;
+* ) dir=$( dirname -- "${dir}" ) ;;
+esac
+
+. "${MUNIN_LIBDIR?}/plugins/plugin.sh"
+
+microseconds_to_hours() { # <ARITHMETIC-EXPRESSION>
+	microseconds=$(( ${*} )) &&
+	microhours=$(( ${microseconds} / ( 60 * 60 ) )) &&
+	case ${microhours} in
+	?      ) hours=0.00000${microhours} ;;
+	??     ) hours=0.0000${microhours} ;;
+	???    ) hours=0.000${microhours} ;;
+	????   ) hours=0.00${microhours} ;;
+	?????  ) hours=0.0${microhours} ;;
+	?????? ) hours=0.${microhours} ;;
+	*      ) hours=${microhours%??????}.${microhours#"${microhours%??????}"} ;;
+	esac
+	case ${hours} in
+	*.*[!0]* ) hours=${hours%"${hours#*.*[!0]}"} ;;
+	esac
+	echo "${hours}"
+}
+
+normalize_name() {
+	case ${name} in
+	*/*/tools/backup )
+		name=${name%/tools/backup}
+		name=${name##*/}
+		;;
+	esac
+}
+
+print_threshold() { # <THRESHOLD-TYPE> <FIELDNAME>
+	threshold=$( "get_${1}" "${2}" )
+	case ${threshold} in
+	'' ) return ;;
+	esac
+	case ${threshold##*[[:digit:]]} in
+	s   ) threshold=$( seconds_to_hours "${threshold%s}" ) ;;
+	min ) threshold=$( seconds_to_hours      "60 * ( ${threshold%min} )" ) ;;
+	m   ) threshold=$( seconds_to_hours      "60 * ( ${threshold%m}   )" ) ;;
+	h   ) threshold=${threshold%h} ;;
+	d   ) threshold=$((     24 * ${threshold%d} )) ;;
+	w   ) threshold=$(( 7 * 24 * ${threshold%w} )) ;;
+	esac
+	echo "${2}.${1} ${threshold}"
+}
+
+seconds_to_hours() { # <ARITHMETIC-EXPRESSION>
+	seconds=$(( ${*} )) &&
+	microseconds_to_hours "1000000 * ( ${seconds} )"
+}
+
+case ${1-} in
+autoconf )
+	if ls -d -- "${dir}"/../*/latest/. > /dev/null 2>&1
+	then
+		echo 'yes'
+	else
+		echo 'no'
+	fi
+	;;
+config )
+	echo 'graph_title Backup ages'
+	echo 'graph_info This graph shows how old the backups are'
+	echo 'graph_category disk'
+	echo 'graph_args --base 1000 --lower-limit 0'
+	echo 'graph_vlabel Age in hours'
+	for name in ${names- "${dir}"/../*/tools/backup }
+	do
+		normalize_name
+		[ -h "${dir}/../${name}" ] && continue
+		case $( find "${dir}/../${name}/." ! -name . -prune -name '*T??' | wc -l ) in
+		0  ) critical=60  warning=36 ;;  # Daily backups
+		1  ) critical=30  warning=18 ;;  # Every 12 hours
+		2  ) critical=20  warning=12 ;;  # Every 8 hours
+		3  ) critical=15  warning=9 ;;   # Every 6 hours
+		4  | \
+		5  ) critical=10  warning=6 ;;   # Every 4 hours
+		6  | \
+		7  ) critical=7.5 warning=4.5 ;; # Every 3 hours
+		8  | \
+		9  | \
+		10 | \
+		11 ) critical=5   warning=3 ;;   # Every 2 hours
+		*  ) critical=2.5 warning=1.5 ;; # Hourly backups
+		esac
+		fieldname=$( clean_fieldname "${name}" )
+		eval echo "\"\${fieldname}.label \${${fieldname}_label-${name}}\""
+		print_threshold critical "${fieldname}"
+		print_threshold warning  "${fieldname}"
+	done
+	;;
+* )
+	now=$( date +%s )
+	for name in ${names- "${dir}"/../*/tools/backup }
+	do
+		normalize_name
+		[ -h "${dir}/../${name}" ] && continue
+		fieldname=$( clean_fieldname "${name}" )
+		ctime=$( stat --format=%Z -- "${dir}/../${name}/latest/." ) &&
+		age_in_hours=$( seconds_to_hours ${now} - ${ctime} ) ||
+		age_in_hours=U
+		echo "${fieldname}.value ${age_in_hours}"
+	done
+	;;
+esac
