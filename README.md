@@ -11,6 +11,7 @@ Commands
  * **backup-create**:      create backups
  * **backup-mirror**:      mirror backups and do related tasks
  * **backup-nice**:        run a backup command nicely
+ * **backup-nologin**:     politely refuse a login but allow a backup
  * **backup-prepare**:     prepare for backups
  * **backup-purge**:       delete old backup directories
  * **backup-rsync**:       a backup-oriented file-copying tool
@@ -59,6 +60,11 @@ Copy backups and then delete old backup directories.
 Run a backup command with idle I/O priority (whose impact on normal
 system activity should be zero), with an adjusted niceness (which affect
 process scheduling) and with minimized effect on file system cache.
+
+### **backup-nologin**
+
+Politely refuse a login but allow backup-rsync to be executed via a
+remote shell.
 
 ### **backup-prepare**
 
