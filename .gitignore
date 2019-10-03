@@ -4,6 +4,8 @@
 /conf/ssh/
 /conf/*-config
 /conf/*-formats
+/conf/*-host
 /conf/*-list
+/conf/*-prefix
 /latest
 /tmp/
