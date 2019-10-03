@@ -1,8 +1,8 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-prepare 0.0.20181130
+# backup-prepare 0.0.20191002
 #
-# Copyright (C) 2010-2014, 2018 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010-2019 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -98,17 +98,6 @@ done
 case ${#} in
 0 ) ;;
 * ) "${0}" --help >&2; exit 1 ;;
-esac
-
-# Parse SSH_ORIGINAL_COMMAND.
-case ${SSH_ORIGINAL_COMMAND++} in
-+ )
-	# Do nothing if SSH_ORIGINAL_COMMAND does not contain me.
-	case ${SSH_ORIGINAL_COMMAND} in
-	*[\\/]"${basename}"[${IFS}\;\&]* ) ;;
-	* ) exit 0 ;;
-	esac
-	;;
 esac
 
 # Prepare for backup.

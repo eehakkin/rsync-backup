@@ -138,10 +138,13 @@ __HELP__
 done
 
 # Prepare to parse server options.
-args= extra_args=
+args= backup_args= backup_prepare= extra_args=
 for arg
 do
-	args="${args} ${arg}"
+	case "${args} ${arg}" in
+	' --backup-prepare' ) backup_prepare=+ backup_args="${backup_args} ${arg}" ;;
+	*                   ) args="${args} ${arg}" ;;
+	esac
 done
 
 # Parse SSH_ORIGINAL_COMMAND.
@@ -151,7 +154,11 @@ case ${SSH_ORIGINAL_COMMAND++} in
 	# extend the options and the operands with ones from
 	# SSH_ORIGINAL_COMMAND.
 	case ${SSH_ORIGINAL_COMMAND} in
-	*"${0}${args}" ) ;;
+	*"${0}${backup_args}${args}" | \
+	*"${0}${args}"               ) ;;
+	*"${0}${backup_args}${args} "* )
+		extra_args=" ${SSH_ORIGINAL_COMMAND#**"${0}${backup_args}${args} "}"
+		;;
 	*"${0}${args} "* )
 		extra_args=" ${SSH_ORIGINAL_COMMAND#**"${0}${args} "}"
 		;;
@@ -179,13 +186,18 @@ case ${SSH_ORIGINAL_COMMAND++} in
 		;;
 	* )
 		# Allow extra options and operands.
-		case ${args}${extra_args} in
-		' --server --sender '* ) ;;
+		case ${backup_args}${args}${extra_args} in
+		' --backup-prepare --server --sender '* | \
+		' --server --sender '*                  ) ;;
 		* ) false ;;
 		esac
 		;;
 	esac &&
-	set -- "${@}" ${extra_args} || {
+	set -- "${@}" ${extra_args} &&
+	case ${SSH_ORIGINAL_COMMAND} in
+	*"${0}${backup_args}${args}${extra_args}" ) ;;
+	*"${0}${args}${extra_args}" ) backup_prepare= ;;
+	esac || {
 		printf "%s: SSH_ORIGINAL_COMMAND='%s' does not match '%s'\n" \
 			"${basename}" \
 			"${SSH_ORIGINAL_COMMAND}" \
@@ -198,6 +210,13 @@ esac
 # Parse server options.
 case ${args}${extra_args} in
 ' --server --sender '* )
+	case ${backup_prepare} in
+	+ ) "${0%backup-*}backup-prepare" || : ;;
+	esac
+	for arg in ${backup_args}
+	do
+		shift
+	done
 	exec "${0%backup-*}backup-nice" -- rsync "${@}"
 	;;
 esac
