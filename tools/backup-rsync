@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-rsync 0.0.20190811
+# backup-rsync 0.0.20191002
 #
 # Copyright (C) 2010-2019 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -178,7 +178,7 @@ case ${SSH_ORIGINAL_COMMAND++} in
 		* )
 			# Allow extra options and operands.
 			case "${args} ${extra_args}" in
-			' --server sender '* ) ;;
+			' --server --sender '* ) ;;
 			* ) false ;;
 			esac
 			;;
