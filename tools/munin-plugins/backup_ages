@@ -53,11 +53,22 @@ microseconds_to_hours() { # <ARITHMETIC-EXPRESSION>
 	echo "${hours}"
 }
 
-normalize_name() {
-	case ${name} in
-	*/*/tools/backup )
-		name=${name%/tools/backup}
-		name=${name##*/}
+normalize_backup_name() {
+	case ${backup_name} in
+	"${dir}"/../*/tools/backup )
+		backup_dir=${backup_name%/tools/backup}
+		backup_name=${backup_dir#"${dir}"/../}
+		if
+			[ -h "${backup_dir}" ]
+		then
+			unset backup_dir backup_name
+		fi
+		;;
+	*[\\/]* )
+		backup_dir=${backup_name}
+		;;
+	* )
+		backup_dir=${dir}/../${backup_name}
 		;;
 	esac
 }
@@ -136,11 +147,11 @@ config )
 	echo 'graph_category disk'
 	echo 'graph_args --base 1000 --lower-limit 0'
 	echo 'graph_vlabel Age in hours'
-	for name in ${names- "${dir}"/../*/tools/backup }
+	for backup_name in ${names- "${dir}"/../*/tools/backup }
 	do
-		normalize_name
-		[ -h "${dir}/../${name}" ] && continue
-		case $( find "${dir}/../${name}/." ! -name . -prune -name '*T??' | wc -l ) in
+		normalize_backup_name
+		${backup_dir+:} ${backup_name+:} continue
+		case $( find "${backup_dir}/." ! -name . -prune -name '*T??' | wc -l ) in
 		0  ) critical=60  warning=36 ;;  # Daily backups
 		1  ) critical=30  warning=18 ;;  # Every 12 hours
 		2  ) critical=20  warning=12 ;;  # Every 8 hours
@@ -155,20 +166,20 @@ config )
 		11 ) critical=5   warning=3 ;;   # Every 2 hours
 		*  ) critical=2.5 warning=1.5 ;; # Hourly backups
 		esac
-		fieldname=$( clean_fieldname "${name}" )
-		eval echo "\"\${fieldname}.label \${${fieldname}_label-${name}}\""
+		fieldname=$( clean_fieldname "${backup_name}" )
+		eval echo "\"\${fieldname}.label \${${fieldname}_label-${backup_name}}\""
 		print_threshold critical "${fieldname}"
 		print_threshold warning  "${fieldname}"
 	done
 	;;
 * )
 	now=$( date +%s )
-	for name in ${names- "${dir}"/../*/tools/backup }
+	for backup_name in ${names- "${dir}"/../*/tools/backup }
 	do
-		normalize_name
-		[ -h "${dir}/../${name}" ] && continue
-		fieldname=$( clean_fieldname "${name}" )
-		ctime=$( stat --format=%Z -- "${dir}/../${name}/latest/." ) &&
+		normalize_backup_name
+		${backup_dir+:} ${backup_name+:} continue
+		fieldname=$( clean_fieldname "${backup_name}" )
+		ctime=$( stat --format=%Z -- "${backup_dir}/latest/." ) &&
 		age_in_hours=$( seconds_to_hours ${now} - ${ctime} ) ||
 		age_in_hours=U
 		echo "${fieldname}.value ${age_in_hours}"
