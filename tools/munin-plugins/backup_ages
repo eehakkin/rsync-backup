@@ -21,7 +21,109 @@
 : << '=cut'
 =encoding UTF-8
 
+=head1 NAME
+
+backup_ages - Munin plugin to monitor backup ages
+
+=head1 APPLICABLE SYSTEMS
+
+All rsync backup hosts.
+
+=head1 CONFIGURATION
+
+This plugin must have access to backups.
+
+=head2 CONFIGURATION EXAMPLE
+
+ [backup_ages]
+  group	backup, users
+
+=head2 NAME AND LABEL SETTINGS
+
+The default behaviour is to report backup ages for the current
+backup directory and for all of its sibling directories
+which contain a conf/src-list configuration file and a tools/backup tool.
+That behaviour can be overridden with the names variable
+which may contain
+names of the sibling directories and
+paths of arbitrary directories.
+The default label for each field is
+the directory basename for the sibling directories and
+the directory pathname for arbitrary directories
+but that can be overridden with a field specific _label variable.
+
+ [backup_ages]
+  env.names localhost devel.example.org mostly-offline.example.org /path/to/dir
+  env.devel_example_org_label Devel
+  env._path_to_dir_label Directory
+  env.mostly_offline_example_org_label Mostly offline
+
+
+=head2 WARNING AND CRITICAL SETTINGS
+
+The default behaviour is to detect backup frequency
+from the number for hourly backups.
+The backup frequency is assumed to be
+one day if there are no hourly backups in addition to daily backups,
+12 hours if there is 1 hourly backup,
+8 hours if there are 2 hourly backups,
+6 hours if there are 3 hourly backups,
+4 hours if there are 4 or 5 hourly backups,
+3 hours if there are 6 or 7 hourly backups,
+2 hours if there are 8 to 11 hourly backups and
+1 hour if there are at least 12 hourly backups.
+
+The default warning threshold is 1.5 times the assumed backup frequency
+(36 hours or 1d12h in the case of daily backups,
+3 hours in the case of bi-hourly backups and
+1.5 hours in the case of hourly backups)
+indicating a delayed backup and
+the default critical threshold is 2.5 times the assumed backup frequency
+(60 hours or 2d12h in the case of daily backups,
+5 hours in the case of bi-hourly backups and
+2.5 hours in the case of hourly backups)
+indicating a missing backup.
+
+ [backup_ages]
+  env.critical 60
+  env.warning 36
+  env.devel_example_org_critical 6.5
+  env.devel_example_org_warning 3.5
+  env._path_to_dir_critical 4.5
+  env._path_to_dir_warning 2.5
+  env.mostly_offline_example_org_critical 15
+  env.mostly_offline_example_org_warning 8
+
+It is also possible to use time units (w for weeks, d for days, h for hours,
+min and m for minutes and s for seconds):
+
+ [backup_ages]
+  env.critical 2d12h
+  env.warning 1d12h
+  env.devel_example_org_critical 6h30min
+  env.devel_example_org_warning 3h30min
+  env._path_to_dir_critical 4h30min
+  env._path_to_dir_warning 2h30min
+  env.mostly_offline_example_org_critical 2w1d
+  env.mostly_offline_example_org_warning 1w1d
+
+=head1 USAGE
+
+Link this plugin in /etc/munin/plugins/ and restart the munin-node.
+
+=head1 AUTHOR
+
+Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+
+=head1 LICENSE
+
+GPLv3
+
 =cut
+
+case ${1-} in
+-h | --help ) exec perldoc "${0}" ;;
+esac
 
 # Locate the script.
 me=$( which -- "${0}" || ls -d -- "${0}" )
