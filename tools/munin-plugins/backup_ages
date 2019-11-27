@@ -47,6 +47,7 @@ microseconds_to_hours() { # <ARITHMETIC-EXPRESSION>
 	*      ) hours=${microhours%??????}.${microhours#"${microhours%??????}"} ;;
 	esac
 	case ${hours} in
+	*.000000 ) hours=${hours%.000000}.0 ;;
 	*.*[!0]* ) hours=${hours%"${hours##*.*[!0]}"} ;;
 	esac
 	echo "${hours}"
@@ -66,13 +67,51 @@ print_threshold() { # <THRESHOLD-TYPE> <FIELDNAME>
 	case ${threshold} in
 	'' ) return ;;
 	esac
+	# Convert from
+	#     <VALUE-1><UNIT-1>[<VALUE-2><UNIT-2>[<VALUE-3><UNIT-3>[...]]]
+	# to
+	#     <VALUE><UNIT>.
+	while :
+	do
+		# Convert from
+		#     <VALUE-1><UNIT-1><VALUE-3><UNIT-3>[<VALUE-4><UNIT-4>[...]]
+		# to
+		#     <VALUE><UNIT-2><VALUE-3><UNIT-3>[<VALUE-4><UNIT-4>[...]]
+		# and from
+		#     <VALUE-1><UNIT-1><VALUE-2><UNIT-2>[<VALUE-3><UNIT-3>[...]]
+		# to
+		#     <VALUE><UNIT-2>[<VALUE-3><UNIT-3>[...]].
+		case ${threshold} in
+		*w[[:digit:]]*[dhms]* ) multiplier=7  unit1=w   unit2=d ;;
+		*d[[:digit:]]*[hms]*  ) multiplier=24 unit1=d   unit2=h ;;
+		*h[[:digit:]]*[ms]*   ) multiplier=60 unit1=h   unit2=min ;;
+		*min[[:digit:]]*s     ) multiplier=60 unit1=min unit2=s ;;
+		*m[[:digit:]]*s       ) multiplier=60 unit1=m   unit2=s ;;
+		*                     ) break ;;
+		esac
+		value1=${threshold%%"${unit1}"*}
+		threshold=${threshold#"${value1}${unit1}"}
+		value2=${threshold%%[![:digit:]]*}
+		case ${threshold} in
+		"${value2}${unit2}"* ) threshold=$((
+			${multiplier} * ( ${value1} ) + ( ${value2} )
+			))${unit2}${threshold#"${value2}${unit2}"} ;;
+		"${value2}${unit2%in}"* ) threshold=$((
+			${multiplier} * ( ${value1} ) + ( ${value2} )
+			))${unit2}${threshold#"${value2}${unit2%in}"} ;;
+		* ) threshold=$((
+			${multiplier} * ( ${value1} )
+			))${unit2}${threshold} ;;
+		esac
+	done
+	# Convert from <VALUE><UNIT> to <VALUE-IN-HOURS>.
 	case ${threshold##*[[:digit:]]} in
 	s   ) threshold=$( seconds_to_hours "${threshold%s}" ) ;;
 	min ) threshold=$( seconds_to_hours      "60 * ( ${threshold%min} )" ) ;;
 	m   ) threshold=$( seconds_to_hours      "60 * ( ${threshold%m}   )" ) ;;
-	h   ) threshold=${threshold%h} ;;
-	d   ) threshold=$((     24 * ${threshold%d} )) ;;
-	w   ) threshold=$(( 7 * 24 * ${threshold%w} )) ;;
+	h   ) threshold=${threshold%h}.0 ;;
+	d   ) threshold=$((     24 * ${threshold%d} )).0 ;;
+	w   ) threshold=$(( 7 * 24 * ${threshold%w} )).0 ;;
 	esac
 	echo "${2}.${1} ${threshold}"
 }
