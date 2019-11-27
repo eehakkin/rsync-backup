@@ -59,7 +59,8 @@ normalize_backup_name() {
 		backup_dir=${backup_name%/tools/backup}
 		backup_name=${backup_dir#"${dir}"/../}
 		if
-			[ -h "${backup_dir}" ]
+			[ -h "${backup_dir}" ] ||
+			[ ! -s "${backup_dir}/conf/src-list" ]
 		then
 			unset backup_dir backup_name
 		fi
