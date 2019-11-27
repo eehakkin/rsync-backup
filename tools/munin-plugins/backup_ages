@@ -47,7 +47,7 @@ microseconds_to_hours() { # <ARITHMETIC-EXPRESSION>
 	*      ) hours=${microhours%??????}.${microhours#"${microhours%??????}"} ;;
 	esac
 	case ${hours} in
-	*.*[!0]* ) hours=${hours%"${hours#*.*[!0]}"} ;;
+	*.*[!0]* ) hours=${hours%"${hours##*.*[!0]}"} ;;
 	esac
 	echo "${hours}"
 }
