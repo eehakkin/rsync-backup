@@ -15,6 +15,7 @@ Commands
  * **backup-prepare**:        prepare for backups
  * **backup-purge**:          delete old backup directories
  * **backup-rsync**:          a backup-oriented file-copying tool
+ * **backup-sources**:        create a new backup directory from backup sources
 
 ### **backup**
 
@@ -86,3 +87,8 @@ backups for at least one year and yearly backups forever.
 ### **backup-rsync**
 
 Copy files using rsync(1).
+
+### **backup-sources**
+
+Read backup sources from configuration files and create a new backup
+directory from the backup sources using rsync(1).

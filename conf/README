@@ -1,20 +1,20 @@
 The conf/backup-src-host file
 =============================
 
-An optional configuration file used by backup(1) containing the backup
-source host to be used if the backup source host is not specified in the
-conf/backup-src-list configuration file or in the conf/backup-src-prefix
-configuration file. The file must contain a line having the following
-form:
+An optional configuration file used by backup-sources(1) used by
+backup(1) containing the backup source host to be used if the backup
+source host is not specified in the conf/backup-src-list configuration
+file or in the conf/backup-src-prefix configuration file. The file must
+contain a line having the following form:
     [<USER>@]<HOST>
 
 The conf/backup-src-list file
 =============================
 
-A configuration file used by backup(1) containing the backup sources to
-be copied to a newly created backup directory when creating a new
-backup. The file must contain operand lines having any the following
-forms:
+A configuration file used by backup-sources(1) used by backup(1)
+containing the backup sources to be copied to a newly created backup
+directory when creating a new backup. The file must contain operand
+lines having any the following forms:
     <SRC>
         A local source to be copied to a newly created backup directory.
     [<USER>@]<HOST>:<SRC>
@@ -33,10 +33,10 @@ and comment lines (starting with a "#") are allowed, too.
 The conf/backup-src-prefix file
 ===============================
 
-An optional configuration file used by backup(1) containing the backup
-source prefix to be used if the backup source prefix is not specified in
-the conf/backup-src-list configuration file. The file must contain a
-line having one of the following forms:
+An optional configuration file used by backup-sources(1) used by
+backup(1) containing the backup source prefix to be used if the backup
+source prefix is not specified in the conf/backup-src-list configuration
+file. The file must contain a line having one of the following forms:
     <BASE-DIR>
         A local base directory.
     [<USER>@]<HOST>:[<BASE-DIR>]
@@ -58,9 +58,9 @@ The conf/create-config file
 ===========================
 
 An optional configuration file used by backup-create(1) used by
-backup(1) containing long option names (without leading slashes) and
-optional option arguments to be passed to rsync(1) when creating a new
-backup directory.
+backup-sources(1) used by backup(1) containing long option names
+(without leading slashes) and optional option arguments to be passed to
+rsync(1) when creating a new backup directory.
 
 The conf/mirror-src-host file
 =============================
@@ -194,15 +194,16 @@ The conf/rsync-config file
 ==========================
 
 An optional configuration file used by backup-rsync(1) used by
-backup-copy(1) and backup-create(1) used by backup(1) and
-backup-mirror(1) containing long option names (without leading slashes)
-and optional option arguments to be passed to rsync(1).
+backup-copy(1) and backup-create(1) used by backup(1), backup-mirror(1)
+and backup-sources(1) containing long option names (without leading
+slashes) and optional option arguments to be passed to rsync(1).
 
 The conf/tag-formats file
 =========================
 
 An optional configuration file used by backup-create(1) used by
-backup(1) containing date formats to be used when constructing a backup
-directory name for a new backup. Empty lines and comment lines (starting
-with a "#") are allowed, too. Each date format is tried in turn in order
-specified until a non-existing backup directory is found.
+backup-sources(1) used by backup(1) containing date formats to be used
+when constructing a backup directory name for a new backup. Empty lines
+and comment lines (starting with a "#") are allowed, too. Each date
+format is tried in turn in order specified until a non-existing backup
+directory is found.
