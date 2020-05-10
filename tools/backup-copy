@@ -282,17 +282,12 @@ do
 	*/ | */. ) # [<PREFIX>]<SRC>/[.]
 		# Create a protected temporary directory.
 		mkdir -m go=u-w -p -- \
-			"${dir}/tmp"		\
-			"${dir}/tmp/copy"	\
-			"${dir}/tmp/copy-"
-		for old in "${dir}/tmp/copy-" "${dir}/tmp/copy"
-		do
-			case ${old} in
-			*[!-] ) mv -- "${old}" "${old}-" ;;
-			esac
-			rm -fr -- "${old%-}-"
-		done
-		mkdir -m go= -- "${dir}/tmp/copy" "${dir}/tmp/copy/${$}"
+			"${dir}/tmp" \
+			"${dir}/tmp/copy-${$}" \
+			"${dir}/tmp/old-copy-${$}"
+		mv -f -- "${dir}/tmp/copy"-* "${dir}/tmp/old-copy-${$}/"
+		rm -fr -- "${dir}/tmp/old-copy"-*
+		mkdir -m go= -- "${dir}/tmp/copy-${$}"
 		# Find out the backup directories to be copied.
 		exclude=$(
 			exec ls -- "${dir}/" \
@@ -307,9 +302,9 @@ do
 			--include='/[[:digit:]]*/'		\
 			--exclude='/*'				\
 			--exclude='/*/*'			\
-			-- "${arg%/*}/./" "${dir}/tmp/copy/${$}/"
+			-- "${arg%/*}/./" "${dir}/tmp/copy-${$}/"
 		# Copy the backup directories.
-		exec ls -rt -- "${dir}/tmp/copy/${$}/" | {
+		exec ls -rt -- "${dir}/tmp/copy-${$}/" | {
 			while read tag
 			do
 				case ${tag} in
@@ -323,8 +318,7 @@ do
 			done
 		}
 		# Clean up.
-		mv     -- "${dir}/tmp/copy" "${dir}/tmp/copy-"
-		rm -fr -- "${dir}/tmp/copy-"
+		rm -fr -- "${dir}/tmp/copy-${$}"
 		;;
 	* ) # [<PREFIX>]<SRC>
 		# Copy a backup directory.

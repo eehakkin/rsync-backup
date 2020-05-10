@@ -246,18 +246,16 @@ esac
 
 # Create a protected temporary directory.
 fstype=$( find "${dir}/." -prune -printf '%F\n' )
-mkdir -m go=u-w -p -- "${dir}/tmp" "${dir}/tmp/create" "${dir}/tmp/create-"
-for old in "${dir}/tmp/create-" "${dir}/tmp/create"
-do
-	case ${old} in
-	*[!-] ) mv -- "${old}" "${old}-" ;;
-	esac
-	case ${fstype} in
-	fuse.s3ql ) s3qlrm -- "${old%-}-" ;;
-	*         ) rm -fr -- "${old%-}-" ;;
-	esac
-done
-mkdir -m go= -- "${dir}/tmp/create" "${dir}/tmp/create/${$}"
+mkdir -m go=u-w -p -- \
+	"${dir}/tmp" \
+	"${dir}/tmp/create-${$}" \
+	"${dir}/tmp/old-create-${$}"
+mv -f -- "${dir}/tmp/create"-* "${dir}/tmp/old-create-${$}/"
+case ${fstype} in
+fuse.s3ql ) s3qlrm -- "${dir}/tmp/old-create"-* ;;
+*         ) rm -fr -- "${dir}/tmp/old-create"-* ;;
+esac
+mkdir -m go= -- "${dir}/tmp/create-${$}"
 
 # Create a backup to a protected temporary directory.
 dest_opt=--link-dest
@@ -270,33 +268,33 @@ if
 then
 	[ ! -d "${dir}/latest/." ] || ${cp_a} -- \
 		"${dir}/latest/."		\
-		"${dir}/tmp/create/${$}/${tag}"
+		"${dir}/tmp/create-${$}/${tag}"
 	set -- --delete --delete-delay --delete-excluded "${@}"
 	dest_opt=--copy-dest
 fi
 dest_opts=$(
 	exec ls -t -- "${dir}/" \
-	| exec sed -n -e '/./s|^[[:digit:][:punct:]TW]*$|'"${dest_opt}"'=../../../../&|p' \
+	| exec sed -n -e '/./s|^[[:digit:][:punct:]TW]*$|'"${dest_opt}"'=../../../&|p' \
 	| exec sed -e '20q'
 	)
 "${0%backup*}backup-rsync" \
 	--backup-config-name="${config_name-create}" \
 	${dest_opts} \
 	"${@}" \
-	"${dir}/tmp/create/${$}/${tag}" ||
+	"${dir}/tmp/create-${$}/${tag}" ||
 case ${?} in
 24 ) ;; # Partial transfer due to vanished source files
 *  ) exit 1 ;;
 esac
-chmod -- g=u-w,o= "${dir}/tmp/create/${$}/${tag}"
-chgrp -- users    "${dir}/tmp/create/${$}/${tag}"
+chmod -- g=u-w,o= "${dir}/tmp/create-${$}/${tag}"
+chgrp -- users    "${dir}/tmp/create-${$}/${tag}"
 case ${fstype} in
-fuse.s3ql ) s3qllock -- "${dir}/tmp/create/${$}/${tag}" ;;
+fuse.s3ql ) s3qllock -- "${dir}/tmp/create-${$}/${tag}" ;;
 esac
 
 # Release the backup.
-ln    -s -- "${tag}" "${dir}/tmp/create/${$}/latest"
+ln    -s -- "${tag}" "${dir}/tmp/create-${$}/latest"
 sync
-mv    -f -- "${dir}/tmp/create/${$}"/* "${dir}/"
-rmdir    -- "${dir}/tmp/create/${$}" "${dir}/tmp/create"
+mv    -f -- "${dir}/tmp/create-${$}"/* "${dir}/"
+rmdir    -- "${dir}/tmp/create-${$}"
 sync
