@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-mirror 0.0.20200510
+# backup-mirror-sources 0.0.20200510
 #
 # Copyright (C) 2010-2020 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -31,7 +31,7 @@ case ${dir} in
 esac
 
 basename=${0##*[\\/]}
-short_description='copy backup directories and do related tasks'
+short_description='copy backup directories from mirror sources'
 
 
 
@@ -43,13 +43,11 @@ do
 Usage: ${basename} [<RSYNC-OPTION>]...
  or:   ${basename} <OPTION>...
 
-Read mirror sources from configuration files, \
-copy backup directories from the mirror sources using rsync(1) and \
-then delete old backup directories \
-based on pattern matching and ages. \
+Read mirror sources from configuration files and \
+copy backup directories from the mirror sources using rsync(1). \
 For details, see \
-${basename%backup*}backup-mirror-sources(1) and \
-${basename%backup*}backup-purge(1).
+the Files section and \
+${basename%backup*}backup-copy(1).
 
 Options:
     -h, --help[=<FORMAT>]
@@ -96,14 +94,12 @@ Files:
     ${dir}/conf/copy-config
         An optional configuration file \
 used by ${basename%backup*}backup-copy(1) \
-used by ${basename%backup*}backup-mirror-sources(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1) \
 when copying a backup directory.
     ${dir}/conf/mirror-src-host
         An optional configuration file \
-used by ${basename%backup*}backup-mirror-sources(1) \
 containing the mirror source host \
 to be used \
 if the mirror source host is not specified \
@@ -113,7 +109,6 @@ The file must contain a line having the following form:
             [<USER>@]<HOST>
     ${dir}/conf/mirror-src-list
         A configuration file \
-used by ${basename%backup*}backup-mirror-sources(1) \
 containing the mirror sources \
 to be copied to newly created backup directories \
 when copying backup directories. \
@@ -144,7 +139,6 @@ to the ${basename%backup*}backup-copy(1) tool. \
 Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/mirror-src-prefix
         An optional configuration file \
-used by ${basename%backup*}backup-mirror-sources(1) \
 containing the mirror source prefix \
 to be used \
 if the mirror source prefix is not specified \
@@ -158,16 +152,6 @@ The file must contain a line having one of the following forms:
                 A rsync daemon host and an optional module and base directory.
             rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>[/<BASE-DIR>]]
                 A rsync daemon host and an optional module and base directory.
-    ${dir}/conf/purge-list
-        An optional configuration file \
-used by ${basename%backup*}backup-purge(1) \
-containing patterns and ages \
-which override the default ones. \
-The file must contain operand lines having the following form:
-            <PATTERN>=<DAYS>
-        Empty lines and comment lines (starting with a "#") are allowed, too. \
-Backup directories matching <PATTERN> are deleted \
-if they are over <DAYS> days old.
     ${dir}/conf/rsh
         An optional script \
 to be used as a remote shell instead of the plain ssh(1). \
@@ -177,18 +161,14 @@ for instance.
         An optional configuration file \
 used by ${basename%backup*}backup-rsync(1) \
 used by ${basename%backup*}backup-copy(1) and ${basename%backup*}backup-create(1) \
-used by ${basename%backup*}backup-mirror-sources(1) and ${basename%backup*}backup-sources(1) \
-used by ${basename%backup*}backup(1) and ${basename}(1) \
+used by ${basename}(1) and ${basename%backup*}backup-sources(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).
     ${dir}/tmp/
         A temporary directory to be used for copying backup directories.
-    ${dir}/tools/${basename%backup*}backup-mirror-sources
+    ${dir}/tools/${basename%backup*}backup-copy
         Used for copying backup directories from mirror sources using rsync(1).
-    ${dir}/tools/${basename%backup*}backup-purge
-        Used for deleting old backup directories \
-based on pattern matching and ages.
     $( which rsync )
         A fast and extraordinarily versatile file copying tool. \
 See also rsync(1).
@@ -231,7 +211,21 @@ __HELP__
 done
 
 # Copy backup directories from mirror sources.
-"${0%backup*}backup-mirror-sources" "${@}"
-
-# Delete old backup directories.
-"${0%backup*}backup-purge"
+set -- "${@}" --
+if [ -f "${dir}/conf/mirror-src-prefix" ]
+then
+	mirror_src_prefix=$( grep -- '^[^#]' "${dir}/conf/mirror-src-prefix" )
+elif [ -f "${dir}/conf/mirror-src-host" ]
+then
+	mirror_src_prefix=$( grep -- '^[^#]' "${dir}/conf/mirror-src-host" ):
+else
+	mirror_src_prefix=
+fi
+while read arg
+do
+	case ${arg} in
+	'' | '#'* ) continue ;;
+	esac
+	set -- "${@}" "${mirror_src_prefix}${arg}"
+done < "${dir}/conf/mirror-src-list"
+exec "${0%backup*}backup-copy" "${@}"

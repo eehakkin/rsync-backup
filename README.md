@@ -10,6 +10,7 @@ Commands
  * **backup-copy**:           copy backup directories
  * **backup-create**:         create a new backup directory
  * **backup-mirror**:         copy backup directories and do related tasks
+ * **backup-mirror-sources**: copy backup directories from mirror sources
  * **backup-nice**:           run a backup command nicely
  * **backup-nologin**:        politely refuse a login but allow a backup
  * **backup-prepare**:        prepare for backups
@@ -58,6 +59,11 @@ therefore not used for disk usage minimisation.
 Read mirror sources from configuration files, copy backup directories
 from the mirror sources using rsync(1) and then delete old backup
 directories based on pattern matching and ages.
+
+### **backup-mirror-sources**
+
+Read mirror sources from configuration files and copy backup directories
+from the mirror sources using rsync(1).
 
 ### **backup-nice**
 

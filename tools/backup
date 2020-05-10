@@ -174,7 +174,8 @@ for instance.
         An optional configuration file \
 used by ${basename%backup*}backup-rsync(1) \
 used by ${basename%backup*}backup-copy(1) and ${basename%backup*}backup-create(1) \
-used by ${basename}(1), ${basename%backup*}backup-mirror(1) and ${basename%backup*}backup-sources(1) \
+used by ${basename%backup*}backup-mirror-sources(1) and ${basename%backup*}backup-sources(1) \
+used by ${basename}(1) and ${basename%backup*}backup-mirror(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).
