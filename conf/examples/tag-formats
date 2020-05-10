@@ -17,7 +17,7 @@
 
 # Create daily backups (<YEAR><MONTH><DAY>, <YEAR>-<MONTH>-<DAY>,
 # <YEAR>W<WEEK><DAY> or <YEAR>-W<WEEK>-<DAY>).
-# By default, daily backups  are kept for at least 1 week.
+# By default, daily backups are kept for at least 1 week.
 %Y%m%d
 #%Y-%m-%d
 #%GW%V%u

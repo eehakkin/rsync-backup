@@ -10,19 +10,19 @@
 # Mirror remote backup directories via a remote shell.
 remote.example.com:/srv/backup/localhost/.
 
-# It is also possible to specify remote.example.com in conf/master-host
-# or to specify remote.example.com: in conf/master-prefix and to list
+# It is also possible to specify remote.example.com in conf/master-host 
+# or to specify remote.example.com: in conf/master-prefix and to list 
 # only directories in conf/master-list.
 
 # An alternative sample conf/master-list file
 # ===========================================
 
-# Mirror remote backup directories via a remote shell using a different
+# Mirror remote backup directories via a remote shell using a different 
 # remote user.
 backup@remote.example.com:/srv/backup/localhost/.
 
-# It is also possible to specify backup@remote.example.com in
-# conf/master-host or to specify backup@remote.example.com: in
+# It is also possible to specify backup@remote.example.com in 
+# conf/master-host or to specify backup@remote.example.com: in 
 # conf/master-prefix and to list only directories in conf/master-list.
 
 # An alternative sample conf/master-list file
@@ -31,7 +31,7 @@ backup@remote.example.com:/srv/backup/localhost/.
 # Mirror remote backup directories via an rsync daemon.
 remote.example.com::/srv/backup/localhost/.
 
-# It is also possible to specify remote.example.com: in
+# It is also possible to specify remote.example.com: in 
 # conf/master-prefix and to list only directories in conf/master-list.
 
 # An alternative sample conf/master-list file
@@ -40,46 +40,46 @@ remote.example.com::/srv/backup/localhost/.
 # Mirror remote backup directories via an rsync daemon.
 rsync://remote.example.com/srv/backup/localhost/.
 
-# It is also possible to specify rsync://remote.example.com in
+# It is also possible to specify rsync://remote.example.com in 
 # conf/master-prefix and to list only directories in conf/master-list.
 
 # An alternative sample conf/master-list file
 # ===========================================
 
-# Mirror remote backup directories via an rsync daemon using a
+# Mirror remote backup directories via an rsync daemon using a 
 # non-standard port.
 rsync://remote.example.com:12345/srv/backup/localhost/.
 
-# It is also possible to specify rsync://remote.example.com:12345 in
+# It is also possible to specify rsync://remote.example.com:12345 in 
 # conf/master-prefix and to list only directories in conf/master-list.
 
 # An alternative sample conf/master-list file
 # ===========================================
 
-# Mirror remote backup directories via an rsync daemon using a different
+# Mirror remote backup directories via an rsync daemon using a different 
 # remote user.
 backup@remote.example.com::/srv/backup/localhost/.
 
-# It is also possible to specify backup@remote.example.com:: in
+# It is also possible to specify backup@remote.example.com:: in 
 # conf/master-prefix and to list only directories in conf/master-list.
 
 # An alternative sample conf/master-list file
 # ===========================================
 
-# Mirror remote backup directories via an rsync daemon using a different
+# Mirror remote backup directories via an rsync daemon using a different 
 # remote user.
 rsync://backup@remote.example.com/srv/backup/localhost/.
 
-# It is also possible to specify rsync://backup@remote.example.com in
+# It is also possible to specify rsync://backup@remote.example.com in 
 # conf/master-prefix and to list only directories in conf/master-list.
 
 # An alternative sample conf/master-list file
 # ===========================================
 
-# Mirror remote backup directories via an rsync daemon using a
+# Mirror remote backup directories via an rsync daemon using a 
 # non-standard port and a different remote user.
 rsync://backup@remote.example.com:12345/srv/backup/localhost/.
 
-# It is also possible to specify rsync://backup@remote.example.com:12345
-# in conf/master-prefix and to list only directories in
+# It is also possible to specify rsync://backup@remote.example.com:12345 
+# in conf/master-prefix and to list only directories in 
 # conf/master-list.

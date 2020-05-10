@@ -15,8 +15,8 @@
 # An alternative sample conf/src-list file
 # ========================================
 
-# Backup remote /etc, /home, /opt, /root, /srv, /usr/local, /var/backups/
-# and /var/spool directories via a remote shell.
+# Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups/ and /var/spool directories via a remote shell.
 remote.example.com:/etc/
 remote.example.com:/home/
 remote.example.com:/opt/
@@ -33,9 +33,9 @@ remote.example.com:/var/spool/
 # An alternative sample conf/src-list file
 # ========================================
 
-# Backup remote /etc, /home, /opt, /root, /srv, /usr/local, /var/backups/
-# and /var/spool directories via a remote shell using a different remote
-# user.
+# Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups/ and /var/spool directories via a remote shell using a
+# different remote user.
 backup@remote.example.com:/etc/
 backup@remote.example.com:/home/
 backup@remote.example.com:/opt/
@@ -52,8 +52,8 @@ backup@remote.example.com:/var/spool/
 # An alternative sample conf/src-list file
 # ========================================
 
-# Backup remote /etc, /home, /opt, /root, /srv, /usr/local, /var/backups/
-# and /var/spool directories via an rsync daemon.
+# Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups/ and /var/spool directories via an rsync daemon.
 remote.example.com::/etc/
 remote.example.com::/home/
 remote.example.com::/opt/
@@ -63,14 +63,14 @@ remote.example.com::/usr/local/
 remote.example.com::/var/backups/
 remote.example.com::/var/spool/
 
-# It is also possible to specify remote.example.com: in conf/src-prefix
+# It is also possible to specify remote.example.com:: in conf/src-prefix
 # and to list only directories in conf/src-list.
 
 # An alternative sample conf/src-list file
 # ========================================
 
-# Backup remote /etc, /home, /opt, /root, /srv, /usr/local, /var/backups/
-# and /var/spool directories via an rsync daemon.
+# Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups/ and /var/spool directories via an rsync daemon.
 rsync://remote.example.com/etc/
 rsync://remote.example.com/home/
 rsync://remote.example.com/opt/
@@ -86,9 +86,9 @@ rsync://remote.example.com/var/spool/
 # An alternative sample conf/src-list file
 # ========================================
 
-# Backup remote /etc, /home, /opt, /root, /srv, /usr/local, /var/backups/
-# and /var/spool directories via an rsync daemon using a non-standard
-# port.
+# Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups/ and /var/spool directories via an rsync daemon using a
+# non-standard port.
 rsync://remote.example.com:12345/etc/
 rsync://remote.example.com:12345/home/
 rsync://remote.example.com:12345/opt/
@@ -104,9 +104,9 @@ rsync://remote.example.com:12345/var/spool/
 # An alternative sample conf/src-list file
 # ========================================
 
-# Backup remote /etc, /home, /opt, /root, /srv, /usr/local, /var/backups/
-# and /var/spool directories via an rsync daemon using a different
-# remote user.
+# Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups/ and /var/spool directories via an rsync daemon using a
+# different remote user.
 backup@remote.example.com::/etc/
 backup@remote.example.com::/home/
 backup@remote.example.com::/opt/
@@ -122,9 +122,9 @@ backup@remote.example.com::/var/spool/
 # An alternative sample conf/src-list file
 # ========================================
 
-# Backup remote /etc, /home, /opt, /root, /srv, /usr/local, /var/backups/
-# and /var/spool directories via an rsync daemon using a different
-# remote user.
+# Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups/ and /var/spool directories via an rsync daemon using a
+# different remote user.
 rsync://backup@remote.example.com/etc/
 rsync://backup@remote.example.com/home/
 rsync://backup@remote.example.com/opt/
@@ -140,9 +140,9 @@ rsync://backup@remote.example.com/var/spool/
 # An alternative sample conf/src-list file
 # ========================================
 
-# Backup remote /etc, /home, /opt, /root, /srv, /usr/local, /var/backups/
-# and /var/spool directories via an rsync daemon using a non-standard
-# port and a different remote user.
+# Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups/ and /var/spool directories via an rsync daemon using a
+# non-standard port and a different remote user.
 rsync://backup@remote.example.com:12345/etc/
 rsync://backup@remote.example.com:12345/home/
 rsync://backup@remote.example.com:12345/opt/
