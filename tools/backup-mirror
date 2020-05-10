@@ -103,25 +103,38 @@ used by ${basename%backup*}backup-copy(1) and ${basename%backup*}backup-create(1
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).
-    ${dir}/conf/master-host
-        An optional file to specify the master host \
-if the master host is not specified in the conf/master-list file or in the conf/master-prefix file. \
+    ${dir}/conf/mirror-src-host
+        An optional file to specify the mirror source host \
+if the mirror source host is not specified in the conf/mirror-src-list file or in the conf/mirror-src-prefix file. \
 The file must contain a line having the following form:
             [<USER>@]<HOST>
-    ${dir}/conf/master-list
-        A file to specify the master directories \
-containing master backup directories \
-to be mirrored. \
+    ${dir}/conf/mirror-src-list
+        A file to specify the mirror source directories \
+containing backup directories \
+to be copied. \
 The file must contain operand lines having any the following forms:
-            [[<USER>@]<HOST>:]<SRC>[/[.]]
-            [<USER>@]<HOST>::<SRC>[/[.]]
-            rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>[/[.]]
+            <SRC>/[.]
+                A local directory containing backup directories to be copied.
+            <SRC>
+                A local backup directory to be copied.
+            [<USER>@]<HOST>:<SRC>/[.]
+                A remote directory containing backup directories to be copied via a remote shell.
+            [<USER>@]<HOST>:<SRC>
+                A remote backup directory to be copied a remote shell.
+            [<USER>@]<HOST>::<SRC>/[.]
+                A remote directory containing backup directories to be copied via an rsync daemon.
+            [<USER>@]<HOST>::<SRC>
+                A remote backup directory to be copied via an rsync daemon.
+            rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>/[.]
+                A remote directory containing backup directories to be copied via an rsync daemon.
+            rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
+                A remote backup directory to be copied via an rsync daemon.
         These operands will be passed \
 to the ${basename%backup*}backup-copy(1) tool. \
 Empty lines and comment lines (starting with a "#") are allowed, too.
-    ${dir}/conf/master-prefix
-        An optional file to specify the master prefix \
-if the master prefix is not specified in the conf/master-list file. \
+    ${dir}/conf/mirror-src-prefix
+        An optional file to specify the mirror source prefix \
+if the mirror source prefix is not specified in the conf/mirror-src-list file. \
 The file must contain a line having one of the following forms:
             <DIR>
             [<USER>@]<HOST>:[<DIR>]
@@ -180,25 +193,25 @@ __HELP__
 	break
 done
 
-# Mirror backups.
+# Mirror backup directories.
 set -- "${@}" --
-if [ -f "${dir}/conf/master-prefix" ]
+if [ -f "${dir}/conf/mirror-src-prefix" ]
 then
-	master_prefix=$( grep -- '^[^#]' "${dir}/conf/master-prefix" )
-elif [ -f "${dir}/conf/master-host" ]
+	mirror_src_prefix=$( grep -- '^[^#]' "${dir}/conf/mirror-src-prefix" )
+elif [ -f "${dir}/conf/mirror-src-host" ]
 then
-	master_prefix=$( grep -- '^[^#]' "${dir}/conf/master-host" ):
+	mirror_src_prefix=$( grep -- '^[^#]' "${dir}/conf/mirror-src-host" ):
 else
-	master_prefix=
+	mirror_src_prefix=
 fi
 while read arg
 do
 	case ${arg} in
 	'' | '#'* ) continue ;;
-	*/ | */.  ) set -- "${@}" "${master_prefix}${arg%/*}/." ;;
-	*         ) set -- "${@}" "${master_prefix}${arg}/." ;;
+	*/ | */.  ) set -- "${@}" "${mirror_src_prefix}${arg%/*}/." ;;
+	*         ) set -- "${@}" "${mirror_src_prefix}${arg}/." ;;
 	esac
-done < "${dir}/conf/master-list"
+done < "${dir}/conf/mirror-src-list"
 "${0%backup*}backup-copy" "${@}"
 
 # Delete old backup directories.

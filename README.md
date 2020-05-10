@@ -23,7 +23,7 @@ directories.
 
 ### **backup-copy**
 
-Copy backups from master locations using rsync(1).
+Copy backups from mirror sources using rsync(1).
 
 Disk usage is minimised and the transfer is speeded up by hard linking
 files from old backup directories to newly created backup directories
