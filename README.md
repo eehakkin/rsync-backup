@@ -6,24 +6,26 @@ rsync(1) based backup scripts.
 Commands
 --------
 
- * **backup**:             create backups and do related tasks
- * **backup-copy**:        copy backups
- * **backup-create**:      create backups
- * **backup-mirror**:      mirror backups and do related tasks
- * **backup-nice**:        run a backup command nicely
- * **backup-nologin**:     politely refuse a login but allow a backup
- * **backup-prepare**:     prepare for backups
- * **backup-purge**:       delete old backup directories
- * **backup-rsync**:       a backup-oriented file-copying tool
+ * **backup**:                create a new backup directory and do related tasks
+ * **backup-copy**:           copy backup directories
+ * **backup-create**:         create a new backup directory
+ * **backup-mirror**:         copy backup directories and do related tasks
+ * **backup-nice**:           run a backup command nicely
+ * **backup-nologin**:        politely refuse a login but allow a backup
+ * **backup-prepare**:        prepare for backups
+ * **backup-purge**:          delete old backup directories
+ * **backup-rsync**:          a backup-oriented file-copying tool
 
 ### **backup**
 
-Prepare for backups, create backups and then delete old backup
-directories.
+Prepare for backups by executing preparation scripts, read backup
+sources from configuration files, create a new backup directory from the
+backup sources using rsync(1) and then delete old backup directories
+based on pattern matching and ages.
 
 ### **backup-copy**
 
-Copy backups from mirror sources using rsync(1).
+Copy backup directories from sources using rsync(1).
 
 Disk usage is minimised and the transfer is speeded up by hard linking
 files from old backup directories to newly created backup directories
@@ -35,13 +37,12 @@ therefore not used for disk usage minimisation.
 
 ### **backup-create**
 
-Create backups using rsync(1).
+Create a new backup directory using rsync(1).
 
-Each new backup is created into a new backup directory which is named
-according to the backup date and time. These backup directories are full
-backup directories containing direct (but possible filtered) copies of
-original files and directories. They can thus be accessed and restored
-directly.
+The newly created backup directory is named according to the backup date
+and time and is a full backup directories containing direct (but
+possible filtered) copies of original files and directories. It can thus
+be accessed and restored directly.
 
 Disk usage is minimised and the transfer is speeded up by hard linking
 files from old backup directories to newly created backup directories
@@ -53,7 +54,9 @@ therefore not used for disk usage minimisation.
 
 ### **backup-mirror**
 
-Copy backups and then delete old backup directories.
+Read mirror sources from configuration files, copy backup directories
+from the mirror sources using rsync(1) and then delete old backup
+directories based on pattern matching and ages.
 
 ### **backup-nice**
 
@@ -74,11 +77,11 @@ This can be used for dumping database snapshots to files, for instance.
 
 ### **backup-purge**
 
-Delete old backup directories based on pattern matching and age.
+Delete old backup directories based on pattern matching and ages.
 
-The default is to keep hourly backups over one day, daily backups over
-one week, weekly backups over one month, monthly backups over one year
-and yearly backups forever.
+The default is to keep hourly backups for at most one day, daily backups
+for at least one week, weekly backups for at least one month, monthly
+backups for at least one year and yearly backups forever.
 
 ### **backup-rsync**
 

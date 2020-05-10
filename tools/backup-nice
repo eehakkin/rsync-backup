@@ -44,8 +44,8 @@ Usage: ${basename} <COMMAND> [<ARG>]...
  or:   ${basename} <OPTION>...
 
 Run a backup command \
-with idle I/O priority (whose impact on normal system activity should be zero),
-with an adjusted niceness (which affect process scheduling) and
+with idle I/O priority (whose impact on normal system activity should be zero), \
+with an adjusted niceness (which affect process scheduling) and \
 with minimized effect on file system cache.
 
 Options:

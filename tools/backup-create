@@ -31,7 +31,7 @@ case ${dir} in
 esac
 
 basename=${0##*[\\/]}
-short_description='create backups'
+short_description='create a new backup directory'
 
 
 
@@ -40,23 +40,24 @@ while :
 do
 	case ${1-} in
 	--help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
-Usage: ${basename} [<RSYNC-OPTION>]... [[<USER>@]<HOST>:]<SRC>...
+Usage: ${basename} [<RSYNC-OPTION>]... <SRC>...
+ or:   ${basename} [<RSYNC-OPTION>]... [<USER>@]<HOST>:<SRC>...
  or:   ${basename} [<RSYNC-OPTION>]... [<USER>@]<HOST>::<SRC>...
  or:   ${basename} [<RSYNC-OPTION>]... rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>...
  or:   ${basename} <OPTION>...
 
-Create backups using rsync(1).
+Create a new backup directory using rsync(1).
 
-Each new backup is created into a new backup directory \
-which is named according to the backup date and time. \
-These backup directories are full backup directories \
+The newly created backup directory \
+is named according to the backup date and time and \
+is a full backup directories \
 containing direct (but possible filtered) copies \
 of original files and directories. \
-They can thus be accessed and restored directly.
+It can thus be accessed and restored directly.
 
-Backups are created using the following steps:
+A new backup directory is created using the following steps:
 
-  A new backup directory is created in a temporary directory.
+  An empty backup directory is created in a temporary directory.
 
   Files and directories are copied \
 from sources \
@@ -113,6 +114,7 @@ Operands:
     [<USER>@]<HOST>:<SRC>
         A remote shell source to be copied to a newly created backup directory.
     [<USER>@]<HOST>::<SRC>
+        A rsync daemon source to be copied to a newly created backup directory.
     rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
         A rsync daemon source to be copied to a newly created backup directory.
 
@@ -139,7 +141,13 @@ Files:
         An optional configuration file \
 containing long option names (without leading slashes) and \
 optional option arguments \
-to be passed to rsync(1).
+to be passed to rsync(1) \
+when creating a new backup directory.
+    ${dir}/conf/rsh
+        An optional script \
+to be used as a remote shell instead of the plain ssh(1). \
+This script can be used for setting identity files and proxy commands, \
+for instance.
     ${dir}/conf/rsync-config
         An optional configuration file \
 used by ${basename%backup*}backup-rsync(1) \
@@ -147,29 +155,28 @@ used by ${basename%backup*}backup-copy(1) and ${basename}(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).
-    ${dir}/conf/rsh
-        An optional script \
-to be used as a remote shell instead of the plain ssh(1). \
-This script can be used for setting identity files and proxy commands, \
-for instance.
     ${dir}/conf/tag-formats
-        An optional file containing date formats \
-to be used when constructing backup directory names for backups. \
+        An optional configuration file \
+containing date formats \
+to be used \
+when constructing a backup directory name for a new backup. \
 Empty lines and comment lines (starting with a "#") are allowed, too. \
 Each date format is tried in turn in order specified \
 until a non-existing backup directory is found.
     ${dir}/tmp/
-        A temporary directory to be used for creating new backup directories.
-    <SOURCE-DIRECTORY>/.backup-filter
-        An optional per-directory rsync(1) filter merge-file \
-which can be used for excluding files from backups. \
-Empty lines and comment lines (starting with a "#") are allowed, too.
+        A temporary directory to be used for creating a new backup directory.
+    ${dir}/tools/${basename%backup*}backup-rsync
+        Used for copying files using rsync(1).
     $( which rsync )
         A fast and extraordinarily versatile file copying tool. \
 See also rsync(1).
     $( which ssh )
         A remote login program. \
 See also ssh(1).
+    <SOURCE-DIRECTORY>/.backup-filter
+        An optional per-directory rsync(1) filter merge-file \
+which can be used for excluding files from backups. \
+Empty lines and comment lines (starting with a "#") are allowed, too.
 __HELP__
 		;;
 	--help=help2man )
@@ -257,7 +264,7 @@ fuse.s3ql ) s3qlrm -- "${dir}/tmp/old-create"-* ;;
 esac
 mkdir -m go= -- "${dir}/tmp/create-${$}"
 
-# Create a backup to a protected temporary directory.
+# Create a new backup directory in a protected temporary directory.
 dest_opt=--link-dest
 if
 	case ${fstype} in
@@ -292,7 +299,7 @@ case ${fstype} in
 fuse.s3ql ) s3qllock -- "${dir}/tmp/create-${$}/${tag}" ;;
 esac
 
-# Release the backup.
+# Release the newly created backup directory.
 ln    -s -- "${tag}" "${dir}/tmp/create-${$}/latest"
 sync
 mv    -f -- "${dir}/tmp/create-${$}"/* "${dir}/"

@@ -31,7 +31,7 @@ case ${dir} in
 esac
 
 basename=${0##*[\\/]}
-short_description='mirror backups and do related tasks'
+short_description='copy backup directories and do related tasks'
 
 
 
@@ -43,8 +43,12 @@ do
 Usage: ${basename} [<RSYNC-OPTION>]...
  or:   ${basename} <OPTION>...
 
-Copy backups and then delete old backup directories. \
+Read mirror sources from configuration files, \
+copy backup directories from the mirror sources using rsync(1) and \
+then delete old backup directories \
+based on pattern matching and ages. \
 For details, see \
+the Files section and \
 ${basename%backup*}backup-copy(1) and \
 ${basename%backup*}backup-purge(1).
 
@@ -95,23 +99,22 @@ Files:
 used by ${basename%backup*}backup-copy(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
-to be passed to rsync(1).
-    ${dir}/conf/rsync-config
-        An optional configuration file \
-used by ${basename%backup*}backup-rsync(1) \
-used by ${basename%backup*}backup-copy(1) and ${basename%backup*}backup-create(1) \
-containing long option names (without leading slashes) and \
-optional option arguments \
-to be passed to rsync(1).
+to be passed to rsync(1) \
+when copying a backup directory.
     ${dir}/conf/mirror-src-host
-        An optional file to specify the mirror source host \
-if the mirror source host is not specified in the conf/mirror-src-list file or in the conf/mirror-src-prefix file. \
+        An optional configuration file \
+containing the mirror source host \
+to be used \
+if the mirror source host is not specified \
+in the conf/mirror-src-list configuration file or \
+in the conf/mirror-src-prefix configuration file. \
 The file must contain a line having the following form:
             [<USER>@]<HOST>
     ${dir}/conf/mirror-src-list
-        A file to specify the mirror source directories \
-containing backup directories \
-to be copied. \
+        A configuration file \
+containing the mirror sources \
+to be copied to newly created backup directories \
+when copying backup directories. \
 The file must contain operand lines having any the following forms:
             <SRC>/[.]
                 A local directory containing backup directories to be copied.
@@ -120,7 +123,7 @@ The file must contain operand lines having any the following forms:
             [<USER>@]<HOST>:<SRC>/[.]
                 A remote directory containing backup directories to be copied via a remote shell.
             [<USER>@]<HOST>:<SRC>
-                A remote backup directory to be copied a remote shell.
+                A remote backup directory to be copied via a remote shell.
             [<USER>@]<HOST>::<SRC>/[.]
                 A remote directory containing backup directories to be copied via an rsync daemon.
             [<USER>@]<HOST>::<SRC>
@@ -129,29 +132,59 @@ The file must contain operand lines having any the following forms:
                 A remote directory containing backup directories to be copied via an rsync daemon.
             rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
                 A remote backup directory to be copied via an rsync daemon.
-        These operands will be passed \
+        The operands specifying directories containing backup directories \
+will be passed \
+to the ${basename%backup*}backup-rsync(1) tool. \
+The backup directories within these directories \
+as well as the operands specifying backup directories \
+will be passed \
 to the ${basename%backup*}backup-copy(1) tool. \
 Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/mirror-src-prefix
-        An optional file to specify the mirror source prefix \
-if the mirror source prefix is not specified in the conf/mirror-src-list file. \
+        An optional configuration file \
+containing the mirror source prefix \
+to be used \
+if the mirror source prefix is not specified \
+in the conf/mirror-src-list configuration file. \
 The file must contain a line having one of the following forms:
-            <DIR>
-            [<USER>@]<HOST>:[<DIR>]
-            [<USER>@]<HOST>::[<MODULE>]
-            rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>]
+            <BASE-DIR>
+                A local base directory.
+            [<USER>@]<HOST>:[<BASE-DIR>]
+                A remote shell host and an optional base directory.
+            [<USER>@]<HOST>::[<MODULE>[/<BASE-DIR>]]
+                A rsync daemon host and an optional module and base directory.
+            rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>[/<BASE-DIR>]]
+                A rsync daemon host and an optional module and base directory.
     ${dir}/conf/purge-list
-        An optional file to override the default patterns and ages. \
+        An optional configuration file \
+used by ${basename%backup*}backup-purge(1) \
+containing patterns and ages \
+which override the default ones. \
 The file must contain operand lines having the following form:
             <PATTERN>=<DAYS>
         Empty lines and comment lines (starting with a "#") are allowed, too. \
 Backup directories matching <PATTERN> are deleted \
-if they are over <DAYS> day old.
+if they are over <DAYS> days old.
     ${dir}/conf/rsh
         An optional script \
 to be used as a remote shell instead of the plain ssh(1). \
 This script can be used for setting identity files and proxy commands, \
 for instance.
+    ${dir}/conf/rsync-config
+        An optional configuration file \
+used by ${basename%backup*}backup-rsync(1) \
+used by ${basename%backup*}backup-copy(1) and ${basename%backup*}backup-create(1) \
+used by ${basename%backup*}backup(1) and ${basename}(1) \
+containing long option names (without leading slashes) and \
+optional option arguments \
+to be passed to rsync(1).
+    ${dir}/tmp/
+        A temporary directory to be used for copying backup directories.
+    ${dir}/tools/${basename%backup*}backup-copy
+        Used for copying backup directories from mirror sources using rsync(1).
+    ${dir}/tools/${basename%backup*}backup-purge
+        Used for deleting old backup directories \
+based on pattern matching and ages.
     $( which rsync )
         A fast and extraordinarily versatile file copying tool. \
 See also rsync(1).
@@ -193,7 +226,7 @@ __HELP__
 	break
 done
 
-# Mirror backup directories.
+# Copy backup directories from mirror sources.
 set -- "${@}" --
 if [ -f "${dir}/conf/mirror-src-prefix" ]
 then

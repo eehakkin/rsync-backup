@@ -40,7 +40,8 @@ while :
 do
 	case ${1-} in
 	--help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
-Usage: ${basename} [<RSYNC-OPTION>]... [[<USER>@]<HOST>:]<SRC>... <DEST>
+Usage: ${basename} [<RSYNC-OPTION>]... <SRC>... <DEST>
+ or:   ${basename} [<RSYNC-OPTION>]... [<USER>@]<HOST>:<SRC>... <DEST>
  or:   ${basename} [<RSYNC-OPTION>]... [<USER>@]<HOST>::<SRC>... <DEST>
  or:   ${basename} [<RSYNC-OPTION>]... rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>... <DEST>
  or:   ${basename} <OPTION>...
@@ -76,22 +77,23 @@ Operands:
     [<USER>@]<HOST>:<SRC>
         A remote shell source to be copied.
     [<USER>@]<HOST>::<SRC>
+        A rsync daemon source to be copied.
     rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
         A rsync daemon source to be copied.
     <DEST>
         A destination.
 
 Files:
-    ${dir}/conf/rsync-config
-        An optional configuration file \
-containing long option names (without leading slashes) and \
-optional option arguments \
-to be passed to rsync(1).
     ${dir}/conf/rsh
         An optional script \
 to be used as a remote shell instead of the plain ssh(1). \
 This script can be used for setting identity files and proxy commands, \
 for instance.
+    ${dir}/conf/rsync-config
+        An optional configuration file \
+containing long option names (without leading slashes) and \
+optional option arguments \
+to be passed to rsync(1).
     <SOURCE-DIRECTORY>/.backup-filter
         An optional per-directory rsync(1) filter merge-file \
 which can be used for excluding files from backups. \

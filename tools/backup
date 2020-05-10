@@ -31,7 +31,7 @@ case ${dir} in
 esac
 
 basename=${0##*[\\/]}
-short_description='create backups and do related tasks'
+short_description='create a new backup directory and do related tasks'
 valid=[:alnum:]_.-
 
 
@@ -43,8 +43,13 @@ do
 Usage: ${basename} [<RSYNC-OPTION>]...
  or:   ${basename} <OPTION>...
 
-Prepare for backups, create backups and then delete old backup directories. \
+Prepare for backups by executing preparation scripts, \
+read backup sources from configuration files, \
+create a new backup directory from the backup sources using rsync(1) and \
+then delete old backup directories \
+based on pattern matching and ages. \
 For details, see \
+the Files section and \
 ${basename%backup*}backup-prepare(1), \
 ${basename%backup*}backup-create(1) and \
 ${basename%backup*}backup-purge(1).
@@ -92,85 +97,113 @@ Files:
     ${dir}/latest
         A symbolic link to the latest backup directory.
     ${dir}/conf/backup-src-host
-        An optional file to specify the backup source host \
-if the backup source host is not specified in the conf/backup-src-list file or in the conf/backup-src-prefix file. \
+        An optional configuration file \
+containing the backup source host \
+to be used \
+if the backup source host is not specified \
+in the conf/backup-src-list configuration file or \
+in the conf/backup-src-prefix configuration file. \
 The file must contain a line having the following form:
             [<USER>@]<HOST>
     ${dir}/conf/backup-src-list
-        A file to specify the backup sources \
+        A configuration file \
+containing the backup sources \
 to be copied to a newly created backup directory \
-when creating backups. \
+when creating a new backup. \
 The file must contain operand lines having any the following forms:
-            [[<USER>@]<HOST>:]<SRC>
+            <SRC>
+                A local source to be copied to a newly created backup directory.
+            [<USER>@]<HOST>:<SRC>
+                A remote shell source to be copied to a newly created backup directory.
             [<USER>@]<HOST>::<SRC>
+                A rsync daemon source to be copied to a newly created backup directory.
             rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
+                A rsync daemon source to be copied to a newly created backup directory.
         These operands will be passed \
 to the ${basename%backup*}backup-create(1) tool. \
 Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/backup-src-prefix
-        An optional file to specify the backup source prefix \
-if the backup source prefix is not specified in the conf/backup-src-list file. \
+        An optional configuration file \
+containing the backup source prefix \
+to be used \
+if the backup source prefix is not specified \
+in the conf/backup-src-list configuration file. \
 The file must contain a line having one of the following forms:
-            <DIR>
-            [<USER>@]<HOST>:[<DIR>]
-            [<USER>@]<HOST>::[<MODULE>]
-            rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>]
+            <BASE-DIR>
+                A local base directory.
+            [<USER>@]<HOST>:[<BASE-DIR>]
+                A remote shell host and an optional base directory.
+            [<USER>@]<HOST>::[<MODULE>[/<BASE-DIR>]]
+                A rsync daemon host and an optional module and base directory.
+            rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>[/<BASE-DIR>]]
+                A rsync daemon host and an optional module and base directory.
     ${dir}/conf/create-config
         An optional configuration file \
 used by ${basename%backup*}backup-create(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
-to be passed to rsync(1).
-    ${dir}/conf/rsync-config
-        An optional configuration file \
-used by ${basename%backup*}backup-rsync(1) \
-used by ${basename%backup*}backup-copy(1) and ${basename%backup*}backup-create(1) \
-containing long option names (without leading slashes) and \
-optional option arguments \
-to be passed to rsync(1).
+to be passed to rsync(1) \
+when creating a new backup directory.
     ${dir}/conf/pre.d/
-        An optional directory containing scripts \
+        An optional directory \
+used by ${basename%backup*}backup-prepare(1) \
+containing scripts \
 which are executed in lexical order of names \
 when preparing for backups. \
 The names of the files must consist of only characters \
 matching the pattern [${valid}].
     ${dir}/conf/purge-list
-        An optional file to override the default patterns and ages. \
+        An optional configuration file \
+used by ${basename%backup*}backup-purge(1) \
+containing patterns and ages \
+which override the default ones. \
 The file must contain operand lines having the following form:
             <PATTERN>=<DAYS>
         Empty lines and comment lines (starting with a "#") are allowed, too. \
 Backup directories matching <PATTERN> are deleted \
-if they are over <DAYS> day old.
+if they are over <DAYS> days old.
     ${dir}/conf/rsh
         An optional script \
 to be used as a remote shell instead of the plain ssh(1). \
 This script can be used for setting identity files and proxy commands, \
 for instance.
+    ${dir}/conf/rsync-config
+        An optional configuration file \
+used by ${basename%backup*}backup-rsync(1) \
+used by ${basename%backup*}backup-copy(1) and ${basename%backup*}backup-create(1) \
+used by ${basename}(1) and ${basename%backup*}backup-mirror(1) \
+containing long option names (without leading slashes) and \
+optional option arguments \
+to be passed to rsync(1).
     ${dir}/conf/tag-formats
-        An optional file containing date formats \
-to be used when constructing backup directory names for backups. \
+        An optional configuration file \
+used by ${basename%backup*}backup-create(1) \
+containing date formats \
+to be used \
+when constructing a backup directory name for a new backup. \
 Empty lines and comment lines (starting with a "#") are allowed, too. \
 Each date format is tried in turn in order specified \
 until a non-existing backup directory is found.
     ${dir}/tmp/
-        A temporary directory to be used for creating new backup directories.
-    <SOURCE-DIRECTORY>/.backup-filter
-        An optional per-directory rsync(1) filter merge-file \
-which can be used for excluding files from backups. \
-Empty lines and comment lines (starting with a "#") are allowed, too.
+        A temporary directory to be used for creating a new backup directory.
     ${dir}/tools/${basename%backup*}backup-create
-        Used for creating backups using rsync(1).
+        Used for creating a new backup directory from backup sources \
+using rsync(1).
     ${dir}/tools/${basename%backup*}backup-prepare
         Used for preparing for backups by executing preparation scripts.
     ${dir}/tools/${basename%backup*}backup-purge
         Used for deleting old backup directories \
-based on pattern matching and age.
+based on pattern matching and ages.
     $( which rsync )
         A fast and extraordinarily versatile file copying tool. \
 See also rsync(1).
     $( which ssh )
         A remote login program. \
 See also ssh(1).
+    <SOURCE-DIRECTORY>/.backup-filter
+        An optional per-directory rsync(1) filter merge-file \
+which can be used for excluding files from backups. \
+Empty lines and comment lines (starting with a "#") are allowed, too.
 __HELP__
 		;;
 	--help=help2man )
@@ -209,7 +242,7 @@ done
 # Prepare for backups.
 "${0%backup*}backup-prepare"
 
-# Create backups.
+# Create a new backup directory from backup sources.
 set -- "${@}" --
 if [ -f "${dir}/conf/backup-src-prefix" ]
 then

@@ -1,11 +1,11 @@
 # A sample conf/mirror-src-host file
 # ==================================
 
-# Mirror remote backup directories.
+# Copy remote backup directories.
 remote.example.com
 
 # An alternative sample conf/mirror-src-host file
 # ===============================================
 
-# Mirror remote backup directories using a different remote user.
+# Copy remote backup directories using a different remote user.
 backup@remote.example.com

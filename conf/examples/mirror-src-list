@@ -1,13 +1,13 @@
 # A sample conf/mirror-src-list file
 # ==================================
 
-# Mirror local backup directories.
+# Copy local backup directories.
 /srv/backup/localhost/.
 
 # An alternative sample conf/mirror-src-list file
 # ===============================================
 
-# Mirror remote backup directories via a remote shell.
+# Copy remote backup directories via a remote shell.
 remote.example.com:/srv/backup/localhost/.
 
 # It is also possible to specify remote.example.com in
@@ -18,7 +18,7 @@ remote.example.com:/srv/backup/localhost/.
 # An alternative sample conf/mirror-src-list file
 # ===============================================
 
-# Mirror remote backup directories via a remote shell using a different
+# Copy remote backup directories via a remote shell using a different
 # remote user.
 backup@remote.example.com:/srv/backup/localhost/.
 
@@ -30,7 +30,7 @@ backup@remote.example.com:/srv/backup/localhost/.
 # An alternative sample conf/mirror-src-list file
 # ===============================================
 
-# Mirror remote backup directories via an rsync daemon.
+# Copy remote backup directories via an rsync daemon.
 remote.example.com::/srv/backup/localhost/.
 
 # It is also possible to specify remote.example.com:: in
@@ -40,7 +40,7 @@ remote.example.com::/srv/backup/localhost/.
 # An alternative sample conf/mirror-src-list file
 # ===============================================
 
-# Mirror remote backup directories via an rsync daemon.
+# Copy remote backup directories via an rsync daemon.
 rsync://remote.example.com/srv/backup/localhost/.
 
 # It is also possible to specify rsync://remote.example.com in
@@ -50,7 +50,7 @@ rsync://remote.example.com/srv/backup/localhost/.
 # An alternative sample conf/mirror-src-list file
 # ===============================================
 
-# Mirror remote backup directories via an rsync daemon using a
+# Copy remote backup directories via an rsync daemon using a
 # non-standard port.
 rsync://remote.example.com:12345/srv/backup/localhost/.
 
@@ -61,7 +61,7 @@ rsync://remote.example.com:12345/srv/backup/localhost/.
 # An alternative sample conf/mirror-src-list file
 # ===============================================
 
-# Mirror remote backup directories via an rsync daemon using a different
+# Copy remote backup directories via an rsync daemon using a different
 # remote user.
 backup@remote.example.com::/srv/backup/localhost/.
 
@@ -72,7 +72,7 @@ backup@remote.example.com::/srv/backup/localhost/.
 # An alternative sample conf/mirror-src-list file
 # ===============================================
 
-# Mirror remote backup directories via an rsync daemon using a different
+# Copy remote backup directories via an rsync daemon using a different
 # remote user.
 rsync://backup@remote.example.com/srv/backup/localhost/.
 
@@ -83,7 +83,7 @@ rsync://backup@remote.example.com/srv/backup/localhost/.
 # An alternative sample conf/mirror-src-list file
 # ===============================================
 
-# Mirror remote backup directories via an rsync daemon using a
+# Copy remote backup directories via an rsync daemon using a
 # non-standard port and a different remote user.
 rsync://backup@remote.example.com:12345/srv/backup/localhost/.
 

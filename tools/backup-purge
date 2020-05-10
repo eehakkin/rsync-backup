@@ -43,7 +43,8 @@ do
 	--help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
 Usage: ${basename} [<OPTION>]... [<PATTERN>=<DAYS>]...
 
-Delete old backup directories based on pattern matching and age. \
+Delete old backup directories \
+based on pattern matching and ages. \
 The default is to keep \
 hourly backups for at most one day, \
 daily backups for at least one week, \
@@ -63,7 +64,7 @@ Options:
 Operands:
     <PATTERN>=<DAYS>
         Backup directories matching <PATTERN> are deleted \
-if they are over <DAYS> day old.
+if they are over <DAYS> days old.
 
 Special patterns:
     yearly        [0-9][0-9][0-9][0-9]
@@ -136,12 +137,14 @@ Files:
     ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[:]<MINUTE>[:]<SECOND>
         A secondly backup directory.
     ${dir}/conf/purge-list
-        An optional file to override the default patterns and ages. \
+        An optional configuration file \
+containing patterns and ages \
+which override the default ones. \
 The file must contain operand lines having the following form:
             <PATTERN>=<DAYS>
         Empty lines and comment lines (starting with a "#") are allowed, too. \
 Backup directories matching <PATTERN> are deleted \
-if they are over <DAYS> day old.
+if they are over <DAYS> days old.
 __HELP__
 		;;
 	--help=help2man )

@@ -31,7 +31,7 @@ case ${dir} in
 esac
 
 basename=${0##*[\\/]}
-short_description='copy backups'
+short_description='copy backup directories'
 
 
 
@@ -45,16 +45,14 @@ Usage: ${basename} [<RSYNC-OPTION>]... [[<USER>@]<HOST>:]<SRC>[/[.]]...
  or:   ${basename} [<RSYNC-OPTION>]... rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>[/[.]]...
  or:   ${basename} <OPTION>...
 
-Copy backups \
-from master locations \
-using rsync(1).
+Copy backup directories from sources using rsync(1).
 
-Each backup is copied using the following steps:
+A backup directory is copied using the following steps:
 
-  A new backup directory is created in a temporary directory.
+  An empty backup directory is created in a temporary directory.
 
   Files and directories are copied \
-from a master backup directory \
+from a source backup directory \
 to the newly created backup directory \
 using rsync(1).
 
@@ -104,19 +102,21 @@ $( exec rsync --help | exec sed '
 
 Operands:
     <SRC>/[.]
-        A local master directory containing master backup directories to be copied.
+        A local directory containing backup directories to be copied.
     <SRC>
-        A local master backup directory to be copied.
+        A local backup directory to be copied.
     [<USER>@]<HOST>:<SRC>/[.]
-        A remote master directory containing master backup directories to be copied via a remote shell.
+        A remote directory containing backup directories to be copied via a remote shell.
     [<USER>@]<HOST>:<SRC>
-        A remote master backup directory to be copied a remote shell.
+        A remote backup directory to be copied via a remote shell.
     [<USER>@]<HOST>::<SRC>/[.]
-    rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>/[.]
-        A remote master directory containing master backup directories to be copied via an rsync daemon.
+        A remote directory containing backup directories to be copied via an rsync daemon.
     [<USER>@]<HOST>::<SRC>
+        A remote backup directory to be copied via an rsync daemon.
+    rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>/[.]
+        A remote directory containing backup directories to be copied via an rsync daemon.
     rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
-        A remote master backup directory to be copied via an rsync daemon.
+        A remote backup directory to be copied via an rsync daemon.
 
 Files:
     ${dir}/<YEAR>
@@ -141,7 +141,13 @@ Files:
         An optional configuration file \
 containing long option names (without leading slashes) and \
 optional option arguments \
-to be passed to rsync(1).
+to be passed to rsync(1) \
+when copying a backup directory.
+    ${dir}/conf/rsh
+        An optional script \
+to be used as a remote shell instead of the plain ssh(1). \
+This script can be used for setting identity files and proxy commands, \
+for instance.
     ${dir}/conf/rsync-config
         An optional configuration file \
 used by ${basename%backup*}backup-rsync(1) \
@@ -149,11 +155,10 @@ used by ${basename}(1) and ${basename%backup*}backup-create(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).
-    ${dir}/conf/rsh
-        An optional script \
-to be used as a remote shell instead of the plain ssh(1). \
-This script can be used for setting identity files and proxy commands, \
-for instance.
+    ${dir}/tmp/
+        A temporary directory to be used for copying backup directories.
+    ${dir}/tools/${basename%backup*}backup-rsync
+        Used for copying files using rsync(1).
     $( which rsync )
         A fast and extraordinarily versatile file copying tool. \
 See also rsync(1).
@@ -279,7 +284,7 @@ do
 	esac
 	# Parse an operand.
 	case ${arg} in
-	*/ | */. ) # [<PREFIX>]<SRC>/[.]
+	*/ | */. ) # <SRC>/[.]
 		# Create a protected temporary directory.
 		mkdir -m go=u-w -p -- \
 			"${dir}/tmp" \
@@ -320,7 +325,7 @@ do
 		# Clean up.
 		rm -fr -- "${dir}/tmp/copy-${$}"
 		;;
-	* ) # [<PREFIX>]<SRC>
+	* ) # <SRC>
 		# Copy a backup directory.
 		tag=$( basename -- "${arg}" )
 		"${0%backup*}backup-create" \
