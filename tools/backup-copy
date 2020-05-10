@@ -1,8 +1,8 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-copy 0.0.20190811
+# backup-copy 0.0.20200510
 #
-# Copyright (C) 2010-2019 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010-2020 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -86,7 +86,7 @@ Options:
         Show version information and exit.
 
 Rsync options:
-$( rsync --help | sed '
+$( exec rsync --help | exec sed '
 	/^ *-/,/^$/!d
 	/ --help/d
 	/ --version/d
@@ -164,7 +164,7 @@ __HELP__
 		;;
 	--help=help2man )
 		COLUMNS=2500 exec "${0}" --help \
-		| sed \
+		| exec sed \
 			-e '/^    [^ ]/!b'	\
 			-e '/[^ ]  /b'		\
 			-e 'N'			\
@@ -196,7 +196,7 @@ __HELP__
 done
 
 # Find out rsync options requiring an option argument.
-rsync_optarg_opts=$( LC_ALL=C rsync --help | sed '
+rsync_optarg_opts=$( LC_ALL=C exec rsync --help | exec sed '
 	/^ *-/,/^$/!d
 	s/^ *\(\(-[^(), ]*\(, \)*\)*\).*/\1/
 	/=.*/!d
@@ -295,8 +295,8 @@ do
 		mkdir -m go= -- "${dir}/tmp/copy" "${dir}/tmp/copy/${$}"
 		# Find out the backup directories to be copied.
 		exclude=$(
-			ls -- "${dir}/" \
-			| sed -n -e '/./s|^[[:digit:][:punct:]TW]*$|--exclude=/&/|p'
+			exec ls -- "${dir}/" \
+			| exec sed -n -e '/./s|^[[:digit:][:punct:]TW]*$|--exclude=/&/|p'
 			)
 		"${0%backup-*}backup-rsync" \
 			--backup-config-name='copy'		\
@@ -309,7 +309,7 @@ do
 			--exclude='/*/*'			\
 			-- "${arg%/*}/./" "${dir}/tmp/copy/${$}/"
 		# Copy the backup directories.
-		ls -rt -- "${dir}/tmp/copy/${$}/" | {
+		exec ls -rt -- "${dir}/tmp/copy/${$}/" | {
 			while read tag
 			do
 				case ${tag} in
