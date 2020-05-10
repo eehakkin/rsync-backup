@@ -45,8 +45,8 @@ Usage: ${basename} [<RSYNC-OPTION>]...
 
 Copy backups and then delete old backup directories. \
 For details, see \
-${basename%-*}-copy(1) and \
-${basename%-*}-purge(1).
+${basename%backup*}backup-copy(1) and \
+${basename%backup*}backup-purge(1).
 
 Options:
     -h, --help[=<FORMAT>]
@@ -92,14 +92,14 @@ Files:
         A symbolic link to the latest backup directory.
     ${dir}/conf/copy-config
         An optional configuration file \
-used by ${basename%-*}-copy(1) \
+used by ${basename%backup*}backup-copy(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).
     ${dir}/conf/rsync-config
         An optional configuration file \
-used by ${basename%-*}-rsync(1) \
-used by ${basename%-*}-copy(1) and ${basename%-*}-create(1) \
+used by ${basename%backup*}backup-rsync(1) \
+used by ${basename%backup*}backup-copy(1) and ${basename%backup*}backup-create(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).
@@ -117,7 +117,7 @@ The file must contain operand lines having any the following forms:
             [<USER>@]<HOST>::<SRC>[/[.]]
             rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>[/[.]]
         These operands will be passed \
-to the ${basename%-*}-copy(1) tool. \
+to the ${basename%backup*}backup-copy(1) tool. \
 Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/master-prefix
         An optional file to specify the master prefix \
@@ -199,7 +199,7 @@ do
 	*         ) set -- "${@}" "${master_prefix}${arg}/." ;;
 	esac
 done < "${dir}/conf/master-list"
-"${0%backup-*}backup-copy" "${@}"
+"${0%backup*}backup-copy" "${@}"
 
 # Delete old backup directories.
-"${0%backup-*}backup-purge"
+"${0%backup*}backup-purge"

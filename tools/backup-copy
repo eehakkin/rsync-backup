@@ -144,8 +144,8 @@ optional option arguments \
 to be passed to rsync(1).
     ${dir}/conf/rsync-config
         An optional configuration file \
-used by ${basename%-*}-rsync(1) \
-used by ${basename}(1) and ${basename%-*}-create(1) \
+used by ${basename%backup*}backup-rsync(1) \
+used by ${basename}(1) and ${basename%backup*}backup-create(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).
@@ -298,7 +298,7 @@ do
 			exec ls -- "${dir}/" \
 			| exec sed -n -e '/./s|^[[:digit:][:punct:]TW]*$|--exclude=/&/|p'
 			)
-		"${0%backup-*}backup-rsync" \
+		"${0%backup*}backup-rsync" \
 			--backup-config-name='copy'		\
 			--exclude='/*[![:digit:][:punct:]TW]*'	\
 			--exclude='/*/*'			\
@@ -314,7 +314,7 @@ do
 			do
 				case ${tag} in
 				*[![:digit:][:punct:]TW]* ) ;;
-				[[:digit:]]* ) "${0%backup-*}backup-create" \
+				[[:digit:]]* ) "${0%backup*}backup-create" \
 					--backup-config-name='copy'	\
 					--backup-tag-name="${tag}"	\
 					"${@}"				\
@@ -329,7 +329,7 @@ do
 	* ) # [<PREFIX>]<SRC>
 		# Copy a backup directory.
 		tag=$( basename -- "${arg}" )
-		"${0%backup-*}backup-create" \
+		"${0%backup*}backup-create" \
 			--backup-config-name='copy'	\
 			--backup-tag-name="${tag}"	\
 			"${@}"				\

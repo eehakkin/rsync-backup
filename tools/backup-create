@@ -142,8 +142,8 @@ optional option arguments \
 to be passed to rsync(1).
     ${dir}/conf/rsync-config
         An optional configuration file \
-used by ${basename%-*}-rsync(1) \
-used by ${basename%-*}-copy(1) and ${basename}(1) \
+used by ${basename%backup*}backup-rsync(1) \
+used by ${basename%backup*}backup-copy(1) and ${basename}(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).
@@ -279,7 +279,7 @@ dest_opts=$(
 	| exec sed -n -e '/./s|^[[:digit:][:punct:]TW]*$|'"${dest_opt}"'=../../../../&|p' \
 	| exec sed -e '20q'
 	)
-"${0%backup-*}backup-rsync" \
+"${0%backup*}backup-rsync" \
 	--backup-config-name="${config_name-create}" \
 	${dest_opts} \
 	"${@}" \
