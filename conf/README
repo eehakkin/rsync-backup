@@ -63,6 +63,12 @@ are over <DAYS> days old. Special patterns:
                  [0-9][0-9][0-9][0-9]-W[0-9][0-9]-9
                  (for <YEAR><MONTH>99, <YEAR>-<MONTH>-99, <YEAR>W<WEEK>9 and
                  <YEAR>-W<WEEK>-9)
+   fake-hourly   [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]T99*
+                 [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T99*
+                 [0-9][0-9][0-9][0-9]W[0-9][0-9][0-9]T99*
+                 [0-9][0-9][0-9][0-9]-W[0-9][0-9]-[0-9]T99*
+                 (for <YEAR><MONTH><DAY>T99*, <YEAR>-<MONTH>-<DAY>T99*,
+                 <YEAR>W<WEEK><DAY>T99* and <YEAR>-W<WEEK>-<DAY>T99*)
 
 The conf/rsh file
 =================

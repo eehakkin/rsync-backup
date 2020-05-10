@@ -109,6 +109,14 @@ Special patterns:
                   (for <YEAR>W<WEEK>9) and
                   [0-9][0-9][0-9][0-9]-W[0-9][0-9]-9
                   (for <YEAR>-W<WEEK>-9)
+    fake-hourly   [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]T99*
+                  (for <YEAR><MONTH><DAY>T99*),
+                  [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T99*
+                  (for <YEAR>-<MONTH>-<DAY>T99*),
+                  [0-9][0-9][0-9][0-9]W[0-9][0-9][0-9]T99*
+                  (for <YEAR>W<WEEK><DAY>T99*) and
+                  [0-9][0-9][0-9][0-9]-W[0-9][0-9]-[0-9]T99*
+                  (for <YEAR>-W<WEEK>-<DAY>T99*)
 
 Files:
     ${dir%/*/..}/<YEAR>
@@ -236,6 +244,12 @@ do
 		-name "${year}-${month}-${day}T${hour}*" -o \
 		-name "${year}W${week}${digit}T${hour}*" -o \
 		-name "${year}-W${week}-${digit}T${hour}*" \
+		\) -mtime +"${arg##*=}" ;;
+	fake-hourly  ) set -- "${@}" -o \( \
+		-name "${year}${month}${day}T99*" -o \
+		-name "${year}-${month}-${day}T99*" -o \
+		-name "${year}W${week}${digit}T99*" -o \
+		-name "${year}-W${week}-${digit}T99*" \
 		\) -mtime +"${arg##*=}" ;;
 	*            ) set -- "${@}" -o -name "${digit}*" -name "${arg%=*}" -mtime +"${arg##*=}" ;;
 	esac
