@@ -91,6 +91,30 @@ Files:
         A secondly backup directory.
     ${dir}/latest
         A symbolic link to the latest backup directory.
+    ${dir}/conf/backup-src-host
+        An optional file to specify the backup source host \
+if the backup source host is not specified in the conf/backup-src-list file or in the conf/backup-src-prefix file. \
+The file must contain a line having the following form:
+            [<USER>@]<HOST>
+    ${dir}/conf/backup-src-list
+        A file to specify the backup sources \
+to be copied to a newly created backup directory \
+when creating backups. \
+The file must contain operand lines having any the following forms:
+            [[<USER>@]<HOST>:]<SRC>
+            [<USER>@]<HOST>::<SRC>
+            rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
+        These operands will be passed \
+to the ${basename%backup*}backup-create(1) tool. \
+Empty lines and comment lines (starting with a "#") are allowed, too.
+    ${dir}/conf/backup-src-prefix
+        An optional file to specify the backup source prefix \
+if the backup source prefix is not specified in the conf/backup-src-list file. \
+The file must contain a line having one of the following forms:
+            <DIR>
+            [<USER>@]<HOST>:[<DIR>]
+            [<USER>@]<HOST>::[<MODULE>]
+            rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>]
     ${dir}/conf/create-config
         An optional configuration file \
 used by ${basename%backup*}backup-create(1) \
@@ -122,30 +146,6 @@ if they are over <DAYS> day old.
 to be used as a remote shell instead of the plain ssh(1). \
 This script can be used for setting identity files and proxy commands, \
 for instance.
-    ${dir}/conf/src-host
-        An optional file to specify the source host \
-if the source host is not specified in the conf/src-list file or in the conf/src-prefix file. \
-The file must contain a line having the following form:
-            [<USER>@]<HOST>
-    ${dir}/conf/src-list
-        A file to specify the sources \
-to be copied to a newly created backup directory \
-when creating backups. \
-The file must contain operand lines having any the following forms:
-            [[<USER>@]<HOST>:]<SRC>
-            [<USER>@]<HOST>::<SRC>
-            rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
-        These operands will be passed \
-to the ${basename%backup*}backup-create(1) tool. \
-Empty lines and comment lines (starting with a "#") are allowed, too.
-    ${dir}/conf/src-prefix
-        An optional file to specify the source prefix \
-if the source prefix is not specified in the conf/src-list file. \
-The file must contain a line having one of the following forms:
-            <DIR>
-            [<USER>@]<HOST>:[<DIR>]
-            [<USER>@]<HOST>::[<MODULE>]
-            rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>]
     ${dir}/conf/tag-formats
         An optional file containing date formats \
 to be used when constructing backup directory names for backups. \
@@ -211,22 +211,22 @@ done
 
 # Create backups.
 set -- "${@}" --
-if [ -f "${dir}/conf/src-prefix" ]
+if [ -f "${dir}/conf/backup-src-prefix" ]
 then
-	src_prefix=$( grep -- '^[^#]' "${dir}/conf/src-prefix" )
-elif [ -f "${dir}/conf/src-host" ]
+	backup_src_prefix=$( grep -- '^[^#]' "${dir}/conf/backup-src-prefix" )
+elif [ -f "${dir}/conf/backup-src-host" ]
 then
-	src_prefix=$( grep -- '^[^#]' "${dir}/conf/src-host" ):
+	backup_src_prefix=$( grep -- '^[^#]' "${dir}/conf/backup-src-host" ):
 else
-	src_prefix=
+	backup_src_prefix=
 fi
 while read arg
 do
 	case ${arg} in
 	'' | '#'* ) continue ;;
 	esac
-	set -- "${@}" "${src_prefix}${arg}"
-done < "${dir}/conf/src-list"
+	set -- "${@}" "${backup_src_prefix}${arg}"
+done < "${dir}/conf/backup-src-list"
 "${0%backup*}backup-create" "${@}"
 
 # Delete old backup directories.

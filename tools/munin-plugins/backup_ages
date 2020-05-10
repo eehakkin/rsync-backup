@@ -42,7 +42,9 @@ This plugin must have access to backups.
 
 The default behaviour is to report backup ages for the current
 backup directory and for all of its sibling directories
-which contain a conf/src-list configuration file and a tools/backup tool.
+which contain
+a conf/backup-src-list configuration file and
+a tools/backup tool.
 That behaviour can be overridden with the names variable
 which may contain
 names of the sibling directories and
@@ -162,7 +164,7 @@ normalize_backup_name() {
 		backup_name=${backup_dir#"${dir}"/../}
 		if
 			[ -h "${backup_dir}" ] ||
-			[ ! -s "${backup_dir}/conf/src-list" ]
+			[ ! -s "${backup_dir}/conf/backup-src-list" ]
 		then
 			unset backup_dir backup_name
 		fi
