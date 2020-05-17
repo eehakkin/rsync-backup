@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-purge 0.0.20200510
+# backup-purge 0.0.20200517
 #
 # Copyright (C) 2010-2020 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -33,13 +33,14 @@ esac
 basename=${0##*[\\/]}
 short_description='delete old backup directories'
 default_args='hourly=0 fake-daily=0 daily=7 fake-weekly=7 weekly=31 fake-monthly=31 monthly=366 fake-yearly=366'
-dry_run=
+dry_run= force=
 
 # Parse options.
 while :
 do
 	case ${1-} in
 	--dry-run | -n ) dry_run=+; shift ;;
+	--force   | -f ) force=+; shift ;;
 	--help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
 Usage: ${basename} [<OPTION>]... [<PATTERN>=<DAYS>]...
 
@@ -54,6 +55,8 @@ yearly backups forever \
 (thus the default operands are ${default_args}).
 
 Options:
+    -f, --force
+        Purge even while on battery power.
     -n, --dry-run
         Perform a trial run with no changes made.
     -h, --help[=<FORMAT>]
@@ -176,6 +179,11 @@ __HELP__
 			-e '/^##/{2!q;}'			\
 			-- "${me}"
 		;;
+	-[!-][!-]* )
+		opts=${1#-}
+		shift
+		set -- "-${opts%"${opts#?}"}" "-${opts#?}" "${@}"
+		;;
 	--  ) shift; break ;;
 	-?* ) getopts '' OPT "${@}"; exit 1 ;;
 	*   ) break ;;
@@ -266,7 +274,7 @@ fuse.s3ql ) rm_fr=s3qlrm ;;
 *         ) rm_fr='rm -fr' ;;
 esac
 
-on_ac_power > /dev/null 2>&1 && :
+${dry_run:+:} ${force:+:} on_ac_power > /dev/null 2>&1 && :
 case ${?} in
 1 ) echo "${0}: deferred while on battery power." >&2; dry_run=+ ;;
 esac
