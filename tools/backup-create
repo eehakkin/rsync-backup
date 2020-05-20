@@ -251,17 +251,22 @@ __FORMATS__
 esac
 : "${tag:?}"
 
-# Create a protected temporary directory.
+# Determine the preferred remove method.
 fstype=$( find "${dir}/." -prune -printf '%F\n' )
+case ${fstype} in
+fuse.s3ql ) rm_fr=s3qlrm ;;
+*         ) rm_fr='rm -fr' ;;
+esac
+
+# Prepare to create a protected temporary directory.
 mkdir -m go=u-w -p -- \
 	"${dir}/tmp" \
 	"${dir}/tmp/create-${$}" \
 	"${dir}/tmp/old-create-${$}"
 mv -f -- "${dir}/tmp/create"-* "${dir}/tmp/old-create-${$}/"
-case ${fstype} in
-fuse.s3ql ) s3qlrm -- "${dir}/tmp/old-create"-* ;;
-*         ) rm -fr -- "${dir}/tmp/old-create"-* ;;
-esac
+${rm_fr} -- "${dir}/tmp/old-create"-*
+
+# Create a protected temporary directory.
 mkdir -m go= -- "${dir}/tmp/create-${$}"
 
 # Create a new backup directory in a protected temporary directory.

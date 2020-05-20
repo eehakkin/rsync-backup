@@ -285,13 +285,14 @@ do
 	# Parse an operand.
 	case ${arg} in
 	*/ | */. ) # <SRC>/[.]
-		# Create a protected temporary directory.
+		# Prepare to create a protected temporary directory.
 		mkdir -m go=u-w -p -- \
 			"${dir}/tmp" \
 			"${dir}/tmp/copy-${$}" \
 			"${dir}/tmp/old-copy-${$}"
 		mv -f -- "${dir}/tmp/copy"-* "${dir}/tmp/old-copy-${$}/"
 		rm -fr -- "${dir}/tmp/old-copy"-*
+		# Create a protected temporary directory.
 		mkdir -m go= -- "${dir}/tmp/copy-${$}"
 		# Find out the backup directories to be copied.
 		exclude=$(

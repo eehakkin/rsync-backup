@@ -268,22 +268,54 @@ do
 done
 shift # -o
 
-fstype=$( find "${dir}/." -prune -printf '%F\n' )
-case ${fstype} in
-fuse.s3ql ) rm_fr=s3qlrm ;;
-*         ) rm_fr='rm -fr' ;;
-esac
-
 ${dry_run:+:} ${force:+:} on_ac_power > /dev/null 2>&1 && :
 case ${?} in
 1 ) echo "${0}: deferred while on battery power." >&2; dry_run=+ ;;
 esac
 
-exec find \
+find \
 	"${dir}/."				\
 	! -name .				\
 	-prune					\
 	-type d					\
 	\( "${@}" \)				\
-	-exec ${dry_run:+echo} ${rm_fr} -- {} +	\
-	>&2
+| {
+	# Read the names of the to be deleted backup directories.
+	set --
+	while read backup_dir
+	do
+		set -- "${@}" "${backup_dir}"
+	done
+
+	# Determine the preferred remove method.
+	fstype=$( find "${dir}/." -prune -printf '%F\n' )
+	case ${fstype} in
+	fuse.s3ql ) rm_fr=s3qlrm ;;
+	*         ) rm_fr='rm -fr' ;;
+	esac
+
+	case ${dry_run:++} in
+	'' )
+		# Prepare to create a protected temporary directory.
+		mkdir -m go=u-w -p -- \
+			"${dir}/tmp" \
+			"${dir}/tmp/purge-${$}" \
+			"${dir}/tmp/old-purge-${$}"
+		mv -f -- "${dir}/tmp/purge"-* "${dir}/tmp/old-purge-${$}/"
+		${rm_fr} -- "${dir}/tmp/old-purge"-*
+		;;
+	esac
+
+	case ${#} in
+	0 ) ;;
+	* )
+		# Create a protected temporary directory.
+		${dry_run:+echo} mkdir -m go= -- "${dir}/tmp/purge-${$}"
+		# Relocate the to be deleted backup directories.
+		${dry_run:+echo} mv -f -- "${@}" "${dir}/tmp/purge-${$}/"
+		# Remove the temporary directory and the backup directories
+		# within it.
+		${dry_run:+echo} ${rm_fr} -- "${dir}/tmp/purge-${$}"
+		;;
+	esac
+} >&2
