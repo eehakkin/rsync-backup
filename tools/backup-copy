@@ -290,6 +290,7 @@ do
 			"${dir}/tmp" \
 			"${dir}/tmp/copy-${$}" \
 			"${dir}/tmp/old-copy-${$}"
+		rm -fr -- "${dir}/tmp/old-copy-${$}"/*
 		mv -f -- "${dir}/tmp/copy"-* "${dir}/tmp/old-copy-${$}/"
 		rm -fr -- "${dir}/tmp/old-copy"-*
 		# Create a protected temporary directory.

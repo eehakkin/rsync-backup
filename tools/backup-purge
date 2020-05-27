@@ -300,7 +300,9 @@ find \
 		mkdir -m go=u-w -p -- \
 			"${dir}/tmp" \
 			"${dir}/tmp/purge-${$}" \
-			"${dir}/tmp/old-purge-${$}"
+			"${dir}/tmp/old-purge-${$}" \
+			"${dir}/tmp/old-purge-${$}/empty"
+		${rm_fr} -- "${dir}/tmp/old-purge-${$}"/*
 		mv -f -- "${dir}/tmp/purge"-* "${dir}/tmp/old-purge-${$}/"
 		${rm_fr} -- "${dir}/tmp/old-purge"-*
 		;;

@@ -262,7 +262,9 @@ esac
 mkdir -m go=u-w -p -- \
 	"${dir}/tmp" \
 	"${dir}/tmp/create-${$}" \
-	"${dir}/tmp/old-create-${$}"
+	"${dir}/tmp/old-create-${$}" \
+	"${dir}/tmp/old-create-${$}/empty"
+${rm_fr} -- "${dir}/tmp/old-create-${$}"/*
 mv -f -- "${dir}/tmp/create"-* "${dir}/tmp/old-create-${$}/"
 ${rm_fr} -- "${dir}/tmp/old-create"-*
 
