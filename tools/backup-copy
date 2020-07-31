@@ -333,6 +333,7 @@ do
 		"${0%backup*}backup-create" \
 			--backup-config-name='copy'	\
 			--backup-tag-name="${tag}"	\
+			--backup-tmp-infix="${tag}"	\
 			"${@}"				\
 			-- "${arg}/./"
 		;;

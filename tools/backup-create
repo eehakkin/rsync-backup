@@ -251,6 +251,12 @@ __FORMATS__
 esac
 : "${tag:?}"
 
+# Parse an internal temporal infix option.
+tmp_infix=
+case ${1-} in
+--backup-tmp-infix=* ) tmp_infix=-${1#*=}; shift ;;
+esac
+
 # Determine the preferred remove method.
 fstype=$( find "${dir}/." -prune -printf '%F\n' )
 case ${fstype} in
@@ -261,15 +267,17 @@ esac
 # Prepare to create a protected temporary directory.
 mkdir -m go=u-w -p -- \
 	"${dir}/tmp" \
-	"${dir}/tmp/create-${$}" \
-	"${dir}/tmp/old-create-${$}" \
-	"${dir}/tmp/old-create-${$}/empty"
-${rm_fr} -- "${dir}/tmp/old-create-${$}"/*
-mv -f -- "${dir}/tmp/create"-* "${dir}/tmp/old-create-${$}/"
-${rm_fr} -- "${dir}/tmp/old-create"-*
+	"${dir}/tmp/create${tmp_infix}-${$}" \
+	"${dir}/tmp/old-create${tmp_infix}-${$}" \
+	"${dir}/tmp/old-create${tmp_infix}-${$}/empty"
+${rm_fr} -- "${dir}/tmp/old-create${tmp_infix}-${$}"/*
+mv -f -- \
+	"${dir}/tmp/create${tmp_infix}"-* \
+	"${dir}/tmp/old-create${tmp_infix}-${$}/"
+${rm_fr} -- "${dir}/tmp/old-create${tmp_infix}"-*
 
 # Create a protected temporary directory.
-mkdir -m go= -- "${dir}/tmp/create-${$}"
+mkdir -m go= -- "${dir}/tmp/create${tmp_infix}-${$}"
 
 # Create a new backup directory in a protected temporary directory.
 dest_opt=--link-dest
@@ -282,7 +290,7 @@ if
 then
 	[ ! -d "${dir}/latest/." ] || ${cp_a} -- \
 		"${dir}/latest/."		\
-		"${dir}/tmp/create-${$}/${tag}"
+		"${dir}/tmp/create${tmp_infix}-${$}/${tag}"
 	set -- --delete --delete-delay --delete-excluded "${@}"
 	dest_opt=--copy-dest
 fi
@@ -295,20 +303,20 @@ dest_opts=$(
 	--backup-config-name="${config_name-create}" \
 	${dest_opts} \
 	"${@}" \
-	"${dir}/tmp/create-${$}/${tag}" ||
+	"${dir}/tmp/create${tmp_infix}-${$}/${tag}" ||
 case ${?} in
 24 ) ;; # Partial transfer due to vanished source files
 *  ) exit 1 ;;
 esac
-chmod -- g=u-w,o= "${dir}/tmp/create-${$}/${tag}"
-chgrp -- users    "${dir}/tmp/create-${$}/${tag}"
+chmod -- g=u-w,o= "${dir}/tmp/create${tmp_infix}-${$}/${tag}"
+chgrp -- users    "${dir}/tmp/create${tmp_infix}-${$}/${tag}"
 case ${fstype} in
-fuse.s3ql ) s3qllock -- "${dir}/tmp/create-${$}/${tag}" ;;
+fuse.s3ql ) s3qllock -- "${dir}/tmp/create${tmp_infix}-${$}/${tag}" ;;
 esac
 
 # Release the newly created backup directory.
-ln    -s -- "${tag}" "${dir}/tmp/create-${$}/latest"
+ln    -s -- "${tag}" "${dir}/tmp/create${tmp_infix}-${$}/latest"
 sync
-mv    -f -- "${dir}/tmp/create-${$}"/* "${dir}/"
-rmdir    -- "${dir}/tmp/create-${$}"
+mv    -f -- "${dir}/tmp/create${tmp_infix}-${$}"/* "${dir}/"
+rmdir    -- "${dir}/tmp/create${tmp_infix}-${$}"
 sync
