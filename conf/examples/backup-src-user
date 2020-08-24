@@ -1,0 +1,5 @@
+# A sample conf/backup-src-user file
+# ==================================
+
+# Backup a remote host using a different remote user.
+backup

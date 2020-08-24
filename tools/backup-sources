@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-sources 0.0.20200510
+# backup-sources 0.0.20200824
 #
 # Copyright (C) 2010-2020 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -132,6 +132,14 @@ The file must contain a line having one of the following forms:
                 A rsync daemon host and an optional module and base directory.
             rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>[/<BASE-DIR>]]
                 A rsync daemon host and an optional module and base directory.
+    ${dir}/conf/backup-src-user
+        An optional configuration file \
+containing the backup source user \
+to be used \
+if only the backup source host but not the user is specified \
+in the conf/backup-src-host configuration file. \
+The file must contain a line having the following form:
+            <USER>
     ${dir}/conf/create-config
         An optional configuration file \
 used by ${basename%backup*}backup-create(1) \
@@ -219,6 +227,12 @@ then
 elif [ -f "${dir}/conf/backup-src-host" ]
 then
 	backup_src_prefix=$( grep -- '^[^#]' "${dir}/conf/backup-src-host" ):
+	if [ -f "${dir}/conf/backup-src-user" ]
+	then
+		backup_src_prefix=$(
+			grep -- '^[^#]' "${dir}/conf/backup-src-user"
+			)@${backup_src_prefix}
+	fi
 else
 	backup_src_prefix=
 fi

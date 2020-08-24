@@ -1,0 +1,5 @@
+# A sample conf/mirror-src-user file
+# ==================================
+
+# Copy remote backup directories using a different remote user.
+backup

@@ -22,10 +22,11 @@ remote.example.com:/srv/backup/localhost/.
 # remote user.
 backup@remote.example.com:/srv/backup/localhost/.
 
-# It is also possible to specify backup@remote.example.com in
-# conf/mirror-src-host or to specify backup@remote.example.com: in
-# conf/mirror-src-prefix and to list only directories in
-# conf/mirror-src-list.
+# It is also possible to specify remote.example.com in
+# conf/mirror-src-host and backup in conf/mirror-src-user or to specify
+# backup@remote.example.com in conf/mirror-src-host or to specify
+# backup@remote.example.com: in conf/mirror-src-prefix and to list only
+# directories in conf/mirror-src-list.
 
 # An alternative sample conf/mirror-src-list file
 # ===============================================

@@ -9,3 +9,6 @@ remote.example.com
 
 # Copy remote backup directories using a different remote user.
 backup@remote.example.com
+
+# It is also possible to specify the user in conf/mirror-src-user and to
+# specify only the host in conf/mirror-src-host.

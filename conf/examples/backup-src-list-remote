@@ -34,10 +34,11 @@ backup@remote.example.com:/var/backups/
 backup@remote.example.com:/var/log/
 backup@remote.example.com:/var/spool/
 
-# It is also possible to specify backup@remote.example.com in
-# conf/backup-src-host or to specify backup@remote.example.com: in
-# conf/backup-src-prefix and to list only directories in
-# conf/backup-src-list.
+# It is also possible to specify remote.example.com in
+# conf/backup-src-host and backup in conf/backup-src-user or to specify
+# backup@remote.example.com in conf/backup-src-host or to specify
+# backup@remote.example.com: in conf/backup-src-prefix and to list only
+# directories in conf/backup-src-list.
 
 # An alternative sample conf/backup-src-list file
 # ===============================================

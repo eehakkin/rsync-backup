@@ -46,6 +46,16 @@ file. The file must contain a line having one of the following forms:
     rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>[/<BASE-DIR>]]
         A rsync daemon host and an optional module and base directory.
 
+The conf/backup-src-user file
+=============================
+
+An optional configuration file used by backup-sources(1) used by
+backup(1) containing the backup source user to be used if only the
+backup source host but not the user is specified in the
+conf/backup-src-host configuration file. The file must contain a line
+having the following form:
+    <USER>
+
 The conf/copy-config file
 =========================
 
@@ -121,6 +131,16 @@ following forms:
         A rsync daemon host and an optional module and base directory.
     rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>[/<BASE-DIR>]]
         A rsync daemon host and an optional module and base directory.
+
+The conf/mirror-src-user file
+=============================
+
+An optional configuration file used by backup-mirror-sources(1) used by
+backup-mirror(1) containing the mirror source user to be used if only
+the mirror source host but not the user is specified in the
+conf/mirror-src-host configuration file. The file must contain a line
+having the following form:
+    <USER>
 
 The conf/pre.d directory
 ========================

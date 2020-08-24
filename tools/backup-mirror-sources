@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-mirror-sources 0.0.20200510
+# backup-mirror-sources 0.0.20200824
 #
 # Copyright (C) 2010-2020 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -152,6 +152,14 @@ The file must contain a line having one of the following forms:
                 A rsync daemon host and an optional module and base directory.
             rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>[/<BASE-DIR>]]
                 A rsync daemon host and an optional module and base directory.
+    ${dir}/conf/mirror-src-user
+        An optional configuration file \
+containing the mirror source user \
+to be used \
+if only the mirror source host but not the user is specified \
+in the conf/mirror-src-host configuration file. \
+The file must contain a line having the following form:
+            <USER>
     ${dir}/conf/rsh
         An optional script \
 to be used as a remote shell instead of the plain ssh(1). \
@@ -218,6 +226,12 @@ then
 elif [ -f "${dir}/conf/mirror-src-host" ]
 then
 	mirror_src_prefix=$( grep -- '^[^#]' "${dir}/conf/mirror-src-host" ):
+	if [ -f "${dir}/conf/mirror-src-user" ]
+	then
+		mirror_src_prefix=$(
+			grep -- '^[^#]' "${dir}/conf/mirror-src-user"
+			)@${mirror_src_prefix}
+	fi
 else
 	mirror_src_prefix=
 fi

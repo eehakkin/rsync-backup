@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-mirror 0.0.20200510
+# backup-mirror 0.0.20200824
 #
 # Copyright (C) 2010-2020 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -158,6 +158,15 @@ The file must contain a line having one of the following forms:
                 A rsync daemon host and an optional module and base directory.
             rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>[/<BASE-DIR>]]
                 A rsync daemon host and an optional module and base directory.
+    ${dir}/conf/mirror-src-user
+        An optional configuration file \
+used by ${basename%backup*}backup-mirror-sources(1) \
+containing the mirror source user \
+to be used \
+if only the mirror source host but not the user is specified \
+in the conf/mirror-src-host configuration file. \
+The file must contain a line having the following form:
+            <USER>
     ${dir}/conf/purge-list
         An optional configuration file \
 used by ${basename%backup*}backup-purge(1) \
