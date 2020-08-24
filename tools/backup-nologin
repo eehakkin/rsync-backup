@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-nologin 0.0.20200510
+# backup-nologin 0.0.20200824
 #
 # Copyright (C) 2019-2020 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -18,12 +18,17 @@
 ###########################################################################
 case ${SSH_ORIGINAL_COMMAND:++},${#},${1-} in
 +,2,-c )
-	case ${2} in
-	"${0%backup*}backup-rsync "* )
-		exec "${0%backup*}backup-rsync" ${2#"${0%backup*}backup-rsync "}
-		;;
-	"exec ${0%backup*}backup-rsync "* )
-		exec "${0%backup*}backup-rsync" ${2#"exec ${0%backup*}backup-rsync "}
+	command_string=${2#"exec "}
+	case ${command_string} in
+	"${0%backup*}backup-rsync "*            | \
+	"sudo ${0%backup*}backup-rsync "*       | \
+	"sudo -- ${0%backup*}backup-rsync "*    | \
+	"sudo -n ${0%backup*}backup-rsync "*    | \
+	"sudo -n -- ${0%backup*}backup-rsync "* )
+		exec \
+			${command_string%%"${0%backup*}backup-rsync "*} \
+			"${0%backup*}backup-rsync" \
+			${command_string#*"${0%backup*}backup-rsync "}
 		;;
 	esac
 	;;
