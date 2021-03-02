@@ -1,8 +1,8 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-mirror-sources 0.0.20200824
+# backup-mirror-sources 0.0.20210302
 #
-# Copyright (C) 2010-2020 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -93,6 +93,7 @@ Files:
         A symbolic link to the latest backup directory.
     ${dir}/conf/copy-config
         An optional configuration file \
+used by ${basename%backup*}backup-copy-rsync(1) \
 used by ${basename%backup*}backup-copy(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
@@ -168,6 +169,7 @@ for instance.
     ${dir}/conf/rsync-config
         An optional configuration file \
 used by ${basename%backup*}backup-rsync(1) \
+used by ${basename%backup*}backup-copy-rsync(1) and ${basename%backup*}backup-create-rsync(1) \
 used by ${basename%backup*}backup-copy(1) and ${basename%backup*}backup-create(1) \
 used by ${basename}(1) and ${basename%backup*}backup-sources(1) \
 containing long option names (without leading slashes) and \

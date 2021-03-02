@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-rsync 0.0.20210302
+# backup-copy-rsync 0.0.20210302
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -31,7 +31,7 @@ case ${dir} in
 esac
 
 basename=${0##*[\\/]}
-short_description='a backup-oriented file-copying tool'
+short_description='a backup copying oriented file-copying tool'
 
 
 
@@ -84,6 +84,12 @@ Operands:
         A destination.
 
 Files:
+    ${dir}/conf/copy-config
+        An optional configuration file \
+containing long option names (without leading slashes) and \
+optional option arguments \
+to be passed to rsync(1) \
+when copying a backup directory.
     ${dir}/conf/rsh
         An optional script \
 to be used as a remote shell instead of the plain ssh(1). \
@@ -91,6 +97,8 @@ This script can be used for setting identity files and proxy commands, \
 for instance.
     ${dir}/conf/rsync-config
         An optional configuration file \
+used by ${basename%backup*}backup-rsync(1) \
+used by ${basename}(1) and ${basename%backup*}backup-create-rsync(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).
@@ -139,141 +147,6 @@ __HELP__
 	break
 done
 
-# Prepare to parse server options.
-args= backup_args= backup_prepare= extra_args=
-for arg
-do
-	case "${args} ${arg}" in
-	' --backup-prepare' ) backup_prepare=+ backup_args="${backup_args} ${arg}" ;;
-	*                   ) args="${args} ${arg}" ;;
-	esac
-done
-
-# Parse SSH_ORIGINAL_COMMAND.
-case ${SSH_ORIGINAL_COMMAND++} in
-+ )
-	# Check if SSH_ORIGINAL_COMMAND matches the supplied arguments and
-	# extend the options and the operands with ones from
-	# SSH_ORIGINAL_COMMAND.
-	case ${SSH_ORIGINAL_COMMAND} in
-	*"${0}${backup_args}${args}" | \
-	*"${0}${args}"               ) ;;
-	*"${0}${backup_args}${args} "* )
-		extra_args=" ${SSH_ORIGINAL_COMMAND#**"${0}${backup_args}${args} "}"
-		;;
-	*"${0}${args} "* )
-		extra_args=" ${SSH_ORIGINAL_COMMAND#**"${0}${args} "}"
-		;;
-	* ) false ;;
-	esac &&
-	case ${args} in
-	' --server --sender -s'*          | \
-	' --server --sender -'[!s]*' . '* )
-		# Require exact argument match.
-		[ -z "${extra_args}" ]
-		;;
-	' --server --sender -'[!s]*' .' )
-		# Allow extra operands but not extra options.
-		(
-			for arg in ${extra_args}
-			do
-				case ${arg} in
-				( -* ) exit 1 ;;
-				esac
-			done
-		)
-		;;
-	' --server --sender' )
-		# Allow extra options and operands.
-		;;
-	* )
-		# Allow extra options and operands.
-		case ${backup_args}${args}${extra_args} in
-		' --backup-prepare --server --sender '* | \
-		' --server --sender '*                  ) ;;
-		* ) false ;;
-		esac
-		;;
-	esac &&
-	set -- "${@}" ${extra_args} &&
-	case ${SSH_ORIGINAL_COMMAND} in
-	*"${0}${backup_args}${args}${extra_args}" ) ;;
-	*"${0}${args}${extra_args}" ) backup_prepare= ;;
-	esac || {
-		printf "%s: SSH_ORIGINAL_COMMAND='%s' does not match '%s'\n" \
-			"${basename}" \
-			"${SSH_ORIGINAL_COMMAND}" \
-			"${0}${args}" >&2
-		exit 1
-	}
-	;;
-esac
-
-# Parse server options.
-case ${args}${extra_args} in
-' --server --sender '* )
-	case ${backup_prepare} in
-	+ ) "${0%backup*}backup-prepare" || : ;;
-	esac
-	for arg in ${backup_args}
-	do
-		shift
-	done
-	exec "${0%backup*}backup-nice" -- rsync "${@}"
-	;;
-esac
-
-# Parse an internal configuration name option.
-unset config_name
-case ${1-} in
---backup-config-name=* ) config_name=${1#*=}; shift ;;
-esac
-
-# Construct default option arguments.
-case ${config_name-rsync} in
-create ) filter='dir-merge /.backup-filter' ;;
-*      ) unset filter ;;
-esac
-rsh=${dir}/conf/rsh; [ ! -x "${rsh}" ] && unset rsh
-rsync_path="\
-IONICE=\$( which -- ionice || : ) && \
-NICE=\$( which -- nice || : ) && \
-NOCACHE=\$( which -- nocache || : ) && \
-exec \
-\${IONICE:+ \"\${IONICE}\" -c 3 -- } \
-\${NICE:+ \"\${NICE}\" -n 99 -- } \
-\${NOCACHE:+ \"\${NOCACHE}\" -n 2 -- } \
-rsync"
-
-# Extend the options with ones read from configuration files.
-for config_name in ${config_name+ "${config_name}" } rsync
-do
-	[ ! -f "${dir}/conf/${config_name}-config" ] || {
-		for arg
-		do
-			while IFS="${IFS}=" read opt optarg
-			do
-				case ${opt} in
-				'' | '#'*  ) continue ;;
-				filter     ) unset filter ;;
-				rsh        ) unset rsh ;;
-				rsync-path ) unset rsync_path ;;
-				esac
-				set -- "${@}" "--${opt}${optarg:+=${optarg}}"
-			done
-			set -- "${@}" "${arg}"
-			shift
-		done < "${dir}/conf/${config_name}-config"
-	}
-done
-
 # Execute.
-exec "${0%backup*}backup-nice" -- rsync \
-	--archive					\
-	${filter+ --filter="${filter}" }		\
-	--fuzzy						\
-	--relative					\
-	${rsh+ --rsh="${rsh}" }				\
-	${rsync_path+ --rsync-path="${rsync_path}" }	\
-	--sparse					\
-	"${@}"
+config_name=copy
+exec "${0%backup*}backup-rsync" --backup-config-name="${config_name}" "${@}"
