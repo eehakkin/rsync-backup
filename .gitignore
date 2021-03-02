@@ -7,5 +7,6 @@
 /conf/*-host
 /conf/*-list
 /conf/*-prefix
+/conf/*-user
 /latest
 /tmp/
