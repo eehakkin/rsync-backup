@@ -8,7 +8,7 @@ remote.example.com
 # ===============================================
 
 # Backup a remote host using a different remote user.
-backup@remote.example.com
+backup-user@remote.example.com
 
 # It is also possible to specify the user in conf/backup-src-user and to
 # specify only the host in conf/backup-src-host.

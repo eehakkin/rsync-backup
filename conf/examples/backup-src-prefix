@@ -20,50 +20,50 @@ remote.example.com:/srv/chroot/distro
 # =================================================
 
 # Backup a remote host via a remote shell using a different remote user.
-backup@remote.example.com:
+backup-user@remote.example.com:
 
 # An alternative sample conf/backup-src-prefix file
 # =================================================
 
 # Backup a remote chroot host via a remote shell using a different
 # remote user.
-backup@remote.example.com:/srv/chroot/distro
+backup-user@remote.example.com:/srv/chroot/distro
 
 # An alternative sample conf/backup-src-prefix file
 # =================================================
 
 # Backup a remote host via an rsync daemon.
-remote.example.com::module
+remote.example.com::backup-module
 
 # An alternative sample conf/backup-src-prefix file
 # =================================================
 
 # Backup a remote host via an rsync daemon.
-rsync://remote.example.com/module
+rsync://remote.example.com/backup-module
 
 # An alternative sample conf/backup-src-prefix file
 # =================================================
 
 # Backup a remote host via an rsync daemon using a non-standard port.
-rsync://remote.example.com:12345/module
+rsync://remote.example.com:12345/backup-module
 
 # An alternative sample conf/backup-src-prefix file
 # =================================================
 
 # Backup a remote host via an rsync daemon using a different remote
 # user.
-backup@remote.example.com::module
+backup-user@remote.example.com::backup-module
 
 # An alternative sample conf/backup-src-prefix file
 # =================================================
 
 # Backup a remote host via an rsync daemon using a different remote
 # user.
-rsync://backup@remote.example.com/module
+rsync://backup-user@remote.example.com/backup-module
 
 # An alternative sample conf/backup-src-prefix file
 # =================================================
 
 # Backup a remote host via an rsync daemon using a non-standard port and
 # a different remote user.
-rsync://backup@remote.example.com:12345/module
+rsync://backup-user@remote.example.com:12345/backup-module

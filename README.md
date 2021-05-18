@@ -8,7 +8,9 @@ Commands
 
  * **backup**:                create a new backup directory and do related tasks
  * **backup-copy**:           copy backup directories
+ * **backup-copy-rsync**:     a backup copying oriented file-copying tool
  * **backup-create**:         create a new backup directory
+ * **backup-create-rsync**:   a backup creation oriented file-copying tool
  * **backup-mirror**:         copy backup directories and do related tasks
  * **backup-mirror-sources**: copy backup directories from mirror sources
  * **backup-nice**:           run a backup command nicely
@@ -37,6 +39,10 @@ are identical in content and in all preserved attributes).
 On the btrfs and s3ql filesystems, hard linking is not needed and is
 therefore not used for disk usage minimisation.
 
+### **backup-copy-rsync**
+
+Copy files using rsync(1).
+
 ### **backup-create**
 
 Create a new backup directory using rsync(1).
@@ -53,6 +59,10 @@ are identical in content and in all preserved attributes).
 
 On the btrfs and s3ql filesystems, hard linking is not needed and is
 therefore not used for disk usage minimisation.
+
+### **backup-create-rsync**
+
+Copy files using rsync(1).
 
 ### **backup-mirror**
 

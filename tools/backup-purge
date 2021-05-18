@@ -1,8 +1,8 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-purge 0.0.20200517
+# backup-purge 0.0.20210517
 #
-# Copyright (C) 2010-2020 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -47,11 +47,11 @@ Usage: ${basename} [<OPTION>]... [<PATTERN>=<DAYS>]...
 Delete old backup directories \
 based on pattern matching and ages. \
 The default is to keep \
-hourly backups for at most one day, \
-daily backups for at least one week, \
-weekly backups for at least one month, \
-monthly backups for at least one year and \
-yearly backups forever \
+secondly, minutely, hourly and fake daily backup directories for at most one day, \
+daily and fake weekly backup directories for at least one week, \
+weekly and fake monthly backup directories for at least one month, \
+monthly and fake yearly backup directories for at least one year and \
+yearly backup directories forever \
 (thus the default operands are ${default_args}).
 
 Options:
