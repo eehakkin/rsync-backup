@@ -13,6 +13,9 @@ fake-super
 # Don't cross filesystem boundaries.
 one-file-system
 
+# Avoid changing the atime on opened files.
+open-noatime
+
 # Preserve extended attributes.
 xattrs
 
