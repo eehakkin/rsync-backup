@@ -1,8 +1,8 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-prepare 0.0.20200510
+# backup-prepare 0.0.20210829
 #
-# Copyright (C) 2010-2020 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -101,10 +101,16 @@ case ${#} in
 esac
 
 # Prepare for backup.
+unset FQDN
 for file in "${dir}"/conf/pre.d/*
 do
 	case ${file##*/} in
 	*[!${valid}]* ) continue ;;
 	esac
-	"${file}" || :
+	"${file}" || {
+		error=${?}
+		FQDN=${FQDN-$( hostname -f 2> /dev/null || hostname )}
+		USER=${USER-$( id -un )}
+		echo "${USER}@${FQDN}:${file}: ${error}" >&2
+	}
 done
