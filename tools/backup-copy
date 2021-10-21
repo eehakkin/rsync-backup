@@ -212,7 +212,7 @@ rsync_optarg_opts=$( LC_ALL=C exec rsync --help | exec sed '
 ' )
 
 # Parse options, option arguments and operands.
-unset argtype
+unset argtype parallel
 for arg
 do
 	# Parse an option or an option argument.
@@ -221,6 +221,10 @@ do
 		# Drop the end of options option and operands.
 		set -- ${argtype+"${@}"}
 		argtype=operand
+		continue
+		;;
+	opt:--backup-parallel )
+		parallel=
 		continue
 		;;
 	opt:-?* ) # -<OPT>[...][<OPTARG>], --<OPT>[=<OPTARG>]
@@ -312,6 +316,7 @@ do
 			--exclude='/*/*'			\
 			-- "${arg%/*}/./" "${dir}/tmp/copy-${$}/"
 		# Copy the backup directories.
+		pids=
 		while :
 		do
 			tag=$(
@@ -325,8 +330,16 @@ do
 				--backup-config-name='copy'	\
 				--backup-tag-name="${tag}"	\
 				"${@}"				\
-				-- "${arg%/*}/${tag}/./"
+				-- "${arg%/*}/${tag}/./"	&
+			case ${parallel++} in
+			+ ) pids="${pids} ${!}" ;;
+			* ) wait "${!}" ;;
+			esac
 			rmdir -- "${dir}/tmp/copy-${$}/${tag}"
+		done
+		for pid in ${pids}
+		do
+			wait "${pid}" || { wait; false; }
 		done
 		# Clean up.
 		rm -fr -- "${dir}/tmp/copy-${$}"
