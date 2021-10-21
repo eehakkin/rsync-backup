@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-copy 0.0.20210302
+# backup-copy 0.0.20211021
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -334,7 +334,6 @@ do
 		"${0%backup*}backup-create" \
 			--backup-config-name='copy'	\
 			--backup-tag-name="${tag}"	\
-			--backup-tmp-infix="${tag}"	\
 			"${@}"				\
 			-- "${arg}/./"
 		;;
