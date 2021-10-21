@@ -236,7 +236,9 @@ case ${1-} in
 	do
 		tag2=$( date +"${format}" )
 		case ${tag2} in
-		[![:digit:]]* | *[![:digit:][:punct:]TW]* ) continue ;;
+		*[![:digit:][:punct:]TW]* ) continue ;;
+		[[:digit:]]*              ) ;;
+		*                         ) continue ;;
 		esac
 		[ ! -e "${dir}/${tag2}" ] && {
 			tag=${tag2} tmp_tag=latest
@@ -295,7 +297,7 @@ then
 fi
 dest_opts=$(
 	exec ls -t -- "${dir}/" \
-	| exec sed -n -e '/./s|^[[:digit:][:punct:]TW]*$|'"${dest_opt}"'=../../../&|p' \
+	| exec sed -n -e '/./s|^[[:digit:]][[:digit:][:punct:]TW]*$|'"${dest_opt}"'=../../../&|p' \
 	| exec sed -e '20q'
 	)
 "${0%backup*}backup-create-rsync" \

@@ -300,7 +300,7 @@ do
 		# Find out the backup directories to be copied.
 		exclude=$(
 			exec ls -- "${dir}/" \
-			| exec sed -n -e '/./s|^[[:digit:][:punct:]TW]*$|--exclude=/&/|p'
+			| exec sed -n -e '/./s|^[[:digit:]][[:digit:][:punct:]TW]*$|--exclude=/&/|p'
 			)
 		"${0%backup*}backup-copy-rsync" \
 			--exclude='/*[![:digit:][:punct:]TW]*'	\
@@ -316,13 +316,15 @@ do
 			while read tag
 			do
 				case ${tag} in
-				*[![:digit:][:punct:]TW]* ) ;;
-				[[:digit:]]* ) "${0%backup*}backup-create" \
+				*[![:digit:][:punct:]TW]* ) continue ;;
+				[[:digit:]]*              ) ;;
+				*                         ) continue ;;
+				esac
+				"${0%backup*}backup-create" \
 					--backup-config-name='copy'	\
 					--backup-tag-name="${tag}"	\
 					"${@}"				\
-					-- "${arg%/*}/${tag}/./" ;;
-				esac
+					-- "${arg%/*}/${tag}/./"
 			done
 		}
 		# Clean up.
