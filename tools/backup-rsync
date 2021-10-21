@@ -212,6 +212,7 @@ case ${SSH_ORIGINAL_COMMAND++} in
 	case ${SSH_ORIGINAL_COMMAND} in
 	*"${0}${backup_args}${args}${extra_args}" ) ;;
 	*"${0}${args}${extra_args}" ) backup_prepare= ;;
+	* ) false ;;
 	esac || {
 		printf "%s: SSH_ORIGINAL_COMMAND='%s' does not match '%s'\n" \
 			"${basename}" \
