@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-copy-rsync 0.0.20210302
+# backup-copy-rsync 0.0.20211021
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -102,16 +102,16 @@ used by ${basename}(1) and ${basename%backup*}backup-create-rsync(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).
-    <SOURCE-DIRECTORY>/.backup-filter
-        An optional per-directory rsync(1) filter merge-file \
-which can be used for excluding files from backups. \
-Empty lines and comment lines (starting with a "#") are allowed, too.
     $( which rsync )
         A fast and extraordinarily versatile file copying tool. \
 See also rsync(1).
     $( which ssh )
         A remote login program. \
 See also ssh(1).
+    <SOURCE-DIRECTORY>/.backup-filter
+        An optional per-directory rsync(1) filter merge-file \
+which can be used for excluding files from backups. \
+Empty lines and comment lines (starting with a "#") are allowed, too.
 __HELP__
 		;;
 	--help=help2man )
