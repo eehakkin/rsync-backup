@@ -32,7 +32,7 @@ esac
 
 basename=${0##*[\\/]}
 short_description='a backup-oriented file-copying tool'
-
+valid=[:alnum:]_.-
 
 
 # Parse options.
@@ -45,6 +45,7 @@ Usage: ${basename} [<RSYNC-OPTION>]... <SRC>... [<DEST>]
  or:   ${basename} [<RSYNC-OPTION>]... [<USER>@]<HOST>::<SRC>... <DEST>
  or:   ${basename} [<RSYNC-OPTION>]... rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>... <DEST>
  or:   ${basename} <OPTION>...
+ or:   ${basename} [--backup-prepare] --server --sender [<RSYNC-SENDER-OPTION>]... . [<ARG>]...
 
 Copy files using rsync(1).
 
@@ -53,6 +54,8 @@ Options:
         Show this help message and exit.
     -V, --version
         Show version information and exit.
+    --backup-prepare
+        Run ${basename%backup-*}backup-prepare(1) before sending files.
 
 Rsync options:
 $( exec rsync --help | exec sed '
@@ -84,6 +87,14 @@ Operands:
         A destination.
 
 Files:
+    ${dir}/conf/pre.d/
+        An optional directory \
+used by ${basename%backup*}backup-prepare(1) \
+containing scripts \
+which are executed in lexical order of names \
+when preparing for backups. \
+The names of the files must consist of only characters \
+matching the pattern [${valid}].
     ${dir}/conf/rsh
         An optional script \
 to be used as a remote shell instead of the plain ssh(1). \
@@ -94,6 +105,8 @@ for instance.
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).
+    ${dir}/tools/${basename%backup*}backup-prepare
+        Used for preparing for backups by executing preparation scripts.
     $( which rsync )
         A fast and extraordinarily versatile file copying tool. \
 See also rsync(1).
