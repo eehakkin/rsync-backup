@@ -312,21 +312,22 @@ do
 			--exclude='/*/*'			\
 			-- "${arg%/*}/./" "${dir}/tmp/copy-${$}/"
 		# Copy the backup directories.
-		exec ls -rt -- "${dir}/tmp/copy-${$}/" | {
-			while read tag
-			do
-				case ${tag} in
-				*[![:digit:][:punct:]TW]* ) continue ;;
-				[[:digit:]]*              ) ;;
-				*                         ) continue ;;
-				esac
-				"${0%backup*}backup-create" \
-					--backup-config-name='copy'	\
-					--backup-tag-name="${tag}"	\
-					"${@}"				\
-					-- "${arg%/*}/${tag}/./"
-			done
-		}
+		while :
+		do
+			tag=$(
+				exec ls -rt -- "${dir}/tmp/copy-${$}/" \
+				| exec sed \
+					-e '/^[[:digit:]][[:digit:][:punct:]TW]*$/!d' \
+					-e 'q'
+				)
+			${tag:+:} break
+			"${0%backup*}backup-create" \
+				--backup-config-name='copy'	\
+				--backup-tag-name="${tag}"	\
+				"${@}"				\
+				-- "${arg%/*}/${tag}/./"
+			rmdir -- "${dir}/tmp/copy-${$}/${tag}"
+		done
 		# Clean up.
 		rm -fr -- "${dir}/tmp/copy-${$}"
 		;;
