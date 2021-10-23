@@ -1,0 +1,84 @@
+#! /bin/sh -Ceu
+###########################################################################
+# mysql-dump 0.0.20211023
+#
+# Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 3
+# as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###########################################################################
+user=backup
+group=${user}
+dst_dir=/var/backups/${user}/mysql
+
+# Clean up old temporary directories.
+# Move first because remove is not atomic for directories.
+for i in "${dst_dir}".*[!~]~
+do
+	case ${i} in "${dst_dir}.*[!~]~" ) continue ;; esac
+	mv -f -- "${i}" "${i}~"
+done
+rm -f -r -- "${dst_dir}".*~~
+
+# Create missing directories and a new temporary directory.
+tmp_dir=${dst_dir}.${$}~
+install -d -g "${group}" -m 750 -o "${user}" -- \
+	"${dst_dir%/*}" \
+	"${dst_dir}" \
+	"${tmp_dir}"
+
+# Dump to a new temporary directory.
+umask -- ug=rx,o=
+mydumper \
+	--compress \
+	--events \
+	--host=localhost \
+	--no-locks \
+	--outputdir="${tmp_dir}" \
+	--routines \
+	--triggers \
+	--trx-consistency-only \
+	--verbose=1
+
+# Update the destination directory to match the new temporary directory.
+for dst_file in "${dst_dir}"/*
+do
+	tmp_file=${tmp_dir}/${dst_file##*/}
+	if [ ! -e "${tmp_file}" ]
+	then
+		# Ensure that the new temporary directory still exists.
+		: < "${tmp_dir}"
+		# The new temporary file does not exist
+		# thus remove the old destination file.
+		rm -f -- "${dst_file}"
+	fi
+done
+for tmp_file in "${tmp_dir}"/*
+do
+	dst_file=${dst_dir}/${tmp_file##*/}
+	if cmp -s -- "${dst_file}" "${tmp_file}"
+	then
+		# There are no changes
+		# thus remove the new temporary file and
+		# keep the old destination file intact.
+		rm -f -- "${tmp_file}"
+	else
+		# There are changes
+		# thus replace the destination file with the new temporary
+		# file.
+		chown -h -- backup:backup "${tmp_file}"
+		mv -f -- "${tmp_file}" "${dst_dir}/"
+	fi
+done
+
+# Remove the new temporary directory which should now be empty.
+rmdir -- "${tmp_dir}"

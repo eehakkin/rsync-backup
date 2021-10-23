@@ -1,0 +1,70 @@
+#! /bin/bash -Ceu
+###########################################################################
+# ldap-dump 0.0.20211023
+#
+# Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 3
+# as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###########################################################################
+set -e -o pipefail
+
+LDAPSEARCH_OPTS=-x
+export LDAPURI=ldapi://
+user=backup
+group=${user}
+dst_dir=/var/backups/${user}
+
+# Create missing directories.
+install -d -g "${group}" -m 750 -o "${user}" -- "${dst_dir}"
+
+# Find out contexts.
+ldapsearch -LLLM ${LDAPSEARCH_OPTS} \
+	-b '' \
+	-o ldif-wrap=no \
+	-s base \
+	-- '(objectClass=*)' configContext namingContexts \
+| sed -n -- 's|^[[:lower:]]*Contexts*: ||p' \
+| {
+	umask -- ug=rx,o=
+	while read -r base
+	do
+		dst_file=${dst_dir}/$( basename -- "${base}" ).ldif.gz
+		# Clean up old temporary files.
+		rm -f -- "${dst_file}".*~
+		# Dump to a new temporary file.
+		tmp_file=${dst_file}.${$}~
+		ldapsearch -LLLM ${LDAPSEARCH_OPTS} \
+			-LLLMx \
+			-b "${base}" \
+			-E pr=500/noprompt \
+			-o ldif-wrap=no \
+			-- '(objectClass=*)' '*' + \
+		| grep -Ev -- \
+			'^(contextCSN|entryDN|hasSubordinates|structuralObjectClass|subschemaSubentry):' \
+		| gzip -n >| "${tmp_file}"
+		# Update the destination file to match the new temporary file.
+		if cmp -s -- "${dst_file}" "${tmp_file}"
+		then
+			# There are no changes
+			# thus remove the new temporary file and
+			# keep the old destination file intact.
+			rm -- "${tmp_file}"
+		else
+			# There are changes
+			# thus replace the destination file with the new
+			# temporary file.
+			chown -h -- backup:backup "${tmp_file}"
+			mv -- "${tmp_file}" "${dst_file}"
+		fi
+	done
+}
