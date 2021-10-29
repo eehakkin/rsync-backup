@@ -1,8 +1,8 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-nice 0.0.20200510
+# backup-nice 0.0.20211029
 #
-# Copyright (C) 2018-2020 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2018-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -23,11 +23,11 @@
 } > /dev/null 2>&1 || :
 
 # Locate the script.
-me=$( which -- "${0}" || ls -d -- "${0}" )
-dir=$( dirname -- "${me}" )
-case ${dir} in
+me=$( command -v -- "${0}" || ls -d -- "${0}" )
+me_dir=$( dirname -- "${me}" )
+case ${me_dir} in
 . ) dir=.. ;;
-* ) dir=$( dirname -- "${dir}" ) ;;
+* ) dir=$( dirname -- "${me_dir}" ) ;;
 esac
 
 basename=${0##*[\\/]}
@@ -95,9 +95,9 @@ __HELP__
 done
 
 # Execute.
-IONICE=${IONICE-$( which -- ionice || : )}
-NICE=${NICE-$( which -- nice || : )}
-NOCACHE=${NOCACHE-$( which -- nocache || : )}
+IONICE=${IONICE-$( command -v -- ionice || : )}
+NICE=${NICE-$( command -v -- nice || : )}
+NOCACHE=${NOCACHE-$( command -v -- nocache || : )}
 exec \
 	${IONICE:+	"${IONICE}" -c 3 --	} \
 	${NICE:+	"${NICE}" -n 99 --	} \

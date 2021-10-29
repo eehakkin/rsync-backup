@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-rsync 0.0.20211021
+# backup-rsync 0.0.20211029
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -23,11 +23,11 @@
 } > /dev/null 2>&1 || :
 
 # Locate the script.
-me=$( which -- "${0}" || ls -d -- "${0}" )
-dir=$( dirname -- "${me}" )
-case ${dir} in
+me=$( command -v -- "${0}" || ls -d -- "${0}" )
+me_dir=$( dirname -- "${me}" )
+case ${me_dir} in
 . ) dir=.. ;;
-* ) dir=$( dirname -- "${dir}" ) ;;
+* ) dir=$( dirname -- "${me_dir}" ) ;;
 esac
 
 basename=${0##*[\\/]}
@@ -107,10 +107,10 @@ optional option arguments \
 to be passed to rsync(1).
     ${dir}/tools/${basename%backup*}backup-prepare
         Used for preparing for backups by executing preparation scripts.
-    $( which rsync )
+    $( command -v -- rsync )
         A fast and extraordinarily versatile file copying tool. \
 See also rsync(1).
-    $( which ssh )
+    $( command -v -- ssh )
         A remote login program. \
 See also ssh(1).
     <SOURCE-DIRECTORY>/.backup-filter
@@ -250,9 +250,9 @@ create ) filter='dir-merge /.backup-filter' ;;
 esac
 rsh=${dir}/conf/rsh; [ ! -x "${rsh}" ] && unset rsh
 rsync_path="\
-IONICE=\$( which -- ionice || : ) && \
-NICE=\$( which -- nice || : ) && \
-NOCACHE=\$( which -- nocache || : ) && \
+IONICE=\$( command -v -- ionice || : ) && \
+NICE=\$( command -v -- nice || : ) && \
+NOCACHE=\$( command -v -- nocache || : ) && \
 exec \
 \${IONICE:+ \"\${IONICE}\" -c 3 -- } \
 \${NICE:+ \"\${NICE}\" -n 99 -- } \

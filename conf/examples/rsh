@@ -4,15 +4,15 @@
 # ======================
 
 # Locate the script.
-me=$( which -- "${0}" || ls -d -- "${0}" )
-dir=$( dirname -- "${me}" )
-dir=$( readlink -f -- "${dir}" )
-case ${dir} in */.misc/* ) dir=/${dir#*/.misc/} ;; esac
-case ${dir} in */.ro/*   ) dir=${dir%%/.ro/*}/${dir#*/.ro/} ;; esac
-case ${dir} in */.rw/*   ) dir=${dir%%/.rw/*}/${dir#*/.rw/} ;; esac
+me=$( command -v -- "${0}" || ls -d -- "${0}" )
+me_dir=$( dirname -- "${me}" )
+me_dir=$( cd -- "${me_dir}" && pwd )
+case ${me_dir} in */.misc/* ) me_dir=/${me_dir#*/.misc/} ;; esac
+case ${me_dir} in */.ro/*   ) me_dir=${me_dir%%/.ro/*}/${me_dir#*/.ro/} ;; esac
+case ${me_dir} in */.rw/*   ) me_dir=${me_dir%%/.rw/*}/${me_dir#*/.rw/} ;; esac
 
 # Use identity files.
-for identity_file in "${dir}/ssh"/id_*
+for identity_file in "${me_dir}/ssh"/id_*
 do
 	case ${identity_file} in
 	*.pub ) continue ;;
@@ -23,16 +23,16 @@ do
 done
 
 # Use some extra options.
-[ ! -f "${dir}/ssh/known_hosts" ] || set -- \
-	-o UserKnownHostsFile="${dir}/ssh/known_hosts" \
+[ ! -f "${me_dir}/ssh/known_hosts" ] || set -- \
+	-o UserKnownHostsFile="${me_dir}/ssh/known_hosts" \
 	"${@}"
 set -- \
 	-o ClearAllForwardings=yes \
 	-o StrictHostKeyChecking=yes \
 	-o VerifyHostKeyDNS=yes \
 	"${@}"
-[ ! -f "${dir}/ssh/config" ] || set -- \
-	-F "${dir}/ssh/config" \
+[ ! -f "${me_dir}/ssh/config" ] || set -- \
+	-F "${me_dir}/ssh/config" \
 	"${@}"
 
 # Use a proxy command for root.
@@ -40,7 +40,7 @@ case " ${*} " in
 *' -l root '* )
 	case ${SUDO_USER:++} in
 	+ ) rsh=ssh ;;
-	* ) rsh=${dir}/$( basename -- "${0}" ) ;;
+	* ) rsh=${me_dir}/$( basename -- "${0}" ) ;;
 	esac
 	set -- \
 		-o ProxyCommand="\

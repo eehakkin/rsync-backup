@@ -23,11 +23,11 @@
 } > /dev/null 2>&1 || :
 
 # Locate the script.
-me=$( which -- "${0}" || ls -d -- "${0}" )
-dir=$( dirname -- "${me}" )
-case ${dir} in
+me=$( command -v -- "${0}" || ls -d -- "${0}" )
+me_dir=$( dirname -- "${me}" )
+case ${me_dir} in
 . ) dir=.. ;;
-* ) dir=$( dirname -- "${dir}" ) ;;
+* ) dir=$( dirname -- "${me_dir}" ) ;;
 esac
 
 basename=${0##*[\\/]}
