@@ -259,7 +259,7 @@ esac
 : "${tag:?}"
 
 # Determine the preferred remove method.
-fstype=$( find "${dir}/." -prune -printf '%F\n' )
+fstype=$( exec find "${dir}/." -prune -printf '%F\n' ) && :
 case ${fstype} in
 fuse.s3ql ) rm_fr=s3qlrm ;;
 *         ) rm_fr='rm -fr' ;;
