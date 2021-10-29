@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-prepare 0.0.20210829
+# backup-prepare 0.0.20211029
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -52,7 +52,11 @@ Options:
         Show version information and exit.
 
 Files:
-    ${dir%/*/..}/conf/pre.d/
+    ${dir}/conf/dump-config
+        An optional configuration file \
+used by some ${dir}/conf/pre.d/*-dump scripts \
+containing configuration variable assignments.
+    ${dir}/conf/pre.d/
         An optional directory containing scripts \
 which are executed in lexical order of names. \
 The names of the files must consist of only characters \

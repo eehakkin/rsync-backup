@@ -1,0 +1,19 @@
+# A sample conf/dump-config file
+# ==============================
+
+# Defaults used by the conf/example/pre.d/*-dump scripts.
+dump_user=backup
+dump_group=${dump_user}
+dump_dir=/var/backups/${dump_user}
+
+# Defaults used by the conf/example/pre.d/ldap-dump script.
+LDAPURI=ldapi://
+LDAPSEARCH_OPTS=-x
+ldap_paged_size=500
+
+# Defaults used by the conf/example/pre.d/mysql-dump script.
+mysql_defaults_file=
+mysql_dump_dir=${dump_dir}/mysql
+mysql_host=
+mysql_port=
+mysql_user=

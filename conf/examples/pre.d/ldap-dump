@@ -1,6 +1,6 @@
 #! /bin/bash -Ceu
 ###########################################################################
-# ldap-dump 0.0.20211023
+# ldap-dump 0.0.20211029
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -18,14 +18,30 @@
 ###########################################################################
 set -e -o pipefail
 
-LDAPSEARCH_OPTS=-x
+# Locate the script.
+me=$( command -v -- "${0}" || ls -d -- "${0}" )
+me_dir=$( dirname -- "${me}" )
+me_dir=$( cd -- "${me_dir}" && pwd )
+
+# Read and set configuration variables.
 export LDAPURI=ldapi://
-user=backup
-group=${user}
-dst_dir=/var/backups/${user}
+unset \
+	LDAPSEARCH_OPTS \
+	dump_dir \
+	dump_group \
+	dump_user \
+	ldap_paged_size
+dump_config=${me_dir%conf*}conf/dump-config
+[ ! -f "${dump_config}" ] || . "${dump_config}"
+LDAPSEARCH_OPTS=${LDAPSEARCH_OPTS-"-x"}
+dump_user=${dump_user:-"backup"}
+dump_group=${dump_group:-"${dump_user}"}
+dump_dir=${dump_dir:-"/var/backups/${dump_user}"}
+ldap_paged_size=${ldap_paged_size-"500"}
+#"
 
 # Create missing directories.
-install -d -g "${group}" -m 750 -o "${user}" -- "${dst_dir}"
+install -d -g "${dump_group}" -m 750 -o "${dump_user}" -- "${dump_dir}"
 
 # Find out contexts.
 ldapsearch -LLLM ${LDAPSEARCH_OPTS} \
@@ -35,36 +51,38 @@ ldapsearch -LLLM ${LDAPSEARCH_OPTS} \
 	-- '(objectClass=*)' configContext namingContexts \
 | sed -n -- 's|^[[:lower:]]*Contexts*: ||p' \
 | {
-	umask -- ug=rx,o=
+	umask -- ug-w,o=
 	while read -r base
 	do
-		dst_file=${dst_dir}/$( basename -- "${base}" ).ldif.gz
-		# Clean up old temporary files.
-		rm -f -- "${dst_file}".*~
-		# Dump to a new temporary file.
-		tmp_file=${dst_file}.${$}~
+		dst_dump_file=${dump_dir}/$( basename -- "${base}" ).ldif.gz
+		# Clean up old temporary dump files.
+		rm -f -- "${dst_dump_file}".*~
+		# Dump to a new temporary dump file.
+		tmp_dump_file=${dst_dump_file}.${$}~
 		ldapsearch -LLLM ${LDAPSEARCH_OPTS} \
-			-LLLMx \
 			-b "${base}" \
-			-E pr=500/noprompt \
+			${ldap_paged_size:+ -E "pr=${ldap_paged_size}/noprompt" } \
 			-o ldif-wrap=no \
 			-- '(objectClass=*)' '*' + \
 		| grep -Ev -- \
 			'^(contextCSN|entryDN|hasSubordinates|structuralObjectClass|subschemaSubentry):' \
-		| gzip -n >| "${tmp_file}"
-		# Update the destination file to match the new temporary file.
-		if cmp -s -- "${dst_file}" "${tmp_file}"
+		| gzip -n >| "${tmp_dump_file}"
+		# Update the destination dump file to match the new temporary
+		# dump file.
+		if cmp -s -- "${dst_dump_file}" "${tmp_dump_file}"
 		then
 			# There are no changes
-			# thus remove the new temporary file and
-			# keep the old destination file intact.
-			rm -- "${tmp_file}"
+			# thus remove the new temporary dump file and
+			# keep the old destination dump file intact.
+			rm -- "${tmp_dump_file}"
 		else
 			# There are changes
-			# thus replace the destination file with the new
-			# temporary file.
-			chown -h -- backup:backup "${tmp_file}"
-			mv -- "${tmp_file}" "${dst_file}"
+			# thus replace the destination dump file with
+			# the new temporary dump file.
+			chown -h -- \
+				"${dump_user}:${dump_group}" \
+				"${tmp_dump_file}"
+			mv -- "${tmp_dump_file}" "${dst_dump_file}"
 		fi
 	done
 }

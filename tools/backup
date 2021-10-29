@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup 0.0.20210302
+# backup 0.0.20211029
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -157,6 +157,11 @@ containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1) \
 when creating a new backup directory.
+    ${dir}/conf/dump-config
+        An optional configuration file \
+used by some ${dir}/conf/pre.d/*-dump scripts \
+used by ${basename%backup*}backup-prepare(1) \
+containing configuration variable assignments.
     ${dir}/conf/pre.d/
         An optional directory \
 used by ${basename%backup*}backup-prepare(1) \

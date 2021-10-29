@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# mysql-dump 0.0.20211023
+# mysql-dump 0.0.20211029
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -16,69 +16,91 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
-user=backup
-group=${user}
-dst_dir=/var/backups/${user}/mysql
+# Locate the script.
+me=$( command -v -- "${0}" || ls -d -- "${0}" )
+me_dir=$( dirname -- "${me}" )
+me_dir=$( cd -- "${me_dir}" && pwd )
+
+# Read and set configuration variables.
+unset \
+	dump_dir \
+	dump_group \
+	dump_user \
+	mysql_defaults_file \
+	mysql_dump_dir \
+	mysql_host \
+	mysql_user
+dump_config=${me_dir%conf*}conf/dump-config
+[ ! -f "${dump_config}" ] || . "${dump_config}"
+dump_user=${dump_user-"backup"}
+dump_group=${dump_group-"${dump_user}"}
+dump_dir=${dump_dir-"/var/backups/${dump_user}"}
+mysql_dump_dir=${mysql_dump_dir-"${dump_dir}/mysql"}
+#"
 
 # Clean up old temporary directories.
 # Move first because remove is not atomic for directories.
-for i in "${dst_dir}".*[!~]~
+for i in "${mysql_dump_dir}".*[!~]~
 do
-	case ${i} in "${dst_dir}.*[!~]~" ) continue ;; esac
+	case ${i} in "${mysql_dump_dir}.*[!~]~" ) continue ;; esac
 	mv -f -- "${i}" "${i}~"
 done
-rm -f -r -- "${dst_dir}".*~~
+rm -f -r -- "${mysql_dump_dir}".*~~
 
 # Create missing directories and a new temporary directory.
-tmp_dir=${dst_dir}.${$}~
-install -d -g "${group}" -m 750 -o "${user}" -- \
-	"${dst_dir%/*}" \
-	"${dst_dir}" \
-	"${tmp_dir}"
+dst_dump_dir=${mysql_dump_dir}
+tmp_dump_dir=${mysql_dump_dir}.${$}~
+install -d -g "${dump_group}" -m 750 -o "${dump_user}" -- \
+	"${dump_dir}" \
+	"${dst_dump_dir}" \
+	"${tmp_dump_dir}"
 
-# Dump to a new temporary directory.
-umask -- ug=rx,o=
+# Dump to a new temporary dump directory.
+umask -- ug-w,o=
 mydumper \
 	--compress \
+	${mysql_defaults_file:+ --defaults-file="${mysql_defaults_file}" } \
 	--events \
-	--host=localhost \
+	${mysql_host:+ --host="${mysql_host}" } \
 	--no-locks \
-	--outputdir="${tmp_dir}" \
+	--outputdir="${tmp_dump_dir}" \
 	--routines \
 	--triggers \
 	--trx-consistency-only \
+	${mysql_user:+ --user="${mysql_user}" } \
 	--verbose=1
 
-# Update the destination directory to match the new temporary directory.
-for dst_file in "${dst_dir}"/*
+# Update the destination dump directory to match the new temporary dump
+# directory.
+for dst_dump_file in "${dst_dump_dir}"/*
 do
-	tmp_file=${tmp_dir}/${dst_file##*/}
-	if [ ! -e "${tmp_file}" ]
+	tmp_dump_file=${tmp_dump_dir}/${dst_dump_file##*/}
+	if [ ! -e "${tmp_dump_file}" ]
 	then
-		# Ensure that the new temporary directory still exists.
-		: < "${tmp_dir}"
-		# The new temporary file does not exist
-		# thus remove the old destination file.
-		rm -f -- "${dst_file}"
+		# Ensure that the new temporary dump directory still exists.
+		: < "${tmp_dump_dir}"
+		# The new temporary dump file does not exist
+		# thus remove the old destination dump file.
+		rm -f -- "${dst_dump_file}"
 	fi
 done
-for tmp_file in "${tmp_dir}"/*
+for tmp_dump_file in "${tmp_dump_dir}"/*
 do
-	dst_file=${dst_dir}/${tmp_file##*/}
-	if cmp -s -- "${dst_file}" "${tmp_file}"
+	dst_dump_file=${dst_dump_dir}/${tmp_dump_file##*/}
+	if cmp -s -- "${dst_dump_file}" "${tmp_dump_file}"
 	then
 		# There are no changes
-		# thus remove the new temporary file and
-		# keep the old destination file intact.
-		rm -f -- "${tmp_file}"
+		# thus remove the new temporary dump file and
+		# keep the old destination dump file intact.
+		rm -f -- "${tmp_dump_file}"
 	else
 		# There are changes
-		# thus replace the destination file with the new temporary
-		# file.
-		chown -h -- backup:backup "${tmp_file}"
-		mv -f -- "${tmp_file}" "${dst_dir}/"
+		# thus replace the destination dump file with the new
+		# temporary dump file.
+		chown -h -- "${dump_user}:${dump_group}" "${tmp_dump_file}"
+		mv -f -- "${tmp_dump_file}" "${dst_dump_dir}/"
 	fi
 done
 
 # Remove the new temporary directory which should now be empty.
-rmdir -- "${tmp_dir}"
+rmdir -- "${tmp_dump_dir}"
