@@ -50,7 +50,7 @@ Create a new backup directory using rsync(1).
 
 The newly created backup directory \
 is named according to the backup date and time and \
-is a full backup directories \
+is a full backup directory \
 containing direct (but possible filtered) copies \
 of original files and directories. \
 It can thus be accessed and restored directly.
@@ -75,7 +75,7 @@ Disk usage is minimised and \
 the transfer is speeded up \
 by hard linking files \
 from old backup directories \
-to newly created backup directories \
+to the newly created backup directory \
 whenever possible \
 (when files in sources and previous backup directories are identical \
 in content and in all preserved attributes).

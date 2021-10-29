@@ -3,6 +3,14 @@ rsync-backup
 
 rsync(1) based backup scripts.
 
+The newly created backup directories are named according to the backup
+date and time and are full backup directories containing direct (but
+possible filtered) copies of original files and directories. They can
+thus be accessed and restored directly.
+
+Disk usage is minimised and transfers are speeded up by hard linking
+files from old backup directories to newly created backup directories.
+
 Commands
 --------
 
@@ -31,7 +39,7 @@ based on pattern matching and ages.
 
 Copy backup directories from sources using rsync(1).
 
-Disk usage is minimised and the transfer is speeded up by hard linking
+Disk usage is minimised and transfers are speeded up by hard linking
 files from old backup directories to newly created backup directories
 whenever possible (when files in sources and previous backup directories
 are identical in content and in all preserved attributes).
@@ -48,12 +56,12 @@ Copy files using rsync(1).
 Create a new backup directory using rsync(1).
 
 The newly created backup directory is named according to the backup date
-and time and is a full backup directories containing direct (but
-possible filtered) copies of original files and directories. It can thus
-be accessed and restored directly.
+and time and is a full backup directory containing direct (but possible
+filtered) copies of original files and directories. It can thus be
+accessed and restored directly.
 
 Disk usage is minimised and the transfer is speeded up by hard linking
-files from old backup directories to newly created backup directories
+files from old backup directories to the newly created backup directory
 whenever possible (when files in sources and previous backup directories
 are identical in content and in all preserved attributes).
 

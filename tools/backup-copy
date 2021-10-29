@@ -64,7 +64,7 @@ the newly created symbolink link \
 are moved to the final location.
 
 Disk usage is minimised and \
-the transfer is speeded up \
+transfers are speeded up \
 by hard linking files \
 from old backup directories \
 to newly created backup directories \

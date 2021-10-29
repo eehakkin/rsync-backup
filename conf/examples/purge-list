@@ -1,8 +1,7 @@
 # The defaults to be used if the conf/purge-list file does not exist
 # ==================================================================
 
-
-# Keep secondly, minutely, hourly and fake weekly backup directories for
+# Keep secondly, minutely, hourly and fake daily backup directories for
 # at most 1 day.
 hourly=0
 fake-daily=0
