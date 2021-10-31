@@ -78,7 +78,8 @@ __HELP__
 		;;
 	--help=troff )
 		exec help2man -h --help=help2man -L en_US.UTF-8 -N -n "${short_description}" -- "${0}" \
-		| exec sed -e 's/\([[:alnum:]\\-][[:alnum:]\\-]*\)[(]\([[:digit:]]*\)[)]/\\fB\1\\fR(\2)/g'
+		| exec sed \
+			-e 's|\([[:alnum:]\\-][[:alnum:]\\-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g'
 		exit
 		;;
 	--version | -V )

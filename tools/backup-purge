@@ -73,54 +73,54 @@ Special patterns:
     yearly        [0-9][0-9][0-9][0-9]
                   (for <YEAR>)
     monthly       [0-9][0-9][0-9][0-9][0-9][0-9]
-                  (for <YEAR><MONTH>) and
+                  (for <YEAR><MONTH>) and
                   [0-9][0-9][0-9][0-9]-[0-9][0-9]
-                  (for <YEAR>-<MONTH>)
+                  (for <YEAR>-<MONTH>)
     weekly        [0-9][0-9][0-9][0-9]W[0-9][0-9]
-                  (for <YEAR>W<WEEK>) and
+                  (for <YEAR>W<WEEK>) and
                   [0-9][0-9][0-9][0-9]-W[0-9][0-9]
-                  (for <YEAR>-W<WEEK>)
+                  (for <YEAR>-W<WEEK>)
     daily         [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]
-                  (for <YEAR><MONTH><DAY>),
+                  (for <YEAR><MONTH><DAY>),
                   [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]
-                  (for <YEAR>-<MONTH>-<DAY>),
+                  (for <YEAR>-<MONTH>-<DAY>),
                   [0-9][0-9][0-9][0-9]W[0-9][0-9][0-9]
-                  (for <YEAR>W<WEEK><DAY>) and
+                  (for <YEAR>W<WEEK><DAY>) and
                   [0-9][0-9][0-9][0-9]-W[0-9][0-9]-[0-9]
-                  (for <YEAR>-W<WEEK>-<DAY>)
+                  (for <YEAR>-W<WEEK>-<DAY>)
     hourly        [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]T[0-9][0-9]*
-                  (for <YEAR><MONTH><DAY>T<HOUR>*),
+                  (for <YEAR><MONTH><DAY>T<HOUR>*),
                   [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]*
-                  (for <YEAR>-<MONTH>-<DAY>T<HOUR>*),
+                  (for <YEAR>-<MONTH>-<DAY>T<HOUR>*),
                   [0-9][0-9][0-9][0-9]W[0-9][0-9][0-9]T[0-9][0-9]*
-                  (for <YEAR>W<WEEK><DAY>T<HOUR>*) and
+                  (for <YEAR>W<WEEK><DAY>T<HOUR>*) and
                   [0-9][0-9][0-9][0-9]-W[0-9][0-9]-[0-9]T[0-9][0-9]*
-                  (for <YEAR>-W<WEEK>-<DAY>T<HOUR>*)
+                  (for <YEAR>-W<WEEK>-<DAY>T<HOUR>*)
     fake-yearly   9999
     fake-monthly  [0-9][0-9][0-9][0-9]99
-                  (for <YEAR>99) and
+                  (for <YEAR>99) and
                   [0-9][0-9][0-9][0-9]-99
-                  (for <YEAR>-99)
+                  (for <YEAR>-99)
     fake-weekly   [0-9][0-9][0-9][0-9]W99
-                  (for <YEAR>W99) and
+                  (for <YEAR>W99) and
                   [0-9][0-9][0-9][0-9]-W99
-                  (for <YEAR>-W99)
+                  (for <YEAR>-W99)
     fake-daily    [0-9][0-9][0-9][0-9][0-9][0-9]99
-                  (for <YEAR><MONTH>99),
+                  (for <YEAR><MONTH>99),
                   [0-9][0-9][0-9][0-9]-[0-9][0-9]-99
-                  (for <YEAR>-<MONTH>-99),
+                  (for <YEAR>-<MONTH>-99),
                   [0-9][0-9][0-9][0-9]W[0-9][0-9]9
-                  (for <YEAR>W<WEEK>9) and
+                  (for <YEAR>W<WEEK>9) and
                   [0-9][0-9][0-9][0-9]-W[0-9][0-9]-9
-                  (for <YEAR>-W<WEEK>-9)
+                  (for <YEAR>-W<WEEK>-9)
     fake-hourly   [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]T99*
-                  (for <YEAR><MONTH><DAY>T99*),
+                  (for <YEAR><MONTH><DAY>T99*),
                   [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T99*
-                  (for <YEAR>-<MONTH>-<DAY>T99*),
+                  (for <YEAR>-<MONTH>-<DAY>T99*),
                   [0-9][0-9][0-9][0-9]W[0-9][0-9][0-9]T99*
-                  (for <YEAR>W<WEEK><DAY>T99*) and
+                  (for <YEAR>W<WEEK><DAY>T99*) and
                   [0-9][0-9][0-9][0-9]-W[0-9][0-9]-[0-9]T99*
-                  (for <YEAR>-W<WEEK>-<DAY>T99*)
+                  (for <YEAR>-W<WEEK>-<DAY>T99*)
 
 Files:
     ${dir}/<YEAR>
@@ -169,7 +169,11 @@ __HELP__
 		;;
 	--help=troff )
 		exec help2man -h --help=help2man -L en_US.UTF-8 -N -n "${short_description}" -- "${0}" \
-		| exec sed -e 's/\([[:alnum:]\\-][[:alnum:]\\-]*\)[(]\([[:digit:]]*\)[)]/\\fB\1\\fR(\2)/g'
+		| exec sed \
+			-e '\|^[.]TP$|{N;N;}' \
+			-e '\|^\([[]0\\-9[]]\)\1\1\1\(\(\\-\)*[TW]*\1*9*[*]*\)*$|i\
+.br' \
+			-e 's|\([[:alnum:]\\-][[:alnum:]\\-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g'
 		exit
 		;;
 	--version | -V )
