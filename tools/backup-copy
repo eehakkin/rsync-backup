@@ -86,18 +86,16 @@ Options:
 Rsync options:
 $( exec rsync --help | exec sed '
 	/^ *-/,/^$/!d
-	/ --help/d
-	/ --version/d
+	/^ *--help/d
+	/^ *--version/d
 	/./!d
 	s/^ */        /
 	s/,-/, -/g
 	/^ *-/{
 		s//    -/
-		s/\([^, ]\) /\1\
-/
+		s/\([^, ]\)  */\1\
+        /
 	}
-	P
-	D
 ' )
 
 Operands:
@@ -207,7 +205,7 @@ done
 rsync_optarg_opts=$( LC_ALL=C exec rsync --help | exec sed '
 	/^ *-/,/^$/!d
 	s/^ *\(\(-[^(), ]*\(, \)*\)*\).*/\1/
-	/=.*/!d
+	/=[^, ]*/!d
 	s///
 	s/[, ][, ]*/ /g
 ' )

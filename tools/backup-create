@@ -94,18 +94,16 @@ Options:
 Rsync options:
 $( exec rsync --help | exec sed '
 	/^ *-/,/^$/!d
-	/ --help/d
-	/ --version/d
+	/^ *--help/d
+	/^ *--version/d
 	/./!d
 	s/^ */        /
 	s/,-/, -/g
 	/^ *-/{
 		s//    -/
-		s/\([^, ]\) /\1\
-/
+		s/\([^, ]\)  */\1\
+        /
 	}
-	P
-	D
 ' )
 
 Operands:
