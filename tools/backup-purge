@@ -41,7 +41,9 @@ do
 	case ${1-} in
 	--dry-run | -n ) dry_run=+; shift ;;
 	--force   | -f ) force=+; shift ;;
-	--help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
+	--help | -h )
+		COLUMNS=${COLUMNS:-$( tput cols 2> /dev/null || : )}
+		exec fmt -s ${COLUMNS:+ -w "${COLUMNS}" } << __HELP__
 Usage: ${basename} [<OPTION>]... [<PATTERN>=<DAYS>]...
 
 Delete old backup directories \

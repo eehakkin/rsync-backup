@@ -39,7 +39,9 @@ short_description='a backup copying oriented file-copying tool'
 while :
 do
 	case ${1-} in
-	--help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
+	--help | -h )
+		COLUMNS=${COLUMNS:-$( tput cols 2> /dev/null || : )}
+		exec fmt -s ${COLUMNS:+ -w "${COLUMNS}" } << __HELP__
 Usage: ${basename} [<RSYNC-OPTION>]... <SRC>... [<DEST>]
  or:   ${basename} [<RSYNC-OPTION>]... [<USER>@]<HOST>:<SRC>... <DEST>
  or:   ${basename} [<RSYNC-OPTION>]... [<USER>@]<HOST>::<SRC>... <DEST>

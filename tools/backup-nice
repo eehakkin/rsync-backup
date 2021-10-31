@@ -39,7 +39,9 @@ short_description='run a backup command nicely'
 while :
 do
 	case ${1-} in
-	--help | -h ) exec fmt -s -w "${COLUMNS:-$( tput cols )}" << __HELP__
+	--help | -h )
+		COLUMNS=${COLUMNS:-$( tput cols 2> /dev/null || : )}
+		exec fmt -s ${COLUMNS:+ -w "${COLUMNS}" } << __HELP__
 Usage: ${basename} <COMMAND> [<ARG>]...
  or:   ${basename} <OPTION>...
 
