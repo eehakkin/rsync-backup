@@ -204,9 +204,21 @@ __HELP__
 		exit
 		;;
 	--help=troff )
+		cat << '__TROFF__'
+.if '\*[.T]'html' \{\
+.HEAD "<link href=""groff.css"" rel=""stylesheet"" type=""text/css"" />"
+.HEAD "<meta name=""viewport"" content=""width=device-width, initial-scale=1.0"" />"
+.HX 0
+.\}
+__TROFF__
 		exec help2man -h --help=help2man -L en_US.UTF-8 -N -n "${short_description}" -- "${0}" \
 		| exec sed \
 			-e 's|\([[:alnum:]\\-][[:alnum:]\\-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g'
+		exit
+		;;
+	--help=* )
+		exec "${0}" --help=troff \
+		| exec man -l -T"${1#*=}" -- -
 		exit
 		;;
 	--version | -V )
