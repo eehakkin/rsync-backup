@@ -21,10 +21,10 @@ lines having any the following forms:
         A remote shell source to be copied to a newly created backup
         directory.
     [<USER>@]<HOST>::<SRC>
-        A rsync daemon source to be copied to a newly created backup
+        An rsync daemon source to be copied to a newly created backup
         directory.
     rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
-        A rsync daemon source to be copied to a newly created backup
+        An rsync daemon source to be copied to a newly created backup
         directory.
 
 These operands will be passed to the backup-create(1) tool. Empty lines
@@ -42,9 +42,9 @@ file. The file must contain a line having one of the following forms:
     [<USER>@]<HOST>:[<BASE-DIR>]
         A remote shell host and an optional base directory.
     [<USER>@]<HOST>::[<MODULE>[/<BASE-DIR>]]
-        A rsync daemon host and an optional module and base directory.
+        An rsync daemon host and an optional module and base directory.
     rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>[/<BASE-DIR>]]
-        A rsync daemon host and an optional module and base directory.
+        An rsync daemon host and an optional module and base directory.
 
 The conf/backup-src-user file
 =============================
@@ -136,9 +136,9 @@ following forms:
     [<USER>@]<HOST>:[<BASE-DIR>]
         A remote shell host and an optional base directory.
     [<USER>@]<HOST>::[<MODULE>[/<BASE-DIR>]]
-        A rsync daemon host and an optional module and base directory.
+        An rsync daemon host and an optional module and base directory.
     rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>[/<BASE-DIR>]]
-        A rsync daemon host and an optional module and base directory.
+        An rsync daemon host and an optional module and base directory.
 
 The conf/mirror-src-user file
 =============================

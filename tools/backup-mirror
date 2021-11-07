@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-mirror 0.0.20211031
+# backup-mirror 0.0.20211107
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -156,9 +156,9 @@ The file must contain a line having one of the following forms:
             [<USER>@]<HOST>:[<BASE-DIR>]
                 A remote shell host and an optional base directory.
             [<USER>@]<HOST>::[<MODULE>[/<BASE-DIR>]]
-                A rsync daemon host and an optional module and base directory.
+                An rsync daemon host and an optional module and base directory.
             rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>[/<BASE-DIR>]]
-                A rsync daemon host and an optional module and base directory.
+                An rsync daemon host and an optional module and base directory.
     ${dir}/conf/mirror-src-user
         An optional configuration file \
 used by ${basename%backup*}backup-mirror-sources(1) \

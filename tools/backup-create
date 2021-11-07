@@ -114,9 +114,9 @@ Operands:
     [<USER>@]<HOST>:<SRC>
         A remote shell source to be copied to a newly created backup directory.
     [<USER>@]<HOST>::<SRC>
-        A rsync daemon source to be copied to a newly created backup directory.
+        An rsync daemon source to be copied to a newly created backup directory.
     rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
-        A rsync daemon source to be copied to a newly created backup directory.
+        An rsync daemon source to be copied to a newly created backup directory.
 
 Files:
     ${dir}/<YEAR>

@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-create-rsync 0.0.20211031
+# backup-create-rsync 0.0.20211107
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -77,9 +77,9 @@ Operands:
     [<USER>@]<HOST>:<SRC>
         A remote shell source to be copied.
     [<USER>@]<HOST>::<SRC>
-        A rsync daemon source to be copied.
+        An rsync daemon source to be copied.
     rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
-        A rsync daemon source to be copied.
+        An rsync daemon source to be copied.
     <DEST>
         A destination.
 

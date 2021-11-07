@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-sources 0.0.20211031
+# backup-sources 0.0.20211107
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -111,9 +111,9 @@ The file must contain operand lines having any the following forms:
             [<USER>@]<HOST>:<SRC>
                 A remote shell source to be copied to a newly created backup directory.
             [<USER>@]<HOST>::<SRC>
-                A rsync daemon source to be copied to a newly created backup directory.
+                An rsync daemon source to be copied to a newly created backup directory.
             rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
-                A rsync daemon source to be copied to a newly created backup directory.
+                An rsync daemon source to be copied to a newly created backup directory.
         These operands will be passed \
 to the ${basename%backup*}backup-create(1) tool. \
 Empty lines and comment lines (starting with a "#") are allowed, too.
@@ -129,9 +129,9 @@ The file must contain a line having one of the following forms:
             [<USER>@]<HOST>:[<BASE-DIR>]
                 A remote shell host and an optional base directory.
             [<USER>@]<HOST>::[<MODULE>[/<BASE-DIR>]]
-                A rsync daemon host and an optional module and base directory.
+                An rsync daemon host and an optional module and base directory.
             rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>[/<BASE-DIR>]]
-                A rsync daemon host and an optional module and base directory.
+                An rsync daemon host and an optional module and base directory.
     ${dir}/conf/backup-src-user
         An optional configuration file \
 containing the backup source user \
