@@ -305,45 +305,76 @@ Backup directories matching <PATTERN> are deleted if they are over
 <DAYS> days old.
 
 Special patterns:
-   yearly        [0-9][0-9][0-9][0-9]
-                 (for <YEAR>)
-   monthly       [0-9][0-9][0-9][0-9][0-9][0-9]
-                 [0-9][0-9][0-9][0-9]-[0-9][0-9]
-                 (for <YEAR><MONTH> and <YEAR>-<MONTH>)
-   weekly        [0-9][0-9][0-9][0-9]W[0-9][0-9]
-                 [0-9][0-9][0-9][0-9]-W[0-9][0-9]
-                 (for <YEAR>W<WEEK> and <YEAR>-W<WEEK>)
-   daily         [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]
-                 [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]
-                 [0-9][0-9][0-9][0-9]W[0-9][0-9][0-9]
-                 [0-9][0-9][0-9][0-9]-W[0-9][0-9]-[0-9]
-                 (for <YEAR><MONTH><DAY>, <YEAR>-<MONTH>-<DAY>,
-                 <YEAR>W<WEEK><DAY> and <YEAR>-W<WEEK>-<DAY>)
-   hourly        [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]T[0-9][0-9]*
-                 [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]*
-                 [0-9][0-9][0-9][0-9]W[0-9][0-9][0-9]T[0-9][0-9]*
-                 [0-9][0-9][0-9][0-9]-W[0-9][0-9]-[0-9]T[0-9][0-9]*
-                 (for <YEAR><MONTH><DAY>T<HOUR>*, <YEAR>-<MONTH>-<DAY>T<HOUR>*,
-                 <YEAR>W<WEEK><DAY>T<HOUR>* and <YEAR>-W<WEEK>-<DAY>T<HOUR>*)
-   fake-yearly   9999
-   fake-monthly  [0-9][0-9][0-9][0-9]99
-                 [0-9][0-9][0-9][0-9]-99
-                 (for <YEAR>99 and <YEAR>-99)
-   fake-weekly   [0-9][0-9][0-9][0-9]W99
-                 [0-9][0-9][0-9][0-9]-W99
-                 (for <YEAR>W99 and <YEAR>-W99)
-   fake-daily    [0-9][0-9][0-9][0-9][0-9][0-9]99
-                 [0-9][0-9][0-9][0-9]-[0-9][0-9]-99
-                 [0-9][0-9][0-9][0-9]W[0-9][0-9]9
-                 [0-9][0-9][0-9][0-9]-W[0-9][0-9]-9
-                 (for <YEAR><MONTH>99, <YEAR>-<MONTH>-99, <YEAR>W<WEEK>9 and
-                 <YEAR>-W<WEEK>-9)
-   fake-hourly   [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]T99*
-                 [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T99*
-                 [0-9][0-9][0-9][0-9]W[0-9][0-9][0-9]T99*
-                 [0-9][0-9][0-9][0-9]-W[0-9][0-9]-[0-9]T99*
-                 (for <YEAR><MONTH><DAY>T99*, <YEAR>-<MONTH>-<DAY>T99*,
-                 <YEAR>W<WEEK><DAY>T99* and <YEAR>-W<WEEK>-<DAY>T99*)
+    yearly
+        Matches yearly backup directories.
+        This corresponds the following pattern:
+            [0-9][0-9][0-9][0-9]
+        (for <YEAR>).
+    monthly
+        Matches monthly backup directories.
+        This corresponds the following patterns:
+            [0-9][0-9][0-9][0-9][0-9][0-9]
+            [0-9][0-9][0-9][0-9]-[0-9][0-9]
+        (for <YEAR>[-]<MONTH>).
+    weekly
+        Matches weekly backup directories.
+        This corresponds the following patterns:
+            [0-9][0-9][0-9][0-9]W[0-9][0-9]
+            [0-9][0-9][0-9][0-9]-W[0-9][0-9]
+        (for <YEAR>[-]W<WEEK>).
+    daily
+        Matches daily backup directories.
+        This corresponds the following patterns:
+            [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]
+            [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]
+            [0-9][0-9][0-9][0-9]W[0-9][0-9][0-9]
+            [0-9][0-9][0-9][0-9]-W[0-9][0-9]-[0-9]
+        (for <YEAR>[-]<MONTH>[-]<DAY> and <YEAR>[-]W<WEEK>[-]<DAY>).
+    hourly
+        Matches hourly, minutely and secondly backup directories.
+        This corresponds the following patterns:
+            [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]T[0-9][0-9]*
+            [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]*
+            [0-9][0-9][0-9][0-9]W[0-9][0-9][0-9]T[0-9][0-9]*
+            [0-9][0-9][0-9][0-9]-W[0-9][0-9]-[0-9]T[0-9][0-9]*
+        (for
+        <YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[[:]<MINUTE>[[:]<SECOND>]] and
+        <YEAR>[-]W<WEEK>[-]<DAY>T<HOUR>[[:]<MINUTE>[[:]<SECOND>]]).
+    fake-yearly
+        Matches yearly backup directories if the year is 9999.
+        This corresponds the pattern 9999.
+    fake-monthly
+        Matches monthly backup directories if the month is 99.
+        This corresponds the following patterns:
+            [0-9][0-9][0-9][0-9]99
+            [0-9][0-9][0-9][0-9]-99
+        (for <YEAR>[-]99).
+    fake-weekly
+        Matches weekly backup directories if the week is 99.
+        This corresponds the following patterns:
+            [0-9][0-9][0-9][0-9]W99
+            [0-9][0-9][0-9][0-9]-W99
+        (for <YEAR>[-]W99).
+    fake-daily
+        Matches daily backup directories
+        if the day of a month is 99 or the day of a week is 9.
+        This corresponds the following patterns:
+            [0-9][0-9][0-9][0-9][0-9][0-9]99
+            [0-9][0-9][0-9][0-9]-[0-9][0-9]-99
+            [0-9][0-9][0-9][0-9]W[0-9][0-9]9
+            [0-9][0-9][0-9][0-9]-W[0-9][0-9]-9
+        (for <YEAR>[-]<MONTH>[-]99 and <YEAR>[-]W<WEEK>[-]9).
+    fake-hourly
+        Matches hourly, minutely and secondly backup directories
+        if the hour is 99.
+        This corresponds the following patterns:
+            [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]T99*
+            [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T99*
+            [0-9][0-9][0-9][0-9]W[0-9][0-9][0-9]T99*
+            [0-9][0-9][0-9][0-9]-W[0-9][0-9]-[0-9]T99*
+        (for
+        <YEAR>[-]<MONTH>[-]<DAY>T99[[:]<MINUTE>[[:]<SECOND>]] and
+        <YEAR>[-]W<WEEK>[-]<DAY>T99[[:]<MINUTE>[[:]<SECOND>]]).
 
 The conf/rsh file
 -----------------
