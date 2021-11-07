@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-purge 0.0.20211031
+# backup-purge 0.0.20211107
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -43,8 +43,10 @@ do
 	--force   | -f ) force=+; shift ;;
 	--help | -h )
 		COLUMNS=${COLUMNS:-$( tput cols 2> /dev/null || : )}
-		exec fmt -s ${COLUMNS:+ -w "${COLUMNS}" } << __HELP__
-Usage: ${basename} [<OPTION>]... [<PATTERN>=<DAYS>]...
+		exec fmt -s ${COLUMNS:+ -w "${COLUMNS}" } << __HELP__ \
+		| exec sed -e '/\\$/{N;s/\\\n  *//;}'; exit
+Usage: \\
+           ${basename} [<OPTION>]... [<PATTERN>=<DAYS>]...
 
 Delete old backup directories \
 based on pattern matching and ages. \

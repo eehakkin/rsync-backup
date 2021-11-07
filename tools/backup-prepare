@@ -41,8 +41,10 @@ do
 	case ${1-} in
 	--help | -h )
 		COLUMNS=${COLUMNS:-$( tput cols 2> /dev/null || : )}
-		exec fmt -s ${COLUMNS:+ -w "${COLUMNS}" } << __HELP__
-Usage: ${basename} [<OPTION>]...
+		exec fmt -s ${COLUMNS:+ -w "${COLUMNS}" } << __HELP__ \
+		| exec sed -e '/\\$/{N;s/\\\n  *//;}'; exit
+Usage: \\
+           ${basename} [<OPTION>]...
 
 Prepare for backups by executing preparation scripts. \
 This can be used for dumping database snapshots to files, for instance.

@@ -41,9 +41,12 @@ do
 	case ${1-} in
 	--help | -h )
 		COLUMNS=${COLUMNS:-$( tput cols 2> /dev/null || : )}
-		exec fmt -s ${COLUMNS:+ -w "${COLUMNS}" } << __HELP__
-Usage: ${basename} [<RSYNC-OPTION>]...
- or:   ${basename} <OPTION>...
+		exec fmt -s ${COLUMNS:+ -w "${COLUMNS}" } << __HELP__ \
+		| exec sed -e '/\\$/{N;s/\\\n  *//;}'; exit
+Usage: \\
+           ${basename} [<RSYNC-OPTION>]...
+ or:   \\
+           ${basename} <OPTION>...
 
 Read backup sources from configuration files and \
 create a new backup directory from the backup sources using rsync(1). \

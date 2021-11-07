@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-nice 0.0.20211031
+# backup-nice 0.0.20211107
 #
 # Copyright (C) 2018-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -41,9 +41,12 @@ do
 	case ${1-} in
 	--help | -h )
 		COLUMNS=${COLUMNS:-$( tput cols 2> /dev/null || : )}
-		exec fmt -s ${COLUMNS:+ -w "${COLUMNS}" } << __HELP__
-Usage: ${basename} <COMMAND> [<ARG>]...
- or:   ${basename} <OPTION>...
+		exec fmt -s ${COLUMNS:+ -w "${COLUMNS}" } << __HELP__ \
+		| exec sed -e '/\\$/{N;s/\\\n  *//;}'; exit
+Usage: \\
+           ${basename} <COMMAND> [<ARG>]...
+ or:   \\
+           ${basename} <OPTION>...
 
 Run a backup command \
 with idle I/O priority (whose impact on normal system activity should be zero), \
