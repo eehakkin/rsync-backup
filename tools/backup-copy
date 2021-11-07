@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-copy 0.0.20211031
+# backup-copy 0.0.20211107
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -43,8 +43,8 @@ do
 		COLUMNS=${COLUMNS:-$( tput cols 2> /dev/null || : )}
 		exec fmt -s ${COLUMNS:+ -w "${COLUMNS}" } << __HELP__
 Usage: ${basename} [<RSYNC-OPTION>]... [[<USER>@]<HOST>:]<SRC>[/[.]]...
- or:   ${basename} [<RSYNC-OPTION>]... [<USER>@]<HOST>::<SRC>[/[.]]...
- or:   ${basename} [<RSYNC-OPTION>]... rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>[/[.]]...
+ or:   ${basename} [<RSYNC-OPTION>]... [<USER>@]<HOST>::<MODULE>[/<SRC>][/[.]]...
+ or:   ${basename} [<RSYNC-OPTION>]... rsync://[<USER>@]<HOST>[:<PORT>]/<MODULE>[/<SRC>][/[.]]...
  or:   ${basename} <OPTION>...
 
 Copy backup directories from sources using rsync(1).
@@ -109,13 +109,13 @@ Operands:
         A remote directory containing backup directories to be copied via a remote shell.
     [<USER>@]<HOST>:<SRC>
         A remote backup directory to be copied via a remote shell.
-    [<USER>@]<HOST>::<SRC>/[.]
+    [<USER>@]<HOST>::<MODULE>[/<SRC>]/[.]
         A remote directory containing backup directories to be copied via an rsync daemon.
-    [<USER>@]<HOST>::<SRC>
+    [<USER>@]<HOST>::<MODULE>/<SRC>
         A remote backup directory to be copied via an rsync daemon.
-    rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>/[.]
+    rsync://[<USER>@]<HOST>[:<PORT>]/<MODULE>[/<SRC>]/[.]
         A remote directory containing backup directories to be copied via an rsync daemon.
-    rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
+    rsync://[<USER>@]<HOST>[:<PORT>]/<MODULE>/<SRC>
         A remote backup directory to be copied via an rsync daemon.
 
 Files:

@@ -1,15 +1,32 @@
-The conf/backup-src-host file
-=============================
+Backup configuration
+====================
+
+The conf/backup-src-base file
+-----------------------------
 
 An optional configuration file used by backup-sources(1) used by
-backup(1) containing the backup source host to be used if the backup
-source host is not specified in the conf/backup-src-list configuration
-file or in the conf/backup-src-prefix configuration file. The file must
-contain a line having the following form:
-    [<USER>@]<HOST>
+backup(1) containing the backup source base directory to be used to
+augment the backup sources specified in the conf/backup-src-list
+configuration file if the conf/backup-src-prefix configuration file does
+not exist. The file must contain a line having the following form:
+    <BASE-DIR>[/.[/]]
+
+Empty lines and comment lines (starting with a "#") are allowed, too.
+
+The conf/backup-src-host file
+-----------------------------
+
+An optional configuration file used by backup-sources(1) used by
+backup(1) containing the backup source host to be used to augment the
+backup sources specified in the conf/backup-src-list configuration file
+if the conf/backup-src-prefix configuration file does not exist. The
+file must contain a line having the following form:
+    <HOST>
+
+Empty lines and comment lines (starting with a "#") are allowed, too.
 
 The conf/backup-src-list file
-=============================
+-----------------------------
 
 A configuration file used by backup-sources(1) used by backup(1)
 containing the backup sources to be copied to a newly created backup
@@ -17,47 +34,103 @@ directory when creating a new backup. The file must contain operand
 lines having any the following forms:
     <SRC>
         A local source to be copied to a newly created backup directory.
+    <BASE-DIR>/./[<SRC>]
+        A local source to be copied to a newly created backup directory
+        without the base directory.
     [<USER>@]<HOST>:<SRC>
         A remote shell source to be copied to a newly created backup
         directory.
-    [<USER>@]<HOST>::<SRC>
-        An rsync daemon source to be copied to a newly created backup
+    [<USER>@]<HOST>:<BASE-DIR>/./[<SRC>]
+        A remote shell source to be copied to a newly created backup
+        directory without the base directory.
+    [<USER>@]<HOST>::<MODULE>[/[<SRC>]]
+        A rsync daemon source to be copied to a newly created backup
         directory.
-    rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
+    [<USER>@]<HOST>::<MODULE>/<BASE-DIR>/./[<SRC>]
         An rsync daemon source to be copied to a newly created backup
+        directory without the base directory.
+    rsync://[<USER>@]<HOST>[:<PORT>]/<MODULE>[/[<SRC>]]
+        A rsync daemon source to be copied to a newly created backup
         directory.
+    rsync://[<USER>@]<HOST>[:<PORT>]/<MODULE>/<BASE-DIR>/./[<SRC>]
+        An rsync daemon source to be copied to a newly created backup
+        directory without the base directory.
 
 These operands will be passed to the backup-create(1) tool. Empty lines
 and comment lines (starting with a "#") are allowed, too.
 
-The conf/backup-src-prefix file
-===============================
+It is also possible to specify the backup source base directory in the
+conf/backup-src-base configuration file, to specify the backup source
+host in the conf/backup-src-host configuration file, to specify the
+backup source module in the conf/backup-src-module configuration file,
+to specify the backup source port in the conf/backup-src-port
+configuration file and to specify the backup source user in the
+conf/backup-src-user configuration file or to specify these in the
+conf/backup-src-prefix configuration file.
+
+The conf/backup-src-module file
+-------------------------------
 
 An optional configuration file used by backup-sources(1) used by
-backup(1) containing the backup source prefix to be used if the backup
-source prefix is not specified in the conf/backup-src-list configuration
-file. The file must contain a line having one of the following forms:
-    <BASE-DIR>
+backup(1) containing the backup source module to be used to augment the
+backup source host specified in the conf/backup-src-host configuration
+file and the backup sources specified in the conf/backup-src-list
+configuration file if the conf/backup-src-prefix configuration file does
+not exist. The file must contain a line having the following form:
+    <MODULE>
+
+Empty lines and comment lines (starting with a "#") are allowed, too.
+
+The conf/backup-src-port file
+-----------------------------
+
+An optional configuration file used by backup-sources(1) used by
+backup(1) containing the backup source port to be used to augment the
+backup source host specified in the conf/backup-src-host configuration
+file, the backup source module specified in the conf/backup-src-module
+configuration file and the backup sources specified in the
+conf/backup-src-list configuration file if the conf/backup-src-prefix
+configuration file does not exist. The file must contain a line having
+the following form:
+    <PORT>
+
+Empty lines and comment lines (starting with a "#") are allowed, too.
+
+The conf/backup-src-prefix file
+-------------------------------
+
+An optional configuration file used by backup-sources(1) used by
+backup(1) containing the backup source prefix to be used to augment the
+backup sources specified in the conf/backup-src-list configuration file.
+The file must contain a line having one of the following forms:
+    <BASE-DIR>[/.[/]]
         A local base directory.
-    [<USER>@]<HOST>:[<BASE-DIR>]
+    [<USER>@]<HOST>:[<BASE-DIR>[/.[/]]]
         A remote shell host and an optional base directory.
-    [<USER>@]<HOST>::[<MODULE>[/<BASE-DIR>]]
-        An rsync daemon host and an optional module and base directory.
-    rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>[/<BASE-DIR>]]
-        An rsync daemon host and an optional module and base directory.
+    [<USER>@]<HOST>::[<MODULE>[/<BASE-DIR>[/.[/]]]]
+        A rsync daemon host and an optional module and base directory.
+    <USER>@
+        A remote shell or an rsync daemon user.
+    rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>[/<BASE-DIR>[/.[/]]]]
+        A rsync daemon host and an optional module and base directory.
+
+Empty lines and comment lines (starting with a "#") are allowed, too.
 
 The conf/backup-src-user file
-=============================
+-----------------------------
 
 An optional configuration file used by backup-sources(1) used by
-backup(1) containing the backup source user to be used if only the
-backup source host but not the user is specified in the
-conf/backup-src-host configuration file. The file must contain a line
-having the following form:
+backup(1) containing the backup source user to be used to augment the
+backup source host specified in the conf/backup-src-host configuration
+file and the backup sources specified in the conf/backup-src-list
+configuration file if the conf/backup-src-prefix configuration file does
+not exist. The file must contain a line having the following form:
     <USER>
 
+Empty lines and comment lines (starting with a "#") are allowed, too.
+
 The conf/copy-config file
-=========================
+-------------------------
 
 An optional configuration file used by backup-copy-rsync(1) used by
 backup-copy(1) used by backup-mirror-sources(1) used by backup-mirror(1)
@@ -66,7 +139,7 @@ option arguments to be passed to rsync(1) when copying a backup
 directory.
 
 The conf/create-config file
-===========================
+---------------------------
 
 An optional configuration file used by backup-create-rsync(1) used by
 backup-create(1) used by backup-sources(1) used by backup(1) containing
@@ -74,24 +147,38 @@ long option names (without leading slashes) and optional option
 arguments to be passed to rsync(1) when creating a new backup directory.
 
 The conf/dump-config file
-=========================
+-------------------------
 
 An optional configuration file used by some conf/pre.d/*-dump scripts
 used by backup-prepare(1) used by backup(1) containing configuration
 variable assignments.
 
-The conf/mirror-src-host file
-=============================
+The conf/mirror-src-base file
+-----------------------------
 
 An optional configuration file used by backup-mirror-sources(1) used by
-backup-mirror(1) containing the mirror source host to be used if the
-mirror source host is not specified in the conf/mirror-src-list
-configuration file or in the conf/mirror-src-prefix configuration file.
+backup-mirror(1) containing the mirror source base directory to be used
+to augment the mirror sources specified in the conf/mirror-src-list
+configuration file if the conf/mirror-src-prefix configuration file does
+not exist. The file must contain a line having the following form:
+    <BASE-DIR>
+
+Empty lines and comment lines (starting with a "#") are allowed, too.
+
+The conf/mirror-src-host file
+-----------------------------
+
+An optional configuration file used by backup-mirror-sources(1) used by
+backup-mirror(1) containing the mirror source host to be used to augment
+the mirror sources specified in the conf/mirror-src-list configuration
+file if the conf/mirror-src-prefix configuration file does not exist.
 The file must contain a line having the following form:
-    [<USER>@]<HOST>
+    <HOST>
+
+Empty lines and comment lines (starting with a "#") are allowed, too.
 
 The conf/mirror-src-list file
-=============================
+-----------------------------
 
 A configuration file used by backup-mirror-sources(1) used by
 backup-mirror(1) containing the mirror sources to be copied to newly
@@ -106,15 +193,15 @@ must contain operand lines having any the following forms:
         via a remote shell.
     [<USER>@]<HOST>:<SRC>
         A remote backup directory to be copied via a remote shell.
-    [<USER>@]<HOST>::<SRC>/[.]
+    [<USER>@]<HOST>::<MODULE>[/<SRC>]/[.]
         A remote directory containing backup directories to be copied
         via an rsync daemon.
-    [<USER>@]<HOST>::<SRC>
+    [<USER>@]<HOST>::<MODULE>/<SRC>
         A remote backup directory to be copied via an rsync daemon.
-    rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>/[.]
+    rsync://[<USER>@]<HOST>[:<PORT>]/<MODULE>[/<SRC>]/[.]
         A remote directory containing backup directories to be copied
         via an rsync daemon.
-    rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
+    rsync://[<USER>@]<HOST>[:<PORT>]/<MODULE>/<SRC>
         A remote backup directory to be copied via an rsync daemon.
 
 The operands specifying directories containing backup directories will
@@ -123,12 +210,50 @@ these directories as well as the operands specifying backup directories
 will be passed to the backup-copy(1) tool. Empty lines and comment lines
 (starting with a "#") are allowed, too.
 
-The conf/mirror-src-prefix file
-===============================
+It is also possible to specify the mirror source base directory in the
+conf/mirror-src-base configuration file, to specify the mirror source
+host in the conf/mirror-src-host configuration file, to specify the
+mirror source module in the conf/mirror-src-module configuration file,
+to specify the mirror source port in the conf/mirror-src-port
+configuration file and to specify the mirror source user in the
+conf/mirror-src-user configuration file or to specify these in the
+conf/mirror-src-prefix configuration file.
+
+The conf/mirror-src-module file
+-------------------------------
 
 An optional configuration file used by backup-mirror-sources(1) used by
-backup-mirror(1) containing the mirror source prefix to be used if the
-mirror source prefix is not specified in the conf/mirror-src-list
+backup-mirror(1) containing the mirror source module to be used to
+augment the mirror source host specified in the conf/mirror-src-host
+configuration file and the mirror sources specified in the
+conf/mirror-src-list configuration file if the conf/mirror-src-prefix
+configuration file does not exist. The file must contain a line having
+the following form:
+    <MODULE>
+
+Empty lines and comment lines (starting with a "#") are allowed, too.
+
+The conf/mirror-src-port file
+-----------------------------
+
+An optional configuration file used by backup-mirror-sources(1) used by
+backup-mirror(1) containing the mirror source port to be used to augment
+the mirror source host specified in the conf/mirror-src-host
+configuration file, the mirror source module specified in the
+conf/mirror-src-module configuration file and the mirror sources
+specified in the conf/mirror-src-list configuration file if the
+conf/mirror-src-prefix configuration file does not exist. The file must
+contain a line having the following form:
+    <PORT>
+
+Empty lines and comment lines (starting with a "#") are allowed, too.
+
+The conf/mirror-src-prefix file
+-------------------------------
+
+An optional configuration file used by backup-mirror-sources(1) used by
+backup-mirror(1) containing the mirror source prefix to be used to
+augment the mirror sources specified in the conf/mirror-src-list
 configuration file. The file must contain a line having one of the
 following forms:
     <BASE-DIR>
@@ -136,22 +261,30 @@ following forms:
     [<USER>@]<HOST>:[<BASE-DIR>]
         A remote shell host and an optional base directory.
     [<USER>@]<HOST>::[<MODULE>[/<BASE-DIR>]]
-        An rsync daemon host and an optional module and base directory.
+        A rsync daemon host and an optional module and base directory.
+    <USER>@
+        A remote shell or an rsync daemon user.
     rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>[/<BASE-DIR>]]
-        An rsync daemon host and an optional module and base directory.
+        A rsync daemon host and an optional module and base directory.
+
+Empty lines and comment lines (starting with a "#") are allowed, too.
 
 The conf/mirror-src-user file
-=============================
+-----------------------------
 
 An optional configuration file used by backup-mirror-sources(1) used by
-backup-mirror(1) containing the mirror source user to be used if only
-the mirror source host but not the user is specified in the
-conf/mirror-src-host configuration file. The file must contain a line
-having the following form:
+backup-mirror(1) containing the mirror source user to be used to augment
+the mirror source host specified in the conf/mirror-src-host
+configuration file and the mirror sources specified in the
+conf/mirror-src-list configuration file if the conf/mirror-src-prefix
+configuration file does not exist. The file must contain a line having
+the following form:
     <USER>
 
-The conf/pre.d directory
-========================
+Empty lines and comment lines (starting with a "#") are allowed, too.
+
+The conf/pre.d/ directory
+-------------------------
 
 An optional directory used by backup-prepare(1) used by backup(1)
 containing scripts which are executed in lexical order of names when
@@ -159,7 +292,7 @@ preparing for backups. The names of the files must consist of only
 characters matching the pattern [[:alnum:]_.-].
 
 The conf/purge-list file
-========================
+------------------------
 
 An optional configuration file used by backup-purge(1) used by backup(1)
 and backup-mirror(1) containing patterns and ages which override the
@@ -213,14 +346,14 @@ Special patterns:
                  <YEAR>W<WEEK><DAY>T99* and <YEAR>-W<WEEK>-<DAY>T99*)
 
 The conf/rsh file
-=================
+-----------------
 
 An optional script to be used as a remote shell instead of the plain
 ssh(1). This script can be used for setting identity files and proxy
 commands, for instance.
 
 The conf/rsync-config file
-==========================
+--------------------------
 
 An optional configuration file used by backup-rsync(1) used by
 backup-copy-rsync(1) and backup-create-rsync(1) used by backup-copy(1)
@@ -230,7 +363,7 @@ option names (without leading slashes) and optional option arguments to
 be passed to rsync(1).
 
 The conf/tag-formats file
-=========================
+-------------------------
 
 An optional configuration file used by backup-create(1) used by
 backup-sources(1) used by backup(1) containing date formats to be used

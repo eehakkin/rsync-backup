@@ -43,9 +43,9 @@ do
 		COLUMNS=${COLUMNS:-$( tput cols 2> /dev/null || : )}
 		exec fmt -s ${COLUMNS:+ -w "${COLUMNS}" } << __HELP__
 Usage: ${basename} [<RSYNC-OPTION>]... <SRC>... [<DEST>]
- or:   ${basename} [<RSYNC-OPTION>]... [<USER>@]<HOST>:<SRC>... <DEST>
- or:   ${basename} [<RSYNC-OPTION>]... [<USER>@]<HOST>::<SRC>... <DEST>
- or:   ${basename} [<RSYNC-OPTION>]... rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>... <DEST>
+ or:   ${basename} [<RSYNC-OPTION>]... [<USER>@]<HOST>:<SRC>... [<DEST>]
+ or:   ${basename} [<RSYNC-OPTION>]... [<USER>@]<HOST>::<MODULE>[/[<SRC>]]... [<DEST>]
+ or:   ${basename} [<RSYNC-OPTION>]... rsync://[<USER>@]<HOST>[:<PORT>]/<MODULE>[/[<SRC>]]... [<DEST>]
  or:   ${basename} <OPTION>...
 
 Copy files using rsync(1).
@@ -76,9 +76,9 @@ Operands:
         A local source to be copied.
     [<USER>@]<HOST>:<SRC>
         A remote shell source to be copied.
-    [<USER>@]<HOST>::<SRC>
+    [<USER>@]<HOST>::<MODULE>[/[<SRC>]]
         An rsync daemon source to be copied.
-    rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
+    rsync://[<USER>@]<HOST>[:<PORT>]/<MODULE>[/[<SRC>]]
         An rsync daemon source to be copied.
     <DEST>
         A destination.

@@ -1,8 +1,8 @@
 # A sample conf/mirror-src-prefix file
 # ====================================
 
-# Copy chroot backup directories.
-/srv/chroot/distro
+# Copy chrooted backup directories.
+/base/dir
 
 # An alternative sample conf/mirror-src-prefix file
 # =================================================
@@ -13,8 +13,8 @@ remote.example.com:
 # An alternative sample conf/mirror-src-prefix file
 # =================================================
 
-# Copy remote chroot backup directories via a remote shell.
-remote.example.com:/srv/chroot/distro
+# Copy remote chrooted backup directories via a remote shell.
+remote.example.com:/base/dir
 
 # An alternative sample conf/mirror-src-prefix file
 # =================================================
@@ -26,9 +26,49 @@ backup-user@remote.example.com:
 # An alternative sample conf/mirror-src-prefix file
 # =================================================
 
-# Copy remote chroot backup directories via a remote shell using a
+# Copy remote chrooted backup directories via a remote shell using a
 # different remote user.
-backup-user@remote.example.com:/srv/chroot/distro
+backup-user@remote.example.com:/base/dir
+
+# An alternative sample conf/mirror-src-prefix file
+# =================================================
+
+# Copy remote backup directories via an rsync daemon.
+remote.example.com::
+
+# An alternative sample conf/mirror-src-prefix file
+# =================================================
+
+# Copy remote backup directories via an rsync daemon.
+rsync://remote.example.com
+
+# An alternative sample conf/mirror-src-prefix file
+# =================================================
+
+# Copy remote backup directories via an rsync daemon using a
+# non-standard remote port.
+rsync://remote.example.com:12345
+
+# An alternative sample conf/mirror-src-prefix file
+# =================================================
+
+# Copy remote backup directories via an rsync daemon using a different
+# remote user.
+backup-user@remote.example.com::
+
+# An alternative sample conf/mirror-src-prefix file
+# =================================================
+
+# Copy remote backup directories via an rsync daemon using a different
+# remote user.
+rsync://backup-user@remote.example.com
+
+# An alternative sample conf/mirror-src-prefix file
+# =================================================
+
+# Copy remote backup directories via an rsync daemon using a
+# non-standard remote port and a different remote user.
+rsync://backup-user@remote.example.com:12345
 
 # An alternative sample conf/mirror-src-prefix file
 # =================================================
@@ -46,8 +86,27 @@ rsync://remote.example.com/backup-module
 # =================================================
 
 # Copy remote backup directories via an rsync daemon using a
-# non-standard port.
+# non-standard remote port.
 rsync://remote.example.com:12345/backup-module
+
+# An alternative sample conf/mirror-src-prefix file
+# =================================================
+
+# Copy remote chrooted backup directories via an rsync daemon.
+remote.example.com::backup-module/base/dir
+
+# An alternative sample conf/mirror-src-prefix file
+# =================================================
+
+# Copy remote chrooted backup directories via an rsync daemon.
+rsync://remote.example.com/backup-module/base/dir
+
+# An alternative sample conf/mirror-src-prefix file
+# =================================================
+
+# Copy remote chrooted backup directories via an rsync daemon using a
+# non-standard remote port.
+rsync://remote.example.com:12345/backup-module/base/dir
 
 # An alternative sample conf/mirror-src-prefix file
 # =================================================
@@ -67,5 +126,26 @@ rsync://backup-user@remote.example.com/backup-module
 # =================================================
 
 # Copy remote backup directories via an rsync daemon using a
-# non-standard port and a different remote user.
+# non-standard remote port and a different remote user.
 rsync://backup-user@remote.example.com:12345/backup-module
+
+# An alternative sample conf/mirror-src-prefix file
+# =================================================
+
+# Copy remote chrooted backup directories via an rsync daemon using a
+# different remote user.
+backup-user@remote.example.com::backup-module/base/dir
+
+# An alternative sample conf/mirror-src-prefix file
+# =================================================
+
+# Copy remote chrooted backup directories via an rsync daemon using a
+# different remote user.
+rsync://backup-user@remote.example.com/backup-module/base/dir
+
+# An alternative sample conf/mirror-src-prefix file
+# =================================================
+
+# Copy remote chrooted backup directories via an rsync daemon using a
+# non-standard remote port and a different remote user.
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir

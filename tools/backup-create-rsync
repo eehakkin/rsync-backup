@@ -74,12 +74,20 @@ $( exec rsync --help | exec sed '
 Operands:
     <SRC>
         A local source to be copied.
+    <BASE-DIR>/./[<SRC>]
+        A local source to be copied without the base directory.
     [<USER>@]<HOST>:<SRC>
         A remote shell source to be copied.
-    [<USER>@]<HOST>::<SRC>
+    [<USER>@]<HOST>:<BASE-DIR>/./[<SRC>]
+        A remote shell source to be copied without the base directory.
+    [<USER>@]<HOST>::<MODULE>[/[<SRC>]]
         An rsync daemon source to be copied.
-    rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
+    [<USER>@]<HOST>::<MODULE>/<BASE-DIR>/./[<SRC>]
+        An rsync daemon source to be copied without the base directory.
+    rsync://[<USER>@]<HOST>[:<PORT>]/<MODULE>[/[<SRC>]]
         An rsync daemon source to be copied.
+    rsync://[<USER>@]<HOST>[:<PORT>]/<MODULE>/<BASE-DIR>/./[<SRC>]
+        An rsync daemon source to be copied without the base directory.
     <DEST>
         A destination.
 

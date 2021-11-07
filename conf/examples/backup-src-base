@@ -1,0 +1,11 @@
+# A sample conf/backup-src-base file
+# ==================================
+
+# Backup a chrooted host with the base directory.
+/base/dir
+
+# An alternative sample conf/backup-src-base file
+# ===============================================
+
+# Backup a chrooted host without the base directory.
+/base/dir/.

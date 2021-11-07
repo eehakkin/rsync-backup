@@ -102,16 +102,26 @@ containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1) \
 when copying a backup directory.
+    ${dir}/conf/mirror-src-base
+        An optional configuration file \
+used by ${basename%backup*}backup-mirror-sources(1) \
+containing the mirror source base directory \
+to be used to augment \
+the mirror sources specified in the conf/mirror-src-list configuration file \
+if the conf/mirror-src-prefix configuration file does not exist. \
+The file must contain a line having the following form:
+            <BASE-DIR>
+        Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/mirror-src-host
         An optional configuration file \
 used by ${basename%backup*}backup-mirror-sources(1) \
 containing the mirror source host \
-to be used \
-if the mirror source host is not specified \
-in the conf/mirror-src-list configuration file or \
-in the conf/mirror-src-prefix configuration file. \
+to be used to augment \
+the mirror sources specified in the conf/mirror-src-list configuration file \
+if the conf/mirror-src-prefix configuration file does not exist. \
 The file must contain a line having the following form:
-            [<USER>@]<HOST>
+            <HOST>
+        Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/mirror-src-list
         A configuration file \
 used by ${basename%backup*}backup-mirror-sources(1) \
@@ -127,13 +137,13 @@ The file must contain operand lines having any the following forms:
                 A remote directory containing backup directories to be copied via a remote shell.
             [<USER>@]<HOST>:<SRC>
                 A remote backup directory to be copied via a remote shell.
-            [<USER>@]<HOST>::<SRC>/[.]
+            [<USER>@]<HOST>::<MODULE>[/<SRC>]/[.]
                 A remote directory containing backup directories to be copied via an rsync daemon.
-            [<USER>@]<HOST>::<SRC>
+            [<USER>@]<HOST>::<MODULE>/<SRC>
                 A remote backup directory to be copied via an rsync daemon.
-            rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>/[.]
+            rsync://[<USER>@]<HOST>[:<PORT>]/<MODULE>[/<SRC>]/[.]
                 A remote directory containing backup directories to be copied via an rsync daemon.
-            rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
+            rsync://[<USER>@]<HOST>[:<PORT>]/<MODULE>/<SRC>
                 A remote backup directory to be copied via an rsync daemon.
         The operands specifying directories containing backup directories \
 will be passed \
@@ -143,13 +153,35 @@ as well as the operands specifying backup directories \
 will be passed \
 to the ${basename%backup*}backup-copy(1) tool. \
 Empty lines and comment lines (starting with a "#") are allowed, too.
+    ${dir}/conf/mirror-src-module
+        An optional configuration file \
+used by ${basename%backup*}backup-mirror-sources(1) \
+containing the mirror source module \
+to be used to augment \
+the mirror source host specified in the conf/mirror-src-host configuration file and \
+the mirror sources specified in the conf/mirror-src-list configuration file \
+if the conf/mirror-src-prefix configuration file does not exist. \
+The file must contain a line having the following form:
+            <MODULE>
+        Empty lines and comment lines (starting with a "#") are allowed, too.
+    ${dir}/conf/mirror-src-port
+        An optional configuration file \
+used by ${basename%backup*}backup-mirror-sources(1) \
+containing the mirror source port \
+to be used to augment \
+the mirror source host specified in the conf/mirror-src-host configuration file, \
+the mirror source module specified in the conf/mirror-src-module configuration file and \
+the mirror sources specified in the conf/mirror-src-list configuration file \
+if the conf/mirror-src-prefix configuration file does not exist. \
+The file must contain a line having the following form:
+            <PORT>
+        Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/mirror-src-prefix
         An optional configuration file \
 used by ${basename%backup*}backup-mirror-sources(1) \
 containing the mirror source prefix \
-to be used \
-if the mirror source prefix is not specified \
-in the conf/mirror-src-list configuration file. \
+to be used to augment \
+the mirror sources specified in the conf/mirror-src-list configuration file. \
 The file must contain a line having one of the following forms:
             <BASE-DIR>
                 A local base directory.
@@ -157,17 +189,22 @@ The file must contain a line having one of the following forms:
                 A remote shell host and an optional base directory.
             [<USER>@]<HOST>::[<MODULE>[/<BASE-DIR>]]
                 An rsync daemon host and an optional module and base directory.
+            <USER>@
+                A remote shell or an rsync daemon user.
             rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>[/<BASE-DIR>]]
                 An rsync daemon host and an optional module and base directory.
+        Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/mirror-src-user
         An optional configuration file \
 used by ${basename%backup*}backup-mirror-sources(1) \
 containing the mirror source user \
-to be used \
-if only the mirror source host but not the user is specified \
-in the conf/mirror-src-host configuration file. \
+to be used to augment \
+the mirror source host specified in the conf/mirror-src-host configuration file and \
+the mirror sources specified in the conf/mirror-src-list configuration file \
+if the conf/mirror-src-prefix configuration file does not exist. \
 The file must contain a line having the following form:
             <USER>
+        Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/purge-list
         An optional configuration file \
 used by ${basename%backup*}backup-purge(1) \

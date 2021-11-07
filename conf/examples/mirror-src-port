@@ -1,0 +1,8 @@
+# A sample conf/mirror-src-port file
+# ==================================
+
+# Copy remote backup directories via an rsync daemon using a
+# non-standard remote port. The remote host must be specified in
+# conf/mirror-src-host and the remote module must be specified in
+# conf/mirror-src-module.
+12345

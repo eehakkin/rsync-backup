@@ -1,0 +1,614 @@
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup chrooted /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories with the base
+# directory.
+/base/dir/etc/
+/base/dir/home/
+/base/dir/opt/
+/base/dir/root/
+/base/dir/srv/
+/base/dir/usr/local/
+/base/dir/var/backups/
+/base/dir/var/log/
+/base/dir/var/spool/
+
+# It is also possible to specify /base/dir in conf/backup-src-base or in
+# conf/backup-src-prefix and to list only directories in
+# conf/backup-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup chrooted /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories without the base
+# directory.
+/base/dir/./etc/
+/base/dir/./home/
+/base/dir/./opt/
+/base/dir/./root/
+/base/dir/./srv/
+/base/dir/./usr/local/
+/base/dir/./var/backups/
+/base/dir/./var/log/
+/base/dir/./var/spool/
+
+# It is also possible to specify /base/dir/. in conf/backup-src-base or
+# in conf/backup-src-prefix and to list only directories in
+# conf/backup-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories via a remote shell.
+remote.example.com:/etc/
+remote.example.com:/home/
+remote.example.com:/opt/
+remote.example.com:/root/
+remote.example.com:/srv/
+remote.example.com:/usr/local/
+remote.example.com:/var/backups/
+remote.example.com:/var/log/
+remote.example.com:/var/spool/
+
+# It is also possible to specify remote.example.com in
+# conf/backup-src-host or to specify remote.example.com: in
+# conf/backup-src-prefix and to list only directories in
+# conf/backup-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories with the base
+# directory via a remote shell.
+remote.example.com:/base/dir/etc/
+remote.example.com:/base/dir/home/
+remote.example.com:/base/dir/opt/
+remote.example.com:/base/dir/root/
+remote.example.com:/base/dir/srv/
+remote.example.com:/base/dir/usr/local/
+remote.example.com:/base/dir/var/backups/
+remote.example.com:/base/dir/var/log/
+remote.example.com:/base/dir/var/spool/
+
+# It is also possible to specify remote.example.com in
+# conf/backup-src-host and /base/dir in conf/backup-src-base or to
+# specify remote.example.com:/base/dir in conf/backup-src-prefix and to
+# list only directories in conf/backup-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories without the base
+# directory via a remote shell.
+remote.example.com:/base/dir/./etc/
+remote.example.com:/base/dir/./home/
+remote.example.com:/base/dir/./opt/
+remote.example.com:/base/dir/./root/
+remote.example.com:/base/dir/./srv/
+remote.example.com:/base/dir/./usr/local/
+remote.example.com:/base/dir/./var/backups/
+remote.example.com:/base/dir/./var/log/
+remote.example.com:/base/dir/./var/spool/
+
+# It is also possible to specify remote.example.com in
+# conf/backup-src-host and /base/dir/. in conf/backup-src-base or to
+# specify remote.example.com:/base/dir/. in conf/backup-src-prefix and
+# to list only directories in conf/backup-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories via a remote shell
+# using a different remote user.
+backup-user@remote.example.com:/etc/
+backup-user@remote.example.com:/home/
+backup-user@remote.example.com:/opt/
+backup-user@remote.example.com:/root/
+backup-user@remote.example.com:/srv/
+backup-user@remote.example.com:/usr/local/
+backup-user@remote.example.com:/var/backups/
+backup-user@remote.example.com:/var/log/
+backup-user@remote.example.com:/var/spool/
+
+# It is also possible to specify backup-user in conf/backup-src-user and
+# remote.example.com in conf/backup-src-host or to specify
+# backup-user@remote.example.com: in conf/backup-src-prefix and to list
+# only directories in conf/backup-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories with the base
+# directory via a remote shell using a different remote user.
+backup-user@remote.example.com:/base/dir/etc/
+backup-user@remote.example.com:/base/dir/home/
+backup-user@remote.example.com:/base/dir/opt/
+backup-user@remote.example.com:/base/dir/root/
+backup-user@remote.example.com:/base/dir/srv/
+backup-user@remote.example.com:/base/dir/usr/local/
+backup-user@remote.example.com:/base/dir/var/backups/
+backup-user@remote.example.com:/base/dir/var/log/
+backup-user@remote.example.com:/base/dir/var/spool/
+
+# It is also possible to specify backup-user in conf/backup-src-user,
+# remote.example.com in conf/backup-src-host and /base/dir in
+# conf/backup-src-base or to specify
+# backup-user@remote.example.com:/base/dir in conf/backup-src-prefix and
+# to list only directories in conf/backup-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories without the base
+# directory via a remote shell using a different remote user.
+backup-user@remote.example.com:/base/dir/./etc/
+backup-user@remote.example.com:/base/dir/./home/
+backup-user@remote.example.com:/base/dir/./opt/
+backup-user@remote.example.com:/base/dir/./root/
+backup-user@remote.example.com:/base/dir/./srv/
+backup-user@remote.example.com:/base/dir/./usr/local/
+backup-user@remote.example.com:/base/dir/./var/backups/
+backup-user@remote.example.com:/base/dir/./var/log/
+backup-user@remote.example.com:/base/dir/./var/spool/
+
+# It is also possible to specify backup-user in conf/backup-src-user,
+# remote.example.com in conf/backup-src-host and /base/dir/. in
+# conf/backup-src-base or to specify
+# backup-user@remote.example.com:/base/dir/. in conf/backup-src-prefix
+# and to list only directories in conf/backup-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories via an rsync daemon.
+remote.example.com::backup-module/etc/
+remote.example.com::backup-module/home/
+remote.example.com::backup-module/opt/
+remote.example.com::backup-module/root/
+remote.example.com::backup-module/srv/
+remote.example.com::backup-module/usr/local/
+remote.example.com::backup-module/var/backups/
+remote.example.com::backup-module/var/log/
+remote.example.com::backup-module/var/spool/
+
+# It is also possible to specify remote.example.com in
+# conf/backup-src-host and backup-module in conf/backup-src-module or to
+# specify remote.example.com::backup-module in conf/backup-src-prefix
+# and to list only directories in conf/backup-src-list or to specify
+# remote.example.com:: in conf/mirror-src-prefix and to list only
+# modules and directories in conf/mirror-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories via an rsync daemon.
+rsync://remote.example.com/backup-module/etc/
+rsync://remote.example.com/backup-module/home/
+rsync://remote.example.com/backup-module/opt/
+rsync://remote.example.com/backup-module/root/
+rsync://remote.example.com/backup-module/srv/
+rsync://remote.example.com/backup-module/usr/local/
+rsync://remote.example.com/backup-module/var/backups/
+rsync://remote.example.com/backup-module/var/log/
+rsync://remote.example.com/backup-module/var/spool/
+
+# It is also possible to specify remote.example.com in
+# conf/backup-src-host and backup-module in conf/backup-src-module or to
+# specify rsync://remote.example.com/backup-module in
+# conf/backup-src-prefix and to list only directories in
+# conf/backup-src-list or to specify rsync://remote.example.com in
+# conf/mirror-src-prefix and to list only modules and directories in
+# conf/mirror-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories via an rsync daemon
+# using a non-standard remote port.
+rsync://remote.example.com:12345/backup-module/etc/
+rsync://remote.example.com:12345/backup-module/home/
+rsync://remote.example.com:12345/backup-module/opt/
+rsync://remote.example.com:12345/backup-module/root/
+rsync://remote.example.com:12345/backup-module/srv/
+rsync://remote.example.com:12345/backup-module/usr/local/
+rsync://remote.example.com:12345/backup-module/var/backups/
+rsync://remote.example.com:12345/backup-module/var/log/
+rsync://remote.example.com:12345/backup-module/var/spool/
+
+# It is also possible to specify remote.example.com in
+# conf/backup-src-host, 12345 in conf/backup-src-port and backup-module
+# in conf/backup-src-module or to specify
+# rsync://remote.example.com:12345/backup-module in
+# conf/backup-src-prefix and to list only directories in
+# conf/backup-src-list or to specify rsync://remote.example.com:12345 in
+# conf/mirror-src-prefix and to list only modules and directories in
+# conf/mirror-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories with the base
+# directory via an rsync daemon.
+remote.example.com::backup-module/base/dir/etc/
+remote.example.com::backup-module/base/dir/home/
+remote.example.com::backup-module/base/dir/opt/
+remote.example.com::backup-module/base/dir/root/
+remote.example.com::backup-module/base/dir/srv/
+remote.example.com::backup-module/base/dir/usr/local/
+remote.example.com::backup-module/base/dir/var/backups/
+remote.example.com::backup-module/base/dir/var/log/
+remote.example.com::backup-module/base/dir/var/spool/
+
+# It is also possible to specify remote.example.com in
+# conf/backup-src-host, backup-module in conf/backup-src-module and
+# /base/dir in conf/backup-src-base or to specify
+# remote.example.com::backup-module/base/dir in conf/backup-src-prefix
+# and to list only directories in conf/backup-src-list or to specify
+# remote.example.com:: in conf/mirror-src-prefix and to list only
+# modules and directories in conf/mirror-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories with the base
+# directory via an rsync daemon.
+rsync://remote.example.com/backup-module/base/dir/etc/
+rsync://remote.example.com/backup-module/base/dir/home/
+rsync://remote.example.com/backup-module/base/dir/opt/
+rsync://remote.example.com/backup-module/base/dir/root/
+rsync://remote.example.com/backup-module/base/dir/srv/
+rsync://remote.example.com/backup-module/base/dir/usr/local/
+rsync://remote.example.com/backup-module/base/dir/var/backups/
+rsync://remote.example.com/backup-module/base/dir/var/log/
+rsync://remote.example.com/backup-module/base/dir/var/spool/
+
+# It is also possible to specify remote.example.com in
+# conf/backup-src-host, backup-module in conf/backup-src-module and
+# /base/dir in conf/backup-src-base or to specify
+# rsync://remote.example.com/backup-module/base/dir in
+# conf/backup-src-prefix and to list only directories in
+# conf/backup-src-list or to specify rsync://remote.example.com in
+# conf/mirror-src-prefix and to list only modules and directories in
+# conf/mirror-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories with the base
+# directory via an rsync daemon using a non-standard remote port.
+rsync://remote.example.com:12345/backup-module/base/dir/etc/
+rsync://remote.example.com:12345/backup-module/base/dir/home/
+rsync://remote.example.com:12345/backup-module/base/dir/opt/
+rsync://remote.example.com:12345/backup-module/base/dir/root/
+rsync://remote.example.com:12345/backup-module/base/dir/srv/
+rsync://remote.example.com:12345/backup-module/base/dir/usr/local/
+rsync://remote.example.com:12345/backup-module/base/dir/var/backups/
+rsync://remote.example.com:12345/backup-module/base/dir/var/log/
+rsync://remote.example.com:12345/backup-module/base/dir/var/spool/
+
+# It is also possible to specify remote.example.com in
+# conf/backup-src-host, 12345 in conf/backup-src-port, backup-module in
+# conf/backup-src-module and /base/dir in conf/backup-src-base or to
+# specify rsync://remote.example.com:12345/backup-module/base/dir in
+# conf/backup-src-prefix and to list only directories in
+# conf/backup-src-list or to specify rsync://remote.example.com:12345 in
+# conf/mirror-src-prefix and to list only modules and directories in
+# conf/mirror-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories without the base
+# directory via an rsync daemon.
+remote.example.com::backup-module/base/dir/./etc/
+remote.example.com::backup-module/base/dir/./home/
+remote.example.com::backup-module/base/dir/./opt/
+remote.example.com::backup-module/base/dir/./root/
+remote.example.com::backup-module/base/dir/./srv/
+remote.example.com::backup-module/base/dir/./usr/local/
+remote.example.com::backup-module/base/dir/./var/backups/
+remote.example.com::backup-module/base/dir/./var/log/
+remote.example.com::backup-module/base/dir/./var/spool/
+
+# It is also possible to specify remote.example.com in
+# conf/backup-src-host, backup-module in conf/backup-src-module and
+# /base/dir/. in conf/backup-src-base or to specify
+# remote.example.com::backup-module/base/dir/. in conf/backup-src-prefix
+# and to list only directories in conf/backup-src-list or to specify
+# remote.example.com:: in conf/mirror-src-prefix and to list only
+# modules and directories in conf/mirror-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories without the base
+# directory via an rsync daemon.
+rsync://remote.example.com/backup-module/base/dir/./etc/
+rsync://remote.example.com/backup-module/base/dir/./home/
+rsync://remote.example.com/backup-module/base/dir/./opt/
+rsync://remote.example.com/backup-module/base/dir/./root/
+rsync://remote.example.com/backup-module/base/dir/./srv/
+rsync://remote.example.com/backup-module/base/dir/./usr/local/
+rsync://remote.example.com/backup-module/base/dir/./var/backups/
+rsync://remote.example.com/backup-module/base/dir/./var/log/
+rsync://remote.example.com/backup-module/base/dir/./var/spool/
+
+# It is also possible to specify remote.example.com in
+# conf/backup-src-host, backup-module in conf/backup-src-module and
+# /base/dir/. in conf/backup-src-base or to specify
+# rsync://remote.example.com/backup-module/base/dir/. in
+# conf/backup-src-prefix and to list only directories in
+# conf/backup-src-list or to specify rsync://remote.example.com in
+# conf/mirror-src-prefix and to list only modules and directories in
+# conf/mirror-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories without the base
+# directory via an rsync daemon using a non-standard remote port.
+rsync://remote.example.com:12345/backup-module/base/dir/./etc/
+rsync://remote.example.com:12345/backup-module/base/dir/./home/
+rsync://remote.example.com:12345/backup-module/base/dir/./opt/
+rsync://remote.example.com:12345/backup-module/base/dir/./root/
+rsync://remote.example.com:12345/backup-module/base/dir/./srv/
+rsync://remote.example.com:12345/backup-module/base/dir/./usr/local/
+rsync://remote.example.com:12345/backup-module/base/dir/./var/backups/
+rsync://remote.example.com:12345/backup-module/base/dir/./var/log/
+rsync://remote.example.com:12345/backup-module/base/dir/./var/spool/
+
+# It is also possible to specify remote.example.com in
+# conf/backup-src-host, 12345 in conf/backup-src-port, backup-module in
+# conf/backup-src-module and /base/dir/. in conf/backup-src-base or to
+# specify rsync://remote.example.com:12345/backup-module/base/dir/. in
+# conf/backup-src-prefix and to list only directories in
+# conf/backup-src-list or to specify rsync://remote.example.com:12345 in
+# conf/mirror-src-prefix and to list only modules and directories in
+# conf/mirror-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories via an rsync daemon
+# using a different remote user.
+backup-user@remote.example.com::backup-module/etc/
+backup-user@remote.example.com::backup-module/home/
+backup-user@remote.example.com::backup-module/opt/
+backup-user@remote.example.com::backup-module/root/
+backup-user@remote.example.com::backup-module/srv/
+backup-user@remote.example.com::backup-module/usr/local/
+backup-user@remote.example.com::backup-module/var/backups/
+backup-user@remote.example.com::backup-module/var/log/
+backup-user@remote.example.com::backup-module/var/spool/
+
+# It is also possible to specify backup-user in conf/backup-src-user,
+# remote.example.com in conf/backup-src-host and backup-module in
+# conf/backup-src-module or to specify
+# backup-user@remote.example.com::backup-module in
+# conf/backup-src-prefix and to list only directories in
+# conf/backup-src-list or to specify backup-user@remote.example.com:: in
+# conf/mirror-src-prefix and to list only modules and directories in
+# conf/mirror-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories via an rsync daemon
+# using a different remote user.
+rsync://backup-user@remote.example.com/backup-module/etc/
+rsync://backup-user@remote.example.com/backup-module/home/
+rsync://backup-user@remote.example.com/backup-module/opt/
+rsync://backup-user@remote.example.com/backup-module/root/
+rsync://backup-user@remote.example.com/backup-module/srv/
+rsync://backup-user@remote.example.com/backup-module/usr/local/
+rsync://backup-user@remote.example.com/backup-module/var/backups/
+rsync://backup-user@remote.example.com/backup-module/var/log/
+rsync://backup-user@remote.example.com/backup-module/var/spool/
+
+# It is also possible to specify backup-user in conf/backup-src-user,
+# remote.example.com in conf/backup-src-host and backup-module in
+# conf/backup-src-module or to specify
+# rsync://backup-user@remote.example.com/backup-module in
+# conf/backup-src-prefix and to list only directories in
+# conf/backup-src-list or to specify
+# rsync://backup-user@remote.example.com in conf/mirror-src-prefix and
+# to list only modules and directories in conf/mirror-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories via an rsync daemon
+# using a non-standard remote port and a different remote user.
+rsync://backup-user@remote.example.com:12345/backup-module/etc/
+rsync://backup-user@remote.example.com:12345/backup-module/home/
+rsync://backup-user@remote.example.com:12345/backup-module/opt/
+rsync://backup-user@remote.example.com:12345/backup-module/root/
+rsync://backup-user@remote.example.com:12345/backup-module/srv/
+rsync://backup-user@remote.example.com:12345/backup-module/usr/local/
+rsync://backup-user@remote.example.com:12345/backup-module/var/backups/
+rsync://backup-user@remote.example.com:12345/backup-module/var/log/
+rsync://backup-user@remote.example.com:12345/backup-module/var/spool/
+
+# It is also possible to specify backup-user in conf/backup-src-user,
+# remote.example.com in conf/backup-src-host, 12345 in
+# conf/backup-src-port and backup-module in conf/backup-src-module or to
+# specify rsync://backup-user@remote.example.com:12345/backup-module in
+# conf/backup-src-prefix and to list only directories in
+# conf/backup-src-list or to specify
+# rsync://backup-user@remote.example.com:12345 in conf/mirror-src-prefix
+# and to list only modules and directories in conf/mirror-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories with the base
+# directory via an rsync daemon using a different remote user.
+backup-user@remote.example.com::backup-module/base/dir/etc/
+backup-user@remote.example.com::backup-module/base/dir/home/
+backup-user@remote.example.com::backup-module/base/dir/opt/
+backup-user@remote.example.com::backup-module/base/dir/root/
+backup-user@remote.example.com::backup-module/base/dir/srv/
+backup-user@remote.example.com::backup-module/base/dir/usr/local/
+backup-user@remote.example.com::backup-module/base/dir/var/backups/
+backup-user@remote.example.com::backup-module/base/dir/var/log/
+backup-user@remote.example.com::backup-module/base/dir/var/spool/
+
+# It is also possible to specify backup-user in conf/backup-src-user,
+# remote.example.com in conf/backup-src-host, backup-module in
+# conf/backup-src-module and /base/dir in conf/backup-src-base or to
+# specify backup-user@remote.example.com::backup-module/base/dir in
+# conf/backup-src-prefix and to list only directories in
+# conf/backup-src-list or to specify backup-user@remote.example.com:: in
+# conf/mirror-src-prefix and to list only modules and directories in
+# conf/mirror-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories with the base
+# directory via an rsync daemon using a different remote user.
+rsync://backup-user@remote.example.com/backup-module/base/dir/etc/
+rsync://backup-user@remote.example.com/backup-module/base/dir/home/
+rsync://backup-user@remote.example.com/backup-module/base/dir/opt/
+rsync://backup-user@remote.example.com/backup-module/base/dir/root/
+rsync://backup-user@remote.example.com/backup-module/base/dir/srv/
+rsync://backup-user@remote.example.com/backup-module/base/dir/usr/local/
+rsync://backup-user@remote.example.com/backup-module/base/dir/var/backups/
+rsync://backup-user@remote.example.com/backup-module/base/dir/var/log/
+rsync://backup-user@remote.example.com/backup-module/base/dir/var/spool/
+
+# It is also possible to specify backup-user in conf/backup-src-user,
+# remote.example.com in conf/backup-src-host, backup-module in
+# conf/backup-src-module and /base/dir in conf/backup-src-base or to
+# specify rsync://backup-user@remote.example.com/backup-module/base/dir
+# in conf/backup-src-prefix and to list only directories in
+# conf/backup-src-list or to specify
+# rsync://backup-user@remote.example.com in conf/mirror-src-prefix and
+# to list only modules and directories in conf/mirror-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories with the base
+# directory via an rsync daemon using a non-standard remote port and a
+# different remote user.
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir/etc/
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir/home/
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir/opt/
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir/root/
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir/srv/
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir/usr/local/
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir/var/backups/
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir/var/log/
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir/var/spool/
+
+# It is also possible to specify backup-user in conf/backup-src-user,
+# remote.example.com in conf/backup-src-host, 12345 in
+# conf/backup-src-port, backup-module in conf/backup-src-module and
+# /base/dir in conf/backup-src-base or to specify
+# rsync://backup-user@remote.example.com:12345/backup-module/base/dir in
+# conf/backup-src-prefix and to list only directories in
+# conf/backup-src-list or to specify
+# rsync://backup-user@remote.example.com:12345 in conf/mirror-src-prefix
+# and to list only modules and directories in conf/mirror-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories without the base
+# directory via an rsync daemon using a different remote user.
+backup-user@remote.example.com::backup-module/base/dir/./etc/
+backup-user@remote.example.com::backup-module/base/dir/./home/
+backup-user@remote.example.com::backup-module/base/dir/./opt/
+backup-user@remote.example.com::backup-module/base/dir/./root/
+backup-user@remote.example.com::backup-module/base/dir/./srv/
+backup-user@remote.example.com::backup-module/base/dir/./usr/local/
+backup-user@remote.example.com::backup-module/base/dir/./var/backups/
+backup-user@remote.example.com::backup-module/base/dir/./var/log/
+backup-user@remote.example.com::backup-module/base/dir/./var/spool/
+
+# It is also possible to specify backup-user in conf/backup-src-user,
+# remote.example.com in conf/backup-src-host, backup-module in
+# conf/backup-src-module and /base/dir/. in conf/backup-src-base or to
+# specify backup-user@remote.example.com::backup-module/base/dir/. in
+# conf/backup-src-prefix and to list only directories in
+# conf/backup-src-list or to specify backup-user@remote.example.com:: in
+# conf/mirror-src-prefix and to list only modules and directories in
+# conf/mirror-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories without the base
+# directory via an rsync daemon using a different remote user.
+rsync://backup-user@remote.example.com/backup-module/base/dir/./etc/
+rsync://backup-user@remote.example.com/backup-module/base/dir/./home/
+rsync://backup-user@remote.example.com/backup-module/base/dir/./opt/
+rsync://backup-user@remote.example.com/backup-module/base/dir/./root/
+rsync://backup-user@remote.example.com/backup-module/base/dir/./srv/
+rsync://backup-user@remote.example.com/backup-module/base/dir/./usr/local/
+rsync://backup-user@remote.example.com/backup-module/base/dir/./var/backups/
+rsync://backup-user@remote.example.com/backup-module/base/dir/./var/log/
+rsync://backup-user@remote.example.com/backup-module/base/dir/./var/spool/
+
+# It is also possible to specify backup-user in conf/backup-src-user,
+# remote.example.com in conf/backup-src-host, backup-module in
+# conf/backup-src-module and /base/dir/. in conf/backup-src-base or to
+# specify
+# rsync://backup-user@remote.example.com/backup-module/base/dir/. in
+# conf/backup-src-prefix and to list only directories in
+# conf/backup-src-list or to specify
+# rsync://backup-user@remote.example.com in conf/mirror-src-prefix and
+# to list only modules and directories in conf/mirror-src-list.
+
+# An alternative sample conf/backup-src-list file
+# ===============================================
+
+# Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
+# /var/backups, /var/log and /var/spool directories without the base
+# directory via an rsync daemon using a non-standard remote port and a
+# different remote user.
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir/./etc/
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir/./home/
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir/./opt/
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir/./root/
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir/./srv/
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir/./usr/local/
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir/./var/backups/
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir/./var/log/
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir/./var/spool/
+
+# It is also possible to specify backup-user in conf/backup-src-user,
+# remote.example.com in conf/backup-src-host, 12345 in
+# conf/backup-src-port, backup-module in conf/backup-src-module and
+# /base/dir/. in conf/backup-src-base or to specify
+# rsync://backup-user@remote.example.com:12345/backup-module/base/dir/.
+# in conf/backup-src-prefix and to list only directories in
+# conf/backup-src-list or to specify
+# rsync://backup-user@remote.example.com:12345 in conf/mirror-src-prefix
+# and to list only modules and directories in conf/mirror-src-list.

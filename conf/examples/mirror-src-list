@@ -1,7 +1,7 @@
 # A sample conf/mirror-src-list file
 # ==================================
 
-# Copy local backup directories.
+# Copy backup directories.
 /srv/backup/localhost/.
 
 # An alternative sample conf/mirror-src-list file
@@ -22,11 +22,10 @@ remote.example.com:/srv/backup/localhost/.
 # remote user.
 backup-user@remote.example.com:/srv/backup/localhost/.
 
-# It is also possible to specify remote.example.com in
-# conf/mirror-src-host and backup-user in conf/mirror-src-user or to
-# specify backup-user@remote.example.com in conf/mirror-src-host or to
-# specify backup-user@remote.example.com: in conf/mirror-src-prefix and
-# to list only directories in conf/mirror-src-list.
+# It is also possible to specify backup-user in conf/mirror-src-user and
+# remote.example.com in conf/mirror-src-host or to specify
+# backup-user@remote.example.com: in conf/mirror-src-prefix and to list
+# only directories in conf/mirror-src-list.
 
 # An alternative sample conf/mirror-src-list file
 # ===============================================
@@ -34,9 +33,12 @@ backup-user@remote.example.com:/srv/backup/localhost/.
 # Copy remote backup directories via an rsync daemon.
 remote.example.com::backup-module/srv/backup/localhost/.
 
-# It is also possible to specify remote.example.com::backup-module in
-# conf/mirror-src-prefix and to list only directories in
-# conf/mirror-src-list.
+# It is also possible to specify remote.example.com in
+# conf/mirror-src-host and backup-module in conf/mirror-src-module or to
+# specify remote.example.com::backup-module in conf/mirror-src-prefix
+# and to list only directories in conf/mirror-src-list or to specify
+# remote.example.com:: in conf/mirror-src-prefix and to list only
+# modules and directories in conf/mirror-src-list.
 
 # An alternative sample conf/mirror-src-list file
 # ===============================================
@@ -44,20 +46,28 @@ remote.example.com::backup-module/srv/backup/localhost/.
 # Copy remote backup directories via an rsync daemon.
 rsync://remote.example.com/backup-module/srv/backup/localhost/.
 
-# It is also possible to specify
-# rsync://remote.example.com/backup-module in conf/mirror-src-prefix and
-# to list only directories in conf/mirror-src-list.
+# It is also possible to specify remote.example.com in
+# conf/mirror-src-host and backup-module in conf/mirror-src-module or to
+# specify rsync://remote.example.com/backup-module in
+# conf/mirror-src-prefix and to list only directories in
+# conf/mirror-src-list or to specify rsync://remote.example.com in
+# conf/mirror-src-prefix and to list only modules and directories in
+# conf/mirror-src-list.
 
 # An alternative sample conf/mirror-src-list file
 # ===============================================
 
 # Copy remote backup directories via an rsync daemon using a
-# non-standard port.
+# non-standard remote port.
 rsync://remote.example.com:12345/backup-module/srv/backup/localhost/.
 
-# It is also possible to specify
+# It is also possible to specify remote.example.com in
+# conf/mirror-src-host, 12345 in conf/mirror-src-port and backup-module
+# in conf/mirror-src-module or to specify
 # rsync://remote.example.com:12345/backup-module in
 # conf/mirror-src-prefix and to list only directories in
+# conf/mirror-src-list or to specify rsync://remote.example.com:12345 in
+# conf/mirror-src-prefix and to list only modules and directories in
 # conf/mirror-src-list.
 
 # An alternative sample conf/mirror-src-list file
@@ -67,9 +77,13 @@ rsync://remote.example.com:12345/backup-module/srv/backup/localhost/.
 # remote user.
 backup-user@remote.example.com::backup-module/srv/backup/localhost/.
 
-# It is also possible to specify
+# It is also possible to specify backup-user in conf/mirror-src-user,
+# remote.example.com in conf/mirror-src-host and backup-module in
+# conf/mirror-src-module or to specify
 # backup-user@remote.example.com::backup-module in
 # conf/mirror-src-prefix and to list only directories in
+# conf/mirror-src-list or to specify backup-user@remote.example.com:: in
+# conf/mirror-src-prefix and to list only modules and directories in
 # conf/mirror-src-list.
 
 # An alternative sample conf/mirror-src-list file
@@ -79,19 +93,27 @@ backup-user@remote.example.com::backup-module/srv/backup/localhost/.
 # remote user.
 rsync://backup-user@remote.example.com/backup-module/srv/backup/localhost/.
 
-# It is also possible to specify
+# It is also possible to specify backup-user in conf/mirror-src-user,
+# remote.example.com in conf/mirror-src-host and backup-module in
+# conf/mirror-src-module or to specify
 # rsync://backup-user@remote.example.com/backup-module in
 # conf/mirror-src-prefix and to list only directories in
-# conf/mirror-src-list.
+# conf/mirror-src-list or to specify
+# rsync://backup-user@remote.example.com in conf/mirror-src-prefix and
+# to list only modules and directories in conf/mirror-src-list.
 
 # An alternative sample conf/mirror-src-list file
 # ===============================================
 
 # Copy remote backup directories via an rsync daemon using a
-# non-standard port and a different remote user.
+# non-standard remote port and a different remote user.
 rsync://backup-user@remote.example.com:12345/backup-module/srv/backup/localhost/.
 
-# It is also possible to specify
-# rsync://backup-user@remote.example.com:12345/backup-module in
+# It is also possible to specify backup-user in conf/mirror-src-user,
+# remote.example.com in conf/mirror-src-host, 12345 in
+# conf/mirror-src-port and backup-module in conf/mirror-src-module or to
+# specify rsync://backup-user@remote.example.com:12345/backup-module in
 # conf/mirror-src-prefix and to list only directories in
-# conf/mirror-src-list.
+# conf/mirror-src-list or to specify
+# rsync://backup-user@remote.example.com:12345 in conf/mirror-src-prefix
+# and to list only modules and directories in conf/mirror-src-list.

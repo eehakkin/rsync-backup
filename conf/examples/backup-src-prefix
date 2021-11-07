@@ -1,8 +1,14 @@
 # A sample conf/backup-src-prefix file
 # ====================================
 
-# Backup a local chroot host.
-/srv/chroot/distro
+# Backup a chrooted host with the base directory.
+/base/dir
+
+# An alternative sample conf/backup-src-prefix file
+# =================================================
+
+# Backup a chrooted host without the base directory.
+/base/dir/.
 
 # An alternative sample conf/backup-src-prefix file
 # =================================================
@@ -13,8 +19,16 @@ remote.example.com:
 # An alternative sample conf/backup-src-prefix file
 # =================================================
 
-# Backup a remote chroot host via a remote shell.
-remote.example.com:/srv/chroot/distro
+# Backup a remote chrooted host with the base directory via a remote
+# shell.
+remote.example.com:/base/dir
+
+# An alternative sample conf/backup-src-prefix file
+# =================================================
+
+# Backup a remote chrooted host without the base directory via a remote
+# shell.
+remote.example.com:/base/dir/.
 
 # An alternative sample conf/backup-src-prefix file
 # =================================================
@@ -25,9 +39,56 @@ backup-user@remote.example.com:
 # An alternative sample conf/backup-src-prefix file
 # =================================================
 
-# Backup a remote chroot host via a remote shell using a different
-# remote user.
-backup-user@remote.example.com:/srv/chroot/distro
+# Backup a remote chrooted host with the base directory via a remote
+# shell using a different remote user.
+backup-user@remote.example.com:/base/dir
+
+# An alternative sample conf/backup-src-prefix file
+# =================================================
+
+# Backup a remote chrooted host without the base directory via a remote
+# shell using a different remote user.
+backup-user@remote.example.com:/base/dir/.
+
+# An alternative sample conf/backup-src-prefix file
+# =================================================
+
+# Backup a remote host via an rsync daemon.
+remote.example.com::
+
+# An alternative sample conf/backup-src-prefix file
+# =================================================
+
+# Backup a remote host via an rsync daemon.
+rsync://remote.example.com
+
+# An alternative sample conf/backup-src-prefix file
+# =================================================
+
+# Backup a remote host via an rsync daemon using a non-standard remote
+# port.
+rsync://remote.example.com:12345
+
+# An alternative sample conf/backup-src-prefix file
+# =================================================
+
+# Backup a remote host via an rsync daemon using a different remote
+# user.
+backup-user@remote.example.com::
+
+# An alternative sample conf/backup-src-prefix file
+# =================================================
+
+# Backup a remote host via an rsync daemon using a different remote
+# user.
+rsync://backup-user@remote.example.com
+
+# An alternative sample conf/backup-src-prefix file
+# =================================================
+
+# Backup a remote host via an rsync daemon using a non-standard remote
+# port and a different remote user.
+rsync://backup-user@remote.example.com:12345
 
 # An alternative sample conf/backup-src-prefix file
 # =================================================
@@ -44,8 +105,51 @@ rsync://remote.example.com/backup-module
 # An alternative sample conf/backup-src-prefix file
 # =================================================
 
-# Backup a remote host via an rsync daemon using a non-standard port.
+# Backup a remote host via an rsync daemon using a non-standard remote
+# port.
 rsync://remote.example.com:12345/backup-module
+
+# An alternative sample conf/backup-src-prefix file
+# =================================================
+
+# Backup a remote chrooted host with the base directory via an rsync
+# daemon.
+remote.example.com::backup-module/base/dir
+
+# An alternative sample conf/backup-src-prefix file
+# =================================================
+
+# Backup a remote chrooted host with the base directory via an rsync
+# daemon.
+rsync://remote.example.com/backup-module/base/dir
+
+# An alternative sample conf/backup-src-prefix file
+# =================================================
+
+# Backup a remote chrooted host with the base directory via an rsync
+# daemon using a non-standard remote port.
+rsync://remote.example.com:12345/backup-module/base/dir
+
+# An alternative sample conf/backup-src-prefix file
+# =================================================
+
+# Backup a remote chrooted host without the base directory via an rsync
+# daemon.
+remote.example.com::backup-module/base/dir/.
+
+# An alternative sample conf/backup-src-prefix file
+# =================================================
+
+# Backup a remote chrooted host without the base directory via an rsync
+# daemon.
+rsync://remote.example.com/backup-module/base/dir/.
+
+# An alternative sample conf/backup-src-prefix file
+# =================================================
+
+# Backup a remote chrooted host without the base directory via an rsync
+# daemon using a non-standard remote port.
+rsync://remote.example.com:12345/backup-module/base/dir/.
 
 # An alternative sample conf/backup-src-prefix file
 # =================================================
@@ -64,6 +168,48 @@ rsync://backup-user@remote.example.com/backup-module
 # An alternative sample conf/backup-src-prefix file
 # =================================================
 
-# Backup a remote host via an rsync daemon using a non-standard port and
-# a different remote user.
+# Backup a remote host via an rsync daemon using a non-standard remote
+# port and a different remote user.
 rsync://backup-user@remote.example.com:12345/backup-module
+
+# An alternative sample conf/backup-src-prefix file
+# =================================================
+
+# Backup a remote chrooted host with the base directory via an rsync
+# daemon using a different remote user.
+backup-user@remote.example.com::backup-module/base/dir
+
+# An alternative sample conf/backup-src-prefix file
+# =================================================
+
+# Backup a remote chrooted host with the base directory via an rsync
+# daemon using a different remote user.
+rsync://backup-user@remote.example.com/backup-module/base/dir
+
+# An alternative sample conf/backup-src-prefix file
+# =================================================
+
+# Backup a remote chrooted host with the base directory via an rsync
+# daemon using a non-standard remote port and a different remote user.
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir
+
+# An alternative sample conf/backup-src-prefix file
+# =================================================
+
+# Backup a remote chrooted host without the base directory via an rsync
+# daemon using a different remote user.
+backup-user@remote.example.com::backup-module/base/dir/.
+
+# An alternative sample conf/backup-src-prefix file
+# =================================================
+
+# Backup a remote chrooted host without the base directory via an rsync
+# daemon using a different remote user.
+rsync://backup-user@remote.example.com/backup-module/base/dir/.
+
+# An alternative sample conf/backup-src-prefix file
+# =================================================
+
+# Backup a remote chrooted host without the base directory via an rsync
+# daemon using a non-standard remote port and a different remote user.
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir/.

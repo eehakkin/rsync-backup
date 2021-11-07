@@ -1,0 +1,5 @@
+# A sample conf/mirror-src-base file
+# ==================================
+
+# Copy chrooted backup directories.
+/base/dir

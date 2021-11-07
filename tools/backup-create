@@ -111,12 +111,20 @@ $( exec rsync --help | exec sed '
 Operands:
     <SRC>
         A local source to be copied to a newly created backup directory.
+    <BASE-DIR>/./[<SRC>]
+        A local source to be copied to a newly created backup directory without the base directory.
     [<USER>@]<HOST>:<SRC>
         A remote shell source to be copied to a newly created backup directory.
-    [<USER>@]<HOST>::<SRC>
+    [<USER>@]<HOST>:<BASE-DIR>/./[<SRC>]
+        A remote shell source to be copied to a newly created backup directory without the base directory.
+    [<USER>@]<HOST>::<MODULE>[/[<SRC>]]
         An rsync daemon source to be copied to a newly created backup directory.
-    rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
+    [<USER>@]<HOST>::<MODULE>/<BASE-DIR>/./[<SRC>]
+        An rsync daemon source to be copied to a newly created backup directory without the base directory.
+    rsync://[<USER>@]<HOST>[:<PORT>]/<MODULE>[/[<SRC>]]
         An rsync daemon source to be copied to a newly created backup directory.
+    rsync://[<USER>@]<HOST>[:<PORT>]/<MODULE>/<BASE-DIR>/./[<SRC>]
+        An rsync daemon source to be copied to a newly created backup directory without the base directory.
 
 Files:
     ${dir}/<YEAR>

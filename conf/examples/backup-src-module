@@ -1,0 +1,6 @@
+# A sample conf/backup-src-module file
+# ====================================
+
+# Backup a remote host via an rsync daemon using a specific module. The
+# remote host must be specified in conf/backup-src-host.
+backup

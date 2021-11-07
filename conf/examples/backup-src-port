@@ -1,0 +1,7 @@
+# A sample conf/backup-src-port file
+# ==================================
+
+# Backup a remote host via an rsync daemon using a non-standard remote
+# port. The remote host must be specified in conf/backup-src-host and
+# the remote module must be specified in conf/backup-src-module.
+12345

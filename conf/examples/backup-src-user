@@ -2,4 +2,5 @@
 # ==================================
 
 # Backup a remote host using a different remote user.
+# The remote host must be specified in conf/backup-src-host.
 backup

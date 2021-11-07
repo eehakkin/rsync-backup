@@ -1,0 +1,6 @@
+# A sample conf/mirror-src-module file
+# ====================================
+
+# Copy remote backup directories via an rsync daemon using a specific
+# module. The remote host must be specified in conf/mirror-src-host.
+backup

@@ -3,12 +3,3 @@
 
 # Backup a remote host.
 remote.example.com
-
-# An alternative sample conf/backup-src-host file
-# ===============================================
-
-# Backup a remote host using a different remote user.
-backup-user@remote.example.com
-
-# It is also possible to specify the user in conf/backup-src-user and to
-# specify only the host in conf/backup-src-host.

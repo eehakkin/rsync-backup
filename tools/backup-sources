@@ -91,15 +91,24 @@ Files:
         A secondly backup directory.
     ${dir}/latest
         A symbolic link to the latest backup directory.
+    ${dir}/conf/backup-src-base
+        An optional configuration file \
+containing the backup source base directory \
+to be used to augment \
+the backup sources specified in the conf/backup-src-list configuration file \
+if the conf/backup-src-prefix configuration file does not exist. \
+The file must contain a line having the following form:
+            <BASE-DIR>[/.[/]]
+        Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/backup-src-host
         An optional configuration file \
 containing the backup source host \
-to be used \
-if the backup source host is not specified \
-in the conf/backup-src-list configuration file or \
-in the conf/backup-src-prefix configuration file. \
+to be used to augment \
+the backup sources specified in the conf/backup-src-list configuration file \
+if the conf/backup-src-prefix configuration file does not exist. \
 The file must contain a line having the following form:
-            [<USER>@]<HOST>
+            <HOST>
+        Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/backup-src-list
         A configuration file \
 containing the backup sources \
@@ -108,38 +117,71 @@ when creating a new backup. \
 The file must contain operand lines having any the following forms:
             <SRC>
                 A local source to be copied to a newly created backup directory.
+            <BASE-DIR>/./[<SRC>]
+                A local source to be copied to a newly created backup directory without the base directory.
             [<USER>@]<HOST>:<SRC>
                 A remote shell source to be copied to a newly created backup directory.
-            [<USER>@]<HOST>::<SRC>
+            [<USER>@]<HOST>:<BASE-DIR>/./[<SRC>]
+                A remote shell source to be copied to a newly created backup directory without the base directory.
+            [<USER>@]<HOST>::<MODULE>[/[<SRC>]]
                 An rsync daemon source to be copied to a newly created backup directory.
-            rsync://[<USER>@]<HOST>[:<PORT>]/<SRC>
+            [<USER>@]<HOST>::<MODULE>/<BASE-DIR>/./[<SRC>]
+                An rsync daemon source to be copied to a newly created backup directory without the base directory.
+            rsync://[<USER>@]<HOST>[:<PORT>]/<MODULE>[/[<SRC>]]
                 An rsync daemon source to be copied to a newly created backup directory.
+            rsync://[<USER>@]<HOST>[:<PORT>]/<MODULE>/<BASE-DIR>/./[<SRC>]
+                An rsync daemon source to be copied to a newly created backup directory without the base directory.
         These operands will be passed \
 to the ${basename%backup*}backup-create(1) tool. \
 Empty lines and comment lines (starting with a "#") are allowed, too.
+    ${dir}/conf/backup-src-module
+        An optional configuration file \
+containing the backup source module \
+to be used to augment \
+the backup source host specified in the conf/backup-src-host configuration file and \
+the backup sources specified in the conf/backup-src-list configuration file \
+if the conf/backup-src-prefix configuration file does not exist. \
+The file must contain a line having the following form:
+            <MODULE>
+        Empty lines and comment lines (starting with a "#") are allowed, too.
+    ${dir}/conf/backup-src-port
+        An optional configuration file \
+containing the backup source port \
+to be used to augment \
+the backup source host specified in the conf/backup-src-host configuration file, \
+the backup source module specified in the conf/backup-src-module configuration file and \
+the backup sources specified in the conf/backup-src-list configuration file \
+if the conf/backup-src-prefix configuration file does not exist. \
+The file must contain a line having the following form:
+            <PORT>
+        Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/backup-src-prefix
         An optional configuration file \
 containing the backup source prefix \
-to be used \
-if the backup source prefix is not specified \
-in the conf/backup-src-list configuration file. \
+to be used to augment \
+the backup sources specified in the conf/backup-src-list configuration file. \
 The file must contain a line having one of the following forms:
-            <BASE-DIR>
+            <BASE-DIR>[/.[/]]
                 A local base directory.
-            [<USER>@]<HOST>:[<BASE-DIR>]
+            [<USER>@]<HOST>:[<BASE-DIR>[/.[/]]]
                 A remote shell host and an optional base directory.
-            [<USER>@]<HOST>::[<MODULE>[/<BASE-DIR>]]
+            [<USER>@]<HOST>::[<MODULE>[/<BASE-DIR>[/.[/]]]]
                 An rsync daemon host and an optional module and base directory.
-            rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>[/<BASE-DIR>]]
+            <USER>@
+                A remote shell or an rsync daemon user.
+            rsync://[<USER>@]<HOST>[:<PORT>][/<MODULE>[/<BASE-DIR>[/.[/]]]]
                 An rsync daemon host and an optional module and base directory.
+        Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/backup-src-user
         An optional configuration file \
 containing the backup source user \
-to be used \
-if only the backup source host but not the user is specified \
-in the conf/backup-src-host configuration file. \
+to be used to augment \
+the backup source host specified in the conf/backup-src-host configuration file and \
+the backup sources specified in the conf/backup-src-list configuration file \
+if the conf/backup-src-prefix configuration file does not exist. \
 The file must contain a line having the following form:
             <USER>
+        Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/create-config
         An optional configuration file \
 used by ${basename%backup*}backup-create-rsync(1) \
@@ -237,26 +279,54 @@ done
 
 # Create a new backup directory from backup sources.
 set -- "${@}" --
-if [ -f "${dir}/conf/backup-src-prefix" ]
+if [ ! -f "${dir}/conf/backup-src-prefix" ]
 then
-	backup_src_prefix=$( grep -- '^[^#]' "${dir}/conf/backup-src-prefix" )
-elif [ -f "${dir}/conf/backup-src-host" ]
-then
-	backup_src_prefix=$( grep -- '^[^#]' "${dir}/conf/backup-src-host" ):
-	if [ -f "${dir}/conf/backup-src-user" ]
+	if [ ! -f "${dir}/conf/backup-src-base" ]
 	then
-		backup_src_prefix=$(
+		unset src_base
+	else
+		src_base=$(
+			grep -- '^[^#]' "${dir}/conf/backup-src-base"
+			)
+		src_base=${src_base%/}/
+	fi
+	if [ ! -f "${dir}/conf/backup-src-host" ]
+	then
+		src_prefix=${src_base-}
+	else
+		src_prefix=$( grep -- '^[^#]' "${dir}/conf/backup-src-host" )
+		[ ! -f "${dir}/conf/backup-src-user" ] || src_prefix=$(
 			grep -- '^[^#]' "${dir}/conf/backup-src-user"
-			)@${backup_src_prefix}
+			)@${src_prefix}
+		if [ ! -f "${dir}/conf/backup-src-module" ]
+		then
+			src_prefix=${src_prefix}:${src_base-}
+		else
+			src_module=$(
+				grep -- '^[^#]' "${dir}/conf/backup-src-module"
+				)
+			if [ ! -f "${dir}/conf/backup-src-port" ]
+			then
+				src_prefix=${src_prefix}::${src_module}${src_base+/${src_base#/}}
+			else
+				src_port=$(
+					grep -- '^[^#]' "${dir}/conf/backup-src-port"
+					)
+				src_prefix=rsync://${src_prefix}:${src_port}/${src_module}${src_base+/${src_base#/}}
+			fi
+		fi
 	fi
 else
-	backup_src_prefix=
+	src_prefix=$( grep -- '^[^#]' "${dir}/conf/backup-src-prefix" )
 fi
-while read arg
+while read src
 do
-	case ${arg} in
+	case ${src} in
 	'' | '#'* ) continue ;;
 	esac
-	set -- "${@}" "${backup_src_prefix}${arg}"
+	case ${src_prefix} in
+	*/ ) src=${src#/} ;;
+	esac
+	set -- "${@}" "${src_prefix}${src}"
 done < "${dir}/conf/backup-src-list"
 exec "${0%backup*}backup-create" "${@}"
