@@ -152,11 +152,23 @@ The file must contain operand lines having the following form:
         Empty lines and comment lines (starting with a "#") are allowed, too. \
 Backup directories matching <PATTERN> are deleted \
 if they are over <DAYS> days old.
+See also:
+    ${basename%backup*}backup(1),
+    ${basename%backup*}backup-mirror(1),
+    ${basename%backup*}backup-nice(1)
+
+    ionice(1),
+    nice(1),
+    nocache(1),
+    on_ac_power(1)
+
+    Home page <https://github.Eero.Häkkinen.fi/rsync-backup/>
 __HELP__
 		;;
 	--help=help2man )
 		COLUMNS=2500 exec "${0}" --help \
 		| exec sed \
+			-e '/^See also:$/,/^[^ ]/{s/^\(See also\):$/*\1*/;s/^ *//;}' \
 			-e '/^    [^ ]/!b'	\
 			-e '/[^ ]  /b'		\
 			-e 'N'			\
@@ -192,7 +204,10 @@ __TROFF__
 			-e '\|^[.]TP$|{N;N;}' \
 			-e '\|^\([[]0\\-9[]]\)\1\1\1\(\(\\-\)*[TW]*\1*9*[*]*\)*$|i\
 .br' \
-			-e 's|\([[:alnum:]\\-][[:alnum:]\\-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g'
+			-e 's|\([[:alpha:]][[:alnum:]\\_-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g' \
+			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|.UR \2\
+\1\
+.UE|'
 		exit
 		;;
 	--help=* )

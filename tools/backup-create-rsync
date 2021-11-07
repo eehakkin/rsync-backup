@@ -124,21 +124,29 @@ used by ${basename%backup*}backup-copy-rsync(1) and ${basename}(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).
-    $( command -v -- rsync )
-        A fast and extraordinarily versatile file copying tool. \
-See also rsync(1).
-    $( command -v -- ssh )
-        A remote login program. \
-See also ssh(1).
     <SOURCE-DIRECTORY>/.backup-filter
         An optional per-directory rsync(1) filter merge-file \
 which can be used for excluding files from backups. \
 Empty lines and comment lines (starting with a "#") are allowed, too.
+
+See also:
+    ${basename%backup*}backup-create(1),
+    ${basename%backup*}backup-nice(1),
+    ${basename%backup*}backup-rsync(1)
+
+    ionice(1),
+    nice(1),
+    nocache(1),
+    rsync(1),
+    ssh(1)
+
+    Home page <https://github.Eero.Häkkinen.fi/rsync-backup/>
 __HELP__
 		;;
 	--help=help2man )
 		COLUMNS=2500 exec "${0}" --help \
 		| exec sed \
+			-e '/^See also:$/,/^[^ ]/{s/^\(See also\):$/*\1*/;s/^ *//;}' \
 			-e '/^    [^ ]/!b'	\
 			-e '/[^ ]  /b'		\
 			-e 'N'			\
@@ -171,7 +179,10 @@ __TROFF__
 			-e '\|^[.]SH |i\
 .YS' \
 			-e '}' \
-			-e 's|\([[:alnum:]\\-][[:alnum:]\\-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g'
+			-e 's|\([[:alpha:]][[:alnum:]\\_-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g' \
+			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|.UR \2\
+\1\
+.UE|'
 		exit
 		;;
 	--help=* )

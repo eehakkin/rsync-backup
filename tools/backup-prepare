@@ -65,11 +65,22 @@ containing configuration variable assignments.
 which are executed in lexical order of names. \
 The names of the files must consist of only characters \
 matching the pattern [${valid}].
+
+See also:
+    ${basename%backup*}backup(1),
+    ${basename%backup*}backup-nice(1)
+
+    ionice(1),
+    nice(1),
+    nocache(1)
+
+    Home page <https://github.Eero.Häkkinen.fi/rsync-backup/>
 __HELP__
 		;;
 	--help=help2man )
 		COLUMNS=2500 exec "${0}" --help \
 		| exec sed \
+			-e '/^See also:$/,/^[^ ]/{s/^\(See also\):$/*\1*/;s/^ *//;}' \
 			-e '/^    [^ ]/!b'	\
 			-e '/[^ ]  /b'		\
 			-e 'N'			\
@@ -102,7 +113,10 @@ __TROFF__
 			-e '\|^[.]SH |i\
 .YS' \
 			-e '}' \
-			-e 's|\([[:alnum:]\\-][[:alnum:]\\-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g'
+			-e 's|\([[:alpha:]][[:alnum:]\\_-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g' \
+			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|.UR \2\
+\1\
+.UE|'
 		exit
 		;;
 	--help=* )
