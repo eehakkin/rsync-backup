@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-prepare 0.0.20211031
+# backup-prepare 0.0.20211107
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -129,7 +129,11 @@ do
 	esac
 	"${file}" || {
 		error=${?}
-		FQDN=${FQDN-$( hostname -f 2> /dev/null || hostname )}
+		FQDN=${FQDN-$(
+			hostname -f 2> /dev/null ||
+			hostname    2> /dev/null ||
+			uname -n
+			)}
 		USER=${USER-$( id -un )}
 		echo "${USER}@${FQDN}:${file}: ${error}" >&2
 	}
