@@ -181,6 +181,14 @@ __HELP__
 __TROFF__
 		exec help2man -h --help=help2man -L en_US.UTF-8 -N -n "${short_description}" -- "${0}" \
 		| exec sed \
+			-e '\|^[.]B backup|,\|^[.]SH |{' \
+			-e '\|^[^.]|s| |&\\%|g' \
+			-e '\|^[^.]|s|^|&\\%|' \
+			-e '\|^[.]br$|d' \
+			-e 's|^[.]B backup|.SY backup|' \
+			-e '\|^[.]SH |i\
+.YS' \
+			-e '}' \
 			-e '\|^[.]TP$|{N;N;}' \
 			-e '\|^\([[]0\\-9[]]\)\1\1\1\(\(\\-\)*[TW]*\1*9*[*]*\)*$|i\
 .br' \
