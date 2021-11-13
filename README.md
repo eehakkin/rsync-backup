@@ -125,6 +125,7 @@ Directory structure
  - **[tools/]**
      A backup tool directory.
    - **[backup]**:                create a new backup directory and do related tasks
+   - **[backup-clean-tmp]**:      clean up a temporary directory
    - **[backup-copy]**:           copy backup directories
    - **[backup-copy-rsync]**:     a backup copying oriented file-copying tool
    - **[backup-create]**:         create a new backup directory
@@ -165,6 +166,7 @@ Directory structure
 [conf/mirror-src-list]: conf/README.md#the-confmirror-src-list-file
 [tools/]: tools/
 [backup]: tools/README.md#backup
+[backup-clean-tmp]: tools/README.md#backup-clean-tmp
 [backup-copy]: tools/README.md#backup-copy
 [backup-copy-rsync]: tools/README.md#backup-copy-rsync
 [backup-create]: tools/README.md#backup-create

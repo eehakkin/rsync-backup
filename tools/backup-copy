@@ -179,6 +179,7 @@ to be passed to rsync(1).
         Used for copying files using rsync(1).
 
 See also:
+    ${basename%backup*}backup-clean-tmp(1),
     ${basename%backup*}backup-copy-rsync(1),
     ${basename%backup*}backup-mirror-sources(1)
 
@@ -336,14 +337,8 @@ do
 	# Parse an operand.
 	case ${arg} in
 	*/ | */. ) # <SRC>/[.]
-		# Prepare to create a protected temporary directory.
-		mkdir -m go=u-w -p -- \
-			"${dir}/tmp" \
-			"${dir}/tmp/copy-${$}" \
-			"${dir}/tmp/old-copy-${$}"
-		rm -fr -- "${dir}/tmp/old-copy-${$}"/*
-		mv -f -- "${dir}/tmp/copy"-* "${dir}/tmp/old-copy-${$}/"
-		rm -fr -- "${dir}/tmp/old-copy"-*
+		# Clean up temporary directories.
+		"${0%backup*}backup-clean-tmp" -- copy
 		# Create a protected temporary directory.
 		mkdir -m go= -- "${dir}/tmp/copy-${$}"
 		# Find out the backup directories to be copied.
@@ -386,7 +381,7 @@ do
 		do
 			wait "${pid}" || { wait; false; }
 		done
-		# Clean up.
+		# Remove the protected temporary directory.
 		rm -fr -- "${dir}/tmp/copy-${$}"
 		;;
 	* ) # <SRC>

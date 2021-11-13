@@ -2,6 +2,7 @@ Backup tools
 ============
 
  - **[backup]**:                create a new backup directory and do related tasks
+ - **[backup-clean-tmp]**:      clean up a temporary directory
  - **[backup-copy]**:           copy backup directories
  - **[backup-copy-rsync]**:     a backup copying oriented file-copying tool
  - **[backup-create]**:         create a new backup directory
@@ -90,6 +91,17 @@ For a reference manual,
 run
 `tools/backup --help` or
 `tools/backup --help=man`.
+
+**backup-clean-tmp**
+--------------------
+[backup-clean-tmp]: #backup-clean-tmp
+
+Remove stale subdirectories from a temporary directory.
+
+For a reference manual,
+run
+`tools/backup-clean-tmp --help` or
+`tools/backup-clean-tmp --help=man`.
 
 **backup-copy**
 ---------------

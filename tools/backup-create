@@ -206,6 +206,7 @@ which can be used for excluding files from backups. \
 Empty lines and comment lines (starting with a "#") are allowed, too.
 
 See also:
+    ${basename%backup*}backup-clean-tmp(1),
     ${basename%backup*}backup-create-rsync(1),
     ${basename%backup*}backup-sources(1)
 
@@ -325,17 +326,8 @@ fuse.s3ql ) rm_fr=s3qlrm ;;
 *         ) rm_fr='rm -fr' ;;
 esac
 
-# Prepare to create a protected temporary directory.
-mkdir -m go=u-w -p -- \
-	"${dir}/tmp" \
-	"${dir}/tmp/create-${tmp_tag}-${$}" \
-	"${dir}/tmp/old-create-${tmp_tag}-${$}" \
-	"${dir}/tmp/old-create-${tmp_tag}-${$}/empty"
-${rm_fr} -- "${dir}/tmp/old-create-${tmp_tag}-${$}"/*
-mv -f -- \
-	"${dir}/tmp/create-${tmp_tag}"-* \
-	"${dir}/tmp/old-create-${tmp_tag}-${$}/"
-${rm_fr} -- "${dir}/tmp/old-create-${tmp_tag}"-*
+# Clean up temporary directories.
+"${0%backup*}backup-clean-tmp" -- "create-${tmp_tag}"
 
 # Create a protected temporary directory.
 mkdir -m go= -- "${dir}/tmp/create-${tmp_tag}-${$}"
@@ -383,5 +375,5 @@ esac
 	sync
 }
 
-# Clean up.
+# Remove the protected temporary directory.
 rmdir -- "${dir}/tmp/create-${tmp_tag}-${$}"

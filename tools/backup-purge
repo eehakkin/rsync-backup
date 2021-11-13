@@ -43,7 +43,7 @@ do
 	case ${1-} in
 	--dry-run | -n ) dry_run=+; shift ;;
 	--force   | -f ) force=+; shift ;;
-	--help | -h )
+	--help    | -h )
 		COLUMNS=${COLUMNS:-$( tput cols 2> /dev/null || : )}
 		exec fmt -s ${COLUMNS:+ -w "${COLUMNS}" } << __HELP__ \
 		| exec sed -e '/\\$/{N;s/\\\n  *//;}'; exit
@@ -345,51 +345,35 @@ case ${?} in
 1 ) echo "${0}: deferred while on battery power." >&2; dry_run=+ ;;
 esac
 
-find \
-	"${dir}/."				\
-	! -name .				\
-	-prune					\
-	-type d					\
-	\( "${@}" \)				\
-| {
+# Clean up temporary directories.
+${dry_run:+:} "${0%backup*}backup-clean-tmp" -- purge
+
+{
+	cd -- "${dir}" &&
+	find . ! -name . -prune -type d \( "${@}" \)
+} | {
 	# Read the names of the to be deleted backup directories.
 	set --
-	while read backup_dir
+	while read backup_tag
 	do
-		set -- "${@}" "${backup_dir}"
+		set -- "${@}" "${dir}/${backup_tag#.[\\/]}"
 	done
+	${1+:} exit 0
 
 	# Determine the preferred remove method.
-	fstype=$( exec find "${dir}/." -prune -printf '%F\n' ) && :
+	fstype=$(
+		exec find "${dir}/." -prune -printf '%F\n' 2> /dev/null
+		) || :
 	case ${fstype} in
 	fuse.s3ql ) rm_fr=s3qlrm ;;
 	*         ) rm_fr='rm -fr' ;;
 	esac
 
-	case ${dry_run:++} in
-	'' )
-		# Prepare to create a protected temporary directory.
-		mkdir -m go=u-w -p -- \
-			"${dir}/tmp" \
-			"${dir}/tmp/purge-${$}" \
-			"${dir}/tmp/old-purge-${$}" \
-			"${dir}/tmp/old-purge-${$}/empty"
-		${rm_fr} -- "${dir}/tmp/old-purge-${$}"/*
-		mv -f -- "${dir}/tmp/purge"-* "${dir}/tmp/old-purge-${$}/"
-		${rm_fr} -- "${dir}/tmp/old-purge"-*
-		;;
-	esac
-
-	case ${#} in
-	0 ) ;;
-	* )
-		# Create a protected temporary directory.
-		${dry_run:+echo} mkdir -m go= -- "${dir}/tmp/purge-${$}"
-		# Relocate the to be deleted backup directories.
-		${dry_run:+echo} mv -f -- "${@}" "${dir}/tmp/purge-${$}/"
-		# Remove the temporary directory and the backup directories
-		# within it.
-		${dry_run:+echo} ${rm_fr} -- "${dir}/tmp/purge-${$}"
-		;;
-	esac
+	# Create a protected temporary directory.
+	${dry_run:+echo} mkdir -m go= -- "${dir}/tmp/purge-${$}"
+	# Relocate the to be deleted backup directories.
+	${dry_run:+echo} mv -f -- "${@}" "${dir}/tmp/purge-${$}/"
+	# Remove the protected temporary directory and the backup directories
+	# within it.
+	${dry_run:+echo} ${rm_fr} -- "${dir}/tmp/purge-${$}"
 } >&2
