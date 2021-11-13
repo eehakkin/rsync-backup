@@ -202,11 +202,5 @@ __TROFF__
 	break
 done
 
-# Parse an internal configuration name option.
-config_name=create
-case ${1-} in
---backup-config-name=* ) config_name=${1#*=}; shift ;;
-esac
-
 # Execute.
-exec "${0%backup*}backup-rsync" --backup-config-name="${config_name}" "${@}"
+exec "${0%backup*}backup-rsync" --backup-config-name='create' "${@}"

@@ -275,37 +275,25 @@ __TROFF__
 	break
 done
 
-# Parse an internal configuration name option.
-unset config_name
-case ${1-} in
---backup-config-name=* ) config_name=${1#*=}; shift ;;
-esac
-
 # Construct a tag name.
-case ${1-} in
---backup-tag-name=* )
-	tag=${1#*=} tmp_tag=${1#*=}
-	shift
-	;;
-* )
-	file=${dir}/conf/tag-formats
-	unset formats tag
-	[ ! -f "${file}" ] || formats=$(
-		exec sed -n -e '/^[[:space:]]*[^[:space:]#]/p' -- "${file}"
-		)
-	while read format
-	do
-		tag2=$( date +"${format}" )
-		case ${tag2} in
-		*[![:digit:][:punct:]TW]* ) continue ;;
-		[[:digit:]]*              ) ;;
-		*                         ) continue ;;
-		esac
-		[ ! -e "${dir}/${tag2}" ] && {
-			tag=${tag2} tmp_tag=latest
-			break
-		}
-	done << __FORMATS__
+file=${dir}/conf/tag-formats
+unset formats tag
+[ ! -f "${file}" ] || formats=$(
+	exec sed -n -e '/^[[:space:]]*[^[:space:]#]/p' -- "${file}"
+	)
+while read format
+do
+	tag2=$( date +"${format}" )
+	case ${tag2} in
+	*[![:digit:][:punct:]TW]* ) continue ;;
+	[[:digit:]]*              ) ;;
+	*                         ) continue ;;
+	esac
+	[ ! -e "${dir}/${tag2}" ] && {
+		tag=${tag2}
+		break
+	}
+done << __FORMATS__
 ${formats-"\
 %Y
 %Y%m
@@ -319,61 +307,8 @@ __FORMATS__
 esac
 : "${tag:?}"
 
-# Determine the preferred remove method.
-fstype=$( exec find "${dir}/." -prune -printf '%F\n' ) && :
-case ${fstype} in
-fuse.s3ql ) rm_fr=s3qlrm ;;
-*         ) rm_fr='rm -fr' ;;
-esac
-
-# Clean up temporary directories.
-"${0%backup*}backup-clean-tmp" -- "create-${tmp_tag}"
-
-# Create a protected temporary directory.
-mkdir -m go= -- "${dir}/tmp/create-${tmp_tag}-${$}"
-
-# Create a new backup directory in a protected temporary directory.
-dest_opt=--link-dest
-if
-	case ${fstype} in
-	btrfs     ) cp_a='cp --archive --reflink=always' ;;
-	fuse.s3ql ) cp_a=s3qlcp ;;
-	*         ) false ;;
-	esac
-then
-	[ ! -d "${dir}/latest/." ] || ${cp_a} -- \
-		"${dir}/latest/."		\
-		"${dir}/tmp/create-${tmp_tag}-${$}/${tag}"
-	set -- --delete --delete-delay --delete-excluded "${@}"
-	dest_opt=--copy-dest
-fi
-dest_opts=$(
-	exec ls -t -- "${dir}/" \
-	| exec sed -n -e '/./s|^[[:digit:]][[:digit:][:punct:]TW]*$|'"${dest_opt}"'=../../../&|p' \
-	| exec sed -e '20q'
-	)
-"${0%backup*}backup-create-rsync" \
-	${config_name+ --backup-config-name="${config_name}" } \
-	${dest_opts} \
-	"${@}" \
-	"${dir}/tmp/create-${tmp_tag}-${$}/${tag}" ||
-case ${?} in
-24 ) ;; # Partial transfer due to vanished source files
-*  ) exit 1 ;;
-esac
-[ ! -d "${dir}/tmp/create-${tmp_tag}-${$}/${tag}" ] || {
-	chmod -- g=u-w,o= "${dir}/tmp/create-${tmp_tag}-${$}/${tag}"
-	chgrp -- users    "${dir}/tmp/create-${tmp_tag}-${$}/${tag}"
-	case ${fstype} in
-	fuse.s3ql ) s3qllock -- "${dir}/tmp/create-${tmp_tag}-${$}/${tag}" ;;
-	esac
-
-	# Release the newly created backup directory.
-	ln -s -- "${tag}" "${dir}/tmp/create-${tmp_tag}-${$}/latest"
-	sync
-	mv -f -- "${dir}/tmp/create-${tmp_tag}-${$}"/* "${dir}/"
-	sync
-}
-
-# Remove the protected temporary directory.
-rmdir -- "${dir}/tmp/create-${tmp_tag}-${$}"
+# Create a protected temporary directory,
+# create a new backup directory in the protected temporary directory,
+# release the newly created backup directory and
+# remove the protected temporary directory.
+exec "${0%backup*}backup-create-rsync" "${@}" "${dir}/tmp/create-${$}/${tag}"

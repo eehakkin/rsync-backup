@@ -265,7 +265,7 @@ do
 	case ${argtype-opt}:${arg} in
 	opt:-- ) # --
 		# Drop the end of options option and operands.
-		set -- ${argtype+"${@}"}
+		set -- ${argtype+"${@}"} #"
 		argtype=operand
 		continue
 		;;
@@ -275,7 +275,7 @@ do
 		;;
 	opt:-?* ) # -<OPT>[...][<OPTARG>], --<OPT>[=<OPTARG>]
 		# Keep an option.
-		set -- ${argtype+"${@}"} "${arg}"
+		set -- ${argtype+"${@}"} "${arg}" #"
 		case ${arg} in
 		--?*=* ) # --<OPT>=<OPTARG>
 			argtype=opt
@@ -324,7 +324,7 @@ do
 		;;
 	opt:* ) # <OPERAND>
 		# Drop operands.
-		set -- ${argtype+"${@}"}
+		set -- ${argtype+"${@}"} #"
 		argtype=operand
 		;;
 	optarg:* ) # <OPTARG>
@@ -362,19 +362,23 @@ do
 			tag=$(
 				exec ls -rt -- "${dir}/tmp/copy-${$}/" \
 				| exec sed \
-					-e '/^[[:digit:]][[:digit:][:punct:]TW]*$/!d' \
+					-e '\|[]()*/?\\[]|d' \
+					-e '\|^[[:digit:]][[:digit:][:punct:]TW]*$|!d' \
 					-e 'q'
 				)
 			${tag:+:} break
-			"${0%backup*}backup-create" \
-				--backup-config-name='copy'	\
-				--backup-tag-name="${tag}"	\
-				"${@}"				\
-				-- "${arg%/*}/${tag}/./"	&
+			# Create a protected temporary directory,
+			# copy the backup directory to the protected temporary
+			# directory, release the copied backup directory and
+			# remove the protected temporary directory.
+			"${0%backup*}backup-copy-rsync" "${@}" -- \
+				"${arg%/*}/${tag}/./" \
+				"${dir}/tmp/copy-${tag}-${$}/${tag}" &
 			case ${parallel++} in
 			+ ) pids="${pids} ${!}" ;;
 			* ) wait "${!}" ;;
 			esac
+			# Proceed to the next tag.
 			rmdir -- "${dir}/tmp/copy-${$}/${tag}"
 		done
 		for pid in ${pids}
@@ -385,13 +389,14 @@ do
 		rm -fr -- "${dir}/tmp/copy-${$}"
 		;;
 	* ) # <SRC>
-		# Copy a backup directory.
+		# Extract the tag name.
 		tag=$( basename -- "${arg}" )
-		"${0%backup*}backup-create" \
-			--backup-config-name='copy'	\
-			--backup-tag-name="${tag}"	\
-			"${@}"				\
-			-- "${arg}/./"
+		# Create a protected temporary directory,
+		# copy the backup directory to the protected temporary
+		# directory, release the copied backup directory and
+		# remove the protected temporary directory.
+		"${0%backup*}backup-copy-rsync" "${@}" -- \
+			"${arg}/./" "${dir}/tmp/copy-${tag}-${$}/${tag}"
 		;;
 	esac
 done

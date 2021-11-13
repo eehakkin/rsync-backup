@@ -8,8 +8,7 @@ digraph "rsync-backup" {
 		"backup"		-> "backup-sources"		[ label = 2 ]
 		"backup"		-> "backup-purge"		[ label = 3 ]
 		"backup-copy"		-> "backup-clean-tmp"
-		"backup-copy"		-> "backup-copy-rsync"		[ minlen = 2 ]
-		"backup-copy"		-> "backup-create"		[ style = invis ]
+		"backup-copy"		-> "backup-copy-rsync"
 		"backup-copy-rsync"	-> "backup-rsync"
 		"backup-create"		-> "backup-clean-tmp"
 		"backup-create"		-> "backup-create-rsync"
@@ -17,15 +16,15 @@ digraph "rsync-backup" {
 		"backup-mirror"		-> "backup-mirror-sources"	[ label = 1 ]
 		"backup-mirror"		-> "backup-purge"		[ label = 2 ]
 		"backup-mirror-sources"	-> "backup-copy"
-		"backup-prepare"	-> "backup-nice"		[ minlen = 5 ]
+		"backup-prepare"	-> "backup-nice"		[ minlen = 4 ]
 		"backup-purge"		-> "backup-clean-tmp"
 		"backup-rsync"		-> "backup-nice"
-		"backup-sources"	-> "backup-create"		[ minlen = 2 ]
+		"backup-sources"	-> "backup-create"
 	}
 	"backup-nice"	-> "ionice"		[ style = dashed ]
 	"backup-nice"	-> "nice"		[ style = dashed ]
 	"backup-nice"	-> "nocache"		[ style = dashed ]
-	"backup-purge"	-> "on_ac_power"	[ minlen = 6, style = dashed ]
+	"backup-purge"	-> "on_ac_power"	[ minlen = 5, style = dashed ]
 	"backup-rsync"	-> "rsync"		[ minlen = 2 ]
 	"rsync"		-> "ssh"		[ style = dashed ]
 }
