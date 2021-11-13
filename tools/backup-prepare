@@ -46,8 +46,16 @@ do
 Usage: \\
            ${basename} [<OPTION>]...
 
-Prepare for backups by executing preparation scripts. \
+Prepare for backups \by executing preparation scripts. \
 This can be used for dumping database snapshots to files, for instance.
+
+Preparation is done \
+with idle I/O priority (whose impact on normal system activity should be zero), \
+with an adjusted niceness (which affect process scheduling) and \
+with minimized effect on file system cache \
+provided that the commands ionice(1), nice(1) and nocache(1) are available. \
+For details, see \
+${basename%backup*}backup-nice(1).
 
 Options:
     -h, --help[=<FORMAT>]
@@ -151,7 +159,7 @@ do
 	case ${file##*/} in
 	*[!${valid}]* ) continue ;;
 	esac
-	"${file}" || {
+	"${0%backup*}backup-nice" -- "${file}" || {
 		error=${?}
 		FQDN=${FQDN-$(
 			hostname -f 2> /dev/null ||

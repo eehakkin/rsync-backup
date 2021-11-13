@@ -56,7 +56,17 @@ Usage: \\
  or:   \\
            ${basename} [--backup-prepare] --server --sender [<RSYNC-SENDER-OPTION>]... . [<ARG>]...
 
-Copy files using rsync(1).
+Copy files \
+using rsync(1) \
+with backup related options.
+
+Copying is done \
+with idle I/O priority (whose impact on normal system activity should be zero), \
+with an adjusted niceness (which affect process scheduling) and \
+with minimized effect on file system cache \
+provided that the commands ionice(1), nice(1) and nocache(1) are available. \
+For details, see \
+${basename%backup*}backup-nice(1).
 
 Options:
     -h, --help[=<FORMAT>]

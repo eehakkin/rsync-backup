@@ -62,7 +62,9 @@ Usage: \\
  or:   \\
            ${basename} <OPTION>...
 
-Copy files using rsync(1).
+Copy files \
+using ${basename%backup*}backup-rsync(1) and thus rsync(1) \
+with backup creation related options.
 
 Options:
     -h, --help[=<FORMAT>]
@@ -131,12 +133,8 @@ Empty lines and comment lines (starting with a "#") are allowed, too.
 
 See also:
     ${basename%backup*}backup-create(1),
-    ${basename%backup*}backup-nice(1),
     ${basename%backup*}backup-rsync(1)
 
-    ionice(1),
-    nice(1),
-    nocache(1),
     rsync(1),
     ssh(1)
 

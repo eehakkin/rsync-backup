@@ -158,9 +158,15 @@ Files:
         A daily backup directory.
     ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>
         An hourly backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>T<HOUR>
+        An hourly backup directory.
     ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[:]<MINUTE>
         A minutely backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>T<HOUR>[:]<MINUTE>
+        A minutely backup directory.
     ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[:]<MINUTE>[:]<SECOND>
+        A secondly backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>T<HOUR>[:]<MINUTE>[:]<SECOND>
         A secondly backup directory.
     ${dir}/conf/purge-list
         An optional configuration file \
@@ -171,14 +177,13 @@ The file must contain operand lines having the following form:
         Empty lines and comment lines (starting with a "#") are allowed, too. \
 Backup directories matching <PATTERN> are deleted \
 if they are over <DAYS> days old.
+    ${dir}/tmp/
+        A temporary directory to be used for deleting old backup directories.
+
 See also:
     ${basename%backup*}backup(1),
-    ${basename%backup*}backup-mirror(1),
-    ${basename%backup*}backup-nice(1)
+    ${basename%backup*}backup-mirror(1)
 
-    ionice(1),
-    nice(1),
-    nocache(1),
     on_ac_power(1)
 
     Home page <https://github.Eero.Häkkinen.fi/rsync-backup/>
@@ -333,7 +338,7 @@ do
 done
 shift # -o
 
-${dry_run:+:} ${force:+:} on_ac_power > /dev/null 2>&1 && :
+${force:+:} on_ac_power > /dev/null 2>&1 && :
 case ${?} in
 1 ) echo "${0}: deferred while on battery power." >&2; dry_run=+ ;;
 esac

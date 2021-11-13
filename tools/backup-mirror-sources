@@ -88,9 +88,15 @@ Files:
         A daily backup directory.
     ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>
         An hourly backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>T<HOUR>
+        An hourly backup directory.
     ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[:]<MINUTE>
         A minutely backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>T<HOUR>[:]<MINUTE>
+        A minutely backup directory.
     ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[:]<MINUTE>[:]<SECOND>
+        A secondly backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>T<HOUR>[:]<MINUTE>[:]<SECOND>
         A secondly backup directory.
     ${dir}/latest
         A symbolic link to the latest backup directory.

@@ -1,0 +1,28 @@
+digraph "rsync-backup" {
+	graph	[ splines = polyline ]
+	node	[ shape = component ]
+	subgraph "cluster:tools" {
+		graph	[ label = "tools/" ]
+		node	[ target = "_parent", URL = "../#\N" ]
+		"backup"		-> "backup-prepare"		[ label = 1 ]
+		"backup"		-> "backup-sources"		[ label = 2 ]
+		"backup"		-> "backup-purge"		[ label = 3 ]
+		"backup-copy"		-> "backup-copy-rsync"		[ minlen = 2 ]
+		"backup-copy"		-> "backup-create"		[ style = invis ]
+		"backup-copy-rsync"	-> "backup-rsync"
+		"backup-create"		-> "backup-create-rsync"
+		"backup-create-rsync"	-> "backup-rsync"
+		"backup-mirror"		-> "backup-mirror-sources"	[ label = 1 ]
+		"backup-mirror"		-> "backup-purge"		[ label = 2 ]
+		"backup-mirror-sources"	-> "backup-copy"
+		"backup-prepare"	-> "backup-nice"		[ minlen = 5 ]
+		"backup-rsync"		-> "backup-nice"
+		"backup-sources"	-> "backup-create"		[ minlen = 2 ]
+	}
+	"backup-nice"	-> "ionice"		[ style = dashed ]
+	"backup-nice"	-> "nice"		[ style = dashed ]
+	"backup-nice"	-> "nocache"		[ style = dashed ]
+	"backup-purge"	-> "on_ac_power"	[ minlen = 6, style = dashed ]
+	"backup-rsync"	-> "rsync"		[ minlen = 2 ]
+	"rsync"		-> "ssh"		[ style = dashed ]
+}

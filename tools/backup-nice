@@ -51,7 +51,8 @@ Usage: \\
 Run a backup command \
 with idle I/O priority (whose impact on normal system activity should be zero), \
 with an adjusted niceness (which affect process scheduling) and \
-with minimized effect on file system cache.
+with minimized effect on file system cache \
+provided that the commands ionice(1), nice(1) and nocache(1) are available.
 
 Options:
     -h, --help[=<FORMAT>]
@@ -64,10 +65,7 @@ Operands:
         A backup command to be executed.
 
 See also:
-    ${basename%backup*}backup-copy-rsync(1),
-    ${basename%backup*}backup-create-rsync(1),
     ${basename%backup*}backup-prepare(1),
-    ${basename%backup*}backup-purge(1),
     ${basename%backup*}backup-rsync(1)
 
     ionice(1),

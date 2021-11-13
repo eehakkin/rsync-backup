@@ -1,121 +1,223 @@
 rsync-backup
 ============
 
-rsync(1) based backup scripts.
+Versatile **rsync**(1) based backup scripts with minimal dependencies.
 
 The newly created backup directories are named according to the backup
 date and time and are full backup directories containing direct (but
 possible filtered) copies of original files and directories. They can
 thus be accessed and restored directly.
 
+Old backup directories are deleted based on pattern matching and ages.
+The default is to keep secondly, minutely and hourly backup directories
+for at most one day covering hours since the last daily backup, daily
+backup directories for at least one week covering days since the last
+weekly backup, weekly backup directories for at least one month covering
+weeks since the last monthly backup, monthly backup directories for at
+least one year covering months since the last yearly backup and yearly
+backup directories forever.
+
 Disk usage is minimised and transfers are speeded up by hard linking
 files from old backup directories to newly created backup directories.
 
-Commands
---------
+Requirements
+------------
 
- * **backup**:                create a new backup directory and do related tasks
- * **backup-copy**:           copy backup directories
- * **backup-copy-rsync**:     a backup copying oriented file-copying tool
- * **backup-create**:         create a new backup directory
- * **backup-create-rsync**:   a backup creation oriented file-copying tool
- * **backup-mirror**:         copy backup directories and do related tasks
- * **backup-mirror-sources**: copy backup directories from mirror sources
- * **backup-nice**:           run a backup command nicely
- * **backup-nologin**:        politely refuse a login but allow a backup
- * **backup-prepare**:        prepare for backups
- * **backup-purge**:          delete old backup directories
- * **backup-rsync**:          a backup-oriented file-copying tool
- * **backup-sources**:        create a new backup directory from backup sources
+Minimum requirements:
+ - Essential POSIX-compiliant utilities
+   **[**(1),
+   **basename**(1),
+   **cat**(1),
+   **echo**(1),
+   **chgrp**(1),
+   **chmod**(1),
+   **cp**(1),
+   **dirname**(1),
+   **find**(1),
+   **grep**(1),
+   **id**(1),
+   **ln**(1),
+   **ls**(1),
+   **mkdir**(1),
+   **mv**(1),
+   **printf**(1),
+   **rm**(1),
+   **rmdir**(1),
+   **sh**(1),
+   **sync**(1) and
+   **uname**(1)
+ - **rsync**(1):        To copy files.
 
-### **backup**
+Optional requirements:
+ - **hostname**(1):     To get the system's hostname.
+ - **ionice**(1):       To set idle I/O priority.
+ - **nice**(1):         To add niceness.
+ - **nocache**(1):      To minimize the effect on file system cache.
+ - **on_ac_power**(1):  To test whether computer is running on AC power.
+ - **renice**(1):       To readd niceness.
+ - **ssh**(1):          To copy files from another host.
+ - **fmt**(1),
+   **help2man**(1),
+   **man**(1),
+   **tput**(1):         To format help messages.
 
-Prepare for backups by executing preparation scripts, read backup
-sources from configuration files, create a new backup directory from the
-backup sources using rsync(1) and then delete old backup directories
-based on pattern matching and ages.
+Installation
+------------
 
-### **backup-copy**
+ 1. Download and extract files.
+     - Choose one method:
+        1. Clone the repository with **git**(1):
+           ```sh
+           git clone https://github.com/eehakkin/rsync-backup.git
+           ```
+        2. Download
+           a [tarball](https://github.com/eehakkin/rsync-backup/tarball/main)
+           and extract files from it with **tar**(1) or with some other
+           archiving tool.
+        3. Download
+           a [zipball](https://github.com/eehakkin/rsync-backup/zipball/main)
+           and extract files from it with **unzip**(1) or with some other
+           archiving tool.
+     - Optionally, rename the directory.
 
-Copy backup directories from sources using rsync(1).
+Usage
+-----
 
-Disk usage is minimised and transfers are speeded up by hard linking
-files from old backup directories to newly created backup directories
-whenever possible (when files in sources and previous backup directories
-are identical in content and in all preserved attributes).
+ 1. Change the working directory:
+    ```sh
+    cd -- rsync-backup
+    ```
+    Adapt accordingly if the directory is named differently.
+ 2. Create proper configuration (at minimum the **[conf/backup-src-list]**
+    file):
+     - As a starting point, copy a sample backup source list:
+       ```sh
+       cp -v -- conf/examples/backup-src-list conf/
+       ```
+     - Optionally, edit the **conf/backup-src-list** file with any text
+       editor.
+     - Optionally, add more configuration files.
+       For details, see documentation in the **[conf/]** directory.
+ 3. Create the first backup:
+    ```sh
+    tools/backup
+    ```
+    By default, the first run will create a yearly backup directory
+    (which is named according to the year). and the next runs will
+    create monthly, weekly, daily, hourly, minutely and secondly backup
+    directories until the next minute, hour, day, week, month or year.
+    For details, see documentation in the **[tools/]** directory.
+ 4. Repeat the last step often enough such as daily, bihourly or hourly.
+    That can be automated with systemd timer units, crontabs or such.
 
-On the btrfs and s3ql filesystems, hard linking is not needed and is
-therefore not used for disk usage minimisation.
+Directory structure
+-------------------
 
-### **backup-copy-rsync**
+ - **[conf/]**
+     A backup configuration directory.
+   - ...
+   - **[backup-src-list](conf/README.md#the-confbackup-src-list-file)**
+   - ...
+ - **latest**
+     A symbolic link to the latest backup directory.
+ - **tmp/**
+     A temporary directory.
+ - **[tools/]**
+     A backup tool directory.
+   - **[backup]**:                create a new backup directory and do related tasks
+   - **[backup-copy]**:           copy backup directories
+   - **[backup-copy-rsync]**:     a backup copying oriented file-copying tool
+   - **[backup-create]**:         create a new backup directory
+   - **[backup-create-rsync]**:   a backup creation oriented file-copying tool
+   - **[backup-mirror]**:         copy backup directories and do related tasks
+   - **[backup-mirror-sources]**: copy backup directories from mirror sources
+   - **[backup-nice]**:           run a backup command nicely
+   - **[backup-nologin]**:        politely refuse a login but allow a backup
+   - **[backup-prepare]**:        prepare for backups
+   - **[backup-purge]**:          delete old backup directories
+   - **[backup-rsync]**:          a backup-oriented file-copying tool
+   - **[backup-sources]**:        create a new backup directory from backup sources
+ - \<YEAR\>/
+     A yearly backup directory.
+ - \<YEAR\>[**-**]\<MONTH\>/
+     A monthly backup directory.
+ - \<YEAR\>[**-**]**W**\<WEEK\>/
+     A weekly backup directory.
+ - \<YEAR\>[**-**]\<MONTH\>[**-**]\<DAY\>/
+     A daily backup directory.
+ - \<YEAR\>[**-**]\<MONTH\>[**-**]\<DAY\>**T**\<HOUR\>/
+     An hourly backup directory.
+ - \<YEAR\>[**-**]\<MONTH\>[**-**]\<DAY\>**T**\<HOUR\>[**:**]\<MINUTE\>/
+     A minutely backup directory.
+ - \<YEAR\>[**-**]\<MONTH\>[**-**]\<DAY\>**T**\<HOUR\>[**:**]\<MINUTE\>[**:**]\<SECOND\>/
+     A secondly backup directory.
+ - \<YEAR\>[**-**]**W**\<WEEK\>[**-**]\<DAY\>/
+     An alternative daily backup directory.
+ - \<YEAR\>[**-**]**W**\<WEEK\>[**-**]\<DAY\>**T**\<HOUR\>/
+     An alternative hourly backup directory.
+ - \<YEAR\>[**-**]**W**\<WEEK\>[**-**]\<DAY\>**T**\<HOUR\>[**:**]\<MINUTE\>/
+     An alternative minutely backup directory.
+ - \<YEAR\>[**-**]**W**\<WEEK\>[**-**]\<DAY\>**T**\<HOUR\>[**:**]\<MINUTE\>[**:**]\<SECOND\>/
+     An alternative secondly backup directory.
 
-Copy files using rsync(1).
+[conf/]: conf/
+[conf/backup-src-list]: conf/README.md#the-confbackup-src-list-file
+[conf/mirror-src-list]: conf/README.md#the-confmirror-src-list-file
+[tools/]: tools/
+[backup]: tools/README.md#backup
+[backup-copy]: tools/README.md#backup-copy
+[backup-copy-rsync]: tools/README.md#backup-copy-rsync
+[backup-create]: tools/README.md#backup-create
+[backup-create-rsync]: tools/README.md#backup-create-rsync
+[backup-mirror]: tools/README.md#backup-mirror
+[backup-mirror-sources]: tools/README.md#backup-mirror-sources
+[backup-nice]: tools/README.md#backup-nice
+[backup-nologin]: tools/README.md#backup-nologin
+[backup-prepare]: tools/README.md#backup-prepare
+[backup-purge]: tools/README.md#backup-purge
+[backup-rsync]: tools/README.md#backup-rsync
+[backup-sources]: tools/README.md#backup-sources
 
-### **backup-create**
+Backup configuration
+--------------------
 
-Create a new backup directory using rsync(1).
+See documentation in the **[conf/]** directory.
 
-The newly created backup directory is named according to the backup date
-and time and is a full backup directory containing direct (but possible
-filtered) copies of original files and directories. It can thus be
-accessed and restored directly.
+Backup tools
+------------
 
-Disk usage is minimised and the transfer is speeded up by hard linking
-files from old backup directories to the newly created backup directory
-whenever possible (when files in sources and previous backup directories
-are identical in content and in all preserved attributes).
+See documentation in the **[tools/]** directory.
 
-On the btrfs and s3ql filesystems, hard linking is not needed and is
-therefore not used for disk usage minimisation.
+Backup scheduling
+-----------------
 
-### **backup-create-rsync**
+The backup scripts must be run often enough. That can be automated with
+systemd timer units, crontabs or such.
 
-Copy files using rsync(1).
+If proper configuration exists in the **[conf/]** directory (at minimum
+the **[conf/backup-src-list]** file), it is enough to run
+`/path/to/tools/backup` (see **[backup]**\(1\) for details) often enough
+such as daily, bihourly, or hourly.
 
-### **backup-mirror**
+If proper configuration does not exist, one has to create one (see the
+documentation in the **[conf/]** directory for details) or one has to
+run `/path/to/tools/backup-create [<RSYNC-OPTION>]... <SRC>..` and
+`/path/to/tools/backup-purge [<PATTERN>=<DAYS>]...` (see
+**[backup-create]**\(1\) and **[backup-purge]**\(1\) for details).
 
-Read mirror sources from configuration files, copy backup directories
-from the mirror sources using rsync(1) and then delete old backup
-directories based on pattern matching and ages.
+Backup mirror scheduling
+------------------------
 
-### **backup-mirror-sources**
+If proper configuration exists in the **[conf/]** directory (at minimum
+the **[conf/mirror-src-list]** file), it is enough to run
+`/path/to/tools/backup-mirror` (see **[backup-mirror]**\(1\) for
+details) often enough such as weekly or daily.
 
-Read mirror sources from configuration files and copy backup directories
-from the mirror sources using rsync(1).
-
-### **backup-nice**
-
-Run a backup command with idle I/O priority (whose impact on normal
-system activity should be zero), with an adjusted niceness (which affect
-process scheduling) and with minimized effect on file system cache.
-
-### **backup-nologin**
-
-Politely refuse a login but allow backup-rsync to be executed via a
-remote shell.
-
-### **backup-prepare**
-
-Prepare for backups by executing preparation scripts.
-
-This can be used for dumping database snapshots to files, for instance.
-
-### **backup-purge**
-
-Delete old backup directories based on pattern matching and ages.
-
-The default is to keep hourly backups for at most one day, daily backups
-for at least one week, weekly backups for at least one month, monthly
-backups for at least one year and yearly backups forever.
-
-### **backup-rsync**
-
-Copy files using rsync(1).
-
-### **backup-sources**
-
-Read backup sources from configuration files and create a new backup
-directory from the backup sources using rsync(1).
+If proper configuration does not exist, one has to create one (see the
+documentation in the **[conf/]** directory for details) or one has to
+run `/path/to/tools/backup-copy [<RSYNC-OPTION>]... <SRC>..` and
+`/path/to/tools/backup-purge [<PATTERN>=<DAYS>]...` (see
+**[backup-copy]**\(1\) and **[backup-purge]**\(1\) for details).
 
 Copyright
 ---------

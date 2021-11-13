@@ -58,6 +58,29 @@ ${basename%backup*}backup-prepare(1), \
 ${basename%backup*}backup-sources(1) and \
 ${basename%backup*}backup-purge(1).
 
+The preparation scripts can be used for dumping database snapshots to files, \
+for instance.
+
+The newly created backup directory \
+is named according to the backup date and time and \
+is a full backup directory \
+containing direct (but possible filtered) copies \
+of original files and directories. \
+It can thus be accessed and restored directly.
+
+Old backup directories are deleted \
+based on pattern matching and ages. \
+The default is to keep \
+secondly, minutely and hourly backup directories for at most one day \
+covering hours since the last daily backup, \
+daily backup directories for at least one week \
+covering days since the last weekly backup, \
+weekly backup directories for at least one month \
+covering weeks since the last monthly backup, \
+monthly backup directories for at least one year \
+covering months since the last yearly backup and \
+yearly backup directories forever.
+
 Options:
     -h, --help[=<FORMAT>]
         Show this help message and exit.
@@ -92,9 +115,15 @@ Files:
         A daily backup directory.
     ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>
         An hourly backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>T<HOUR>
+        An hourly backup directory.
     ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[:]<MINUTE>
         A minutely backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>T<HOUR>[:]<MINUTE>
+        A minutely backup directory.
     ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[:]<MINUTE>[:]<SECOND>
+        A secondly backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>T<HOUR>[:]<MINUTE>[:]<SECOND>
         A secondly backup directory.
     ${dir}/latest
         A symbolic link to the latest backup directory.

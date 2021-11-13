@@ -62,7 +62,8 @@ Usage: \\
  or:   \\
            ${basename} <OPTION>...
 
-Create a new backup directory using rsync(1).
+Create a new backup directory \
+using ${basename%backup*}backup-create-rsync(1) and thus rsync(1).
 
 The newly created backup directory \
 is named according to the backup date and time and \
@@ -78,7 +79,7 @@ A new backup directory is created using the following steps:
   Files and directories are copied \
 from sources \
 to the newly created backup directory \
-using rsync(1).
+using ${basename%backup*}backup-create-rsync(1) and thus rsync(1).
 
   A new symbolink link to denote the latest backup directory \
 is created in a temporary directory.
@@ -153,9 +154,15 @@ Files:
         A daily backup directory.
     ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>
         An hourly backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>T<HOUR>
+        An hourly backup directory.
     ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[:]<MINUTE>
         A minutely backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>T<HOUR>[:]<MINUTE>
+        A minutely backup directory.
     ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[:]<MINUTE>[:]<SECOND>
+        A secondly backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>T<HOUR>[:]<MINUTE>[:]<SECOND>
         A secondly backup directory.
     ${dir}/latest
         A symbolic link to the latest backup directory.

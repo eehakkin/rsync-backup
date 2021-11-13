@@ -54,7 +54,8 @@ Usage: \\
  or:   \\
            ${basename} <OPTION>...
 
-Copy backup directories from sources using rsync(1).
+Copy backup directories from sources \
+using ${basename%backup*}backup-copy-rsync(1) and thus rsync(1).
 
 A backup directory is copied using the following steps:
 
@@ -63,7 +64,7 @@ A backup directory is copied using the following steps:
   Files and directories are copied \
 from a source backup directory \
 to the newly created backup directory \
-using rsync(1).
+using ${basename%backup*}backup-copy-rsync(1) and thus rsync(1).
 
   A new symbolink link to denote the latest backup directory \
 is created in a temporary directory.
@@ -138,9 +139,15 @@ Files:
         A daily backup directory.
     ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>
         An hourly backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>T<HOUR>
+        An hourly backup directory.
     ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[:]<MINUTE>
         A minutely backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>T<HOUR>[:]<MINUTE>
+        A minutely backup directory.
     ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[:]<MINUTE>[:]<SECOND>
+        A secondly backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>T<HOUR>[:]<MINUTE>[:]<SECOND>
         A secondly backup directory.
     ${dir}/latest
         A symbolic link to the latest backup directory.

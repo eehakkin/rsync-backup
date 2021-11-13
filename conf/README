@@ -1,6 +1,32 @@
 Backup configuration
 ====================
 
+ - conf/backup-src-base
+ - conf/backup-src-host
+ - conf/backup-src-list
+ - conf/backup-src-module
+ - conf/backup-src-port
+ - conf/backup-src-prefix
+ - conf/backup-src-user
+ - conf/copy-config
+ - conf/create-config
+ - conf/dump-config
+ - conf/examples/
+    - ...
+ - conf/mirror-src-base
+ - conf/mirror-src-host
+ - conf/mirror-src-list
+ - conf/mirror-src-module
+ - conf/mirror-src-port
+ - conf/mirror-src-prefix
+ - conf/mirror-src-user
+ - conf/pre.d/
+    - ...
+ - conf/purge-list
+ - conf/rsync-config
+ - conf/rsh
+ - conf/tag-formats
+
 The conf/backup-src-base file
 -----------------------------
 
@@ -152,6 +178,11 @@ The conf/dump-config file
 An optional configuration file used by some conf/pre.d/*-dump scripts
 used by backup-prepare(1) used by backup(1) containing configuration
 variable assignments.
+
+The conf/examples/ directory
+----------------------------
+
+A directory containing sample configuration files.
 
 The conf/mirror-src-base file
 -----------------------------
@@ -402,3 +433,20 @@ when constructing a backup directory name for a new backup. Empty lines
 and comment lines (starting with a "#") are allowed, too. Each date
 format is tried in turn in order specified until a non-existing backup
 directory is found.
+
+Copyright
+---------
+
+Copyright (C) 2010 - 2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License version 3
+as published by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
