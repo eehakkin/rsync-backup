@@ -92,7 +92,8 @@ Each date format is tried in turn in order specified \
 until a non-existing backup directory is found.
 
 See also:
-    ${basename%backup*}backup-create(1)
+    ${basename%backup*}backup-create(1),
+    ${basename%backup*}backup-rsync(1)
 
     Home page <https://github.Eero.Häkkinen.fi/rsync-backup/>
 __HELP__

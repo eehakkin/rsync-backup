@@ -78,7 +78,8 @@ matching the pattern [${valid}].
 
 See also:
     ${basename%backup*}backup(1),
-    ${basename%backup*}backup-nice(1)
+    ${basename%backup*}backup-nice(1),
+    ${basename%backup*}backup-rsync(1)
 
     ionice(1),
     nice(1),

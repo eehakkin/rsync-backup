@@ -57,6 +57,8 @@ Usage: \\
            ${basename} <OPTION>...
  or:   \\
            ${basename} [--backup-prepare] --server --sender [<RSYNC-SENDER-OPTION>]... . [<ARG>]...
+ or:   \\
+           ${basename} --server [<RSYNC-RECEIVER-OPTION>]... . [<ARG>]...
 
 Copy files \
 using rsync(1) \
@@ -132,9 +134,12 @@ which can be used for excluding files from backups. \
 Empty lines and comment lines (starting with a "#") are allowed, too.
 
 See also:
+    ${basename%backup*}backup-clean-tmp(1),
     ${basename%backup*}backup-copy-rsync(1),
     ${basename%backup*}backup-create-rsync(1),
-    ${basename%backup*}backup-nice(1)
+    ${basename%backup*}backup-make-tag(1),
+    ${basename%backup*}backup-nice(1),
+    ${basename%backup*}backup-prepare(1)
 
     ionice(1),
     nice(1),
@@ -232,12 +237,15 @@ case ${SSH_ORIGINAL_COMMAND++} in
 	* ) false ;;
 	esac &&
 	case ${args} in
-	' --server --sender -s'*          | \
-	' --server --sender -'[!s]*' . '* )
+	' --server --sender -s'*           | \
+	' --server --sender -'[!-s]*' . '* | \
+	' --server -s'*                    | \
+	' --server -'[!-s]*' . '*          )
 		# Require exact argument match.
 		[ -z "${extra_args}" ]
 		;;
-	' --server --sender -'[!s]*' .' )
+	' --server --sender -'[!-s]*' .' | \
+	' --server -'[!-s]*' .'          )
 		# Allow extra operands but not extra options.
 		(
 			for arg in ${extra_args}
@@ -248,14 +256,16 @@ case ${SSH_ORIGINAL_COMMAND++} in
 			done
 		)
 		;;
-	' --server --sender' )
+	' --server --sender' | \
+	' --server'          )
 		# Allow extra options and operands.
 		;;
 	* )
 		# Allow extra options and operands.
 		case ${backup_args}${args}${extra_args} in
 		' --backup-prepare --server --sender '* | \
-		' --server --sender '*                  ) ;;
+		' --server --sender '*                  | \
+		' --server '*                           ) ;;
 		* ) false ;;
 		esac
 		;;
@@ -288,6 +298,26 @@ case ${args}${extra_args} in
 	do
 		shift
 	done
+	;;
+' --server '* | \
+' --server'   )
+	eval 'last_arg=${'"${#}"'}'
+	case ${last_arg} in
+	. )
+		max_dest_opts=$(( ${max_dest_opts} / 2 ))
+		# Replace the last operand with <DIR>/tmp/rsync-<PID>/<TAG>.
+		tag=$( "${0%backup*}backup-make-tag" )
+		tmp_base=rsync-${$}
+		unset last_arg
+		for arg
+		do
+			set -- "${@}" ${last_arg+"${last_arg}"} #"
+			shift
+			last_arg=${arg}
+		done
+		set -- "${@}" "${dir}/tmp/${tmp_base}/${tag}"
+		;;
+	esac
 	;;
 * )
 	# Parse an internal configuration name option.
@@ -343,7 +373,7 @@ rsync"
 		${rsh+ --rsh="${rsh}" }				\
 		${rsync_path+ --rsync-path="${rsync_path}" }	\
 		--sparse					\
-		"${@}"
+		"${@}"						#"
 
 	# Check if the last operand is <DIR>/tmp/<BASE-PREFIX>-<PID>/<TAG>.
 	eval 'last_arg=${'"${#}"'}'
@@ -393,7 +423,7 @@ case ${tmp_base++}${tag++} in
 		| exec sed -n \
 			-e '\|[]()*/?\\[]|d' \
 			-e 's|^[[:digit:]][[:digit:][:punct:]TW]*$|'"${dest_opt}"'=../../../&|p' \
-		| exec sed -e '20q'
+		| exec sed -e "${max_dest_opts}q"
 		)
 
 	# Run rsync.

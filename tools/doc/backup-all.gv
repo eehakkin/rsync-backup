@@ -4,7 +4,7 @@ digraph "rsync-backup" {
 	subgraph "cluster:tools" {
 		graph	[ label = "tools/" ]
 		node	[ target = "_parent", URL = "../#\N" ]
-		"backup"		-> "backup-prepare"		[ label = 1 ]
+		"backup"		-> "backup-prepare"		[ taillabel = 1 ]
 		"backup"		-> "backup-sources"		[ label = 2 ]
 		"backup"		-> "backup-purge"		[ label = 3 ]
 		"backup-copy"		-> "backup-clean-tmp"
@@ -17,15 +17,18 @@ digraph "rsync-backup" {
 		"backup-mirror"		-> "backup-mirror-sources"	[ label = 1 ]
 		"backup-mirror"		-> "backup-purge"		[ label = 2 ]
 		"backup-mirror-sources"	-> "backup-copy"
-		"backup-prepare"	-> "backup-nice"		[ minlen = 4 ]
+		"backup-prepare"	-> "backup-nice"
 		"backup-purge"		-> "backup-clean-tmp"
-		"backup-rsync"		-> "backup-nice"
+		"backup-rsync"		-> "backup-clean-tmp"		[ style = dashed ]
+		"backup-rsync"		-> "backup-make-tag"		[ style = dashed ]
+		"backup-rsync"		-> "backup-nice"		[ minlen = 2 ]
+		"backup-rsync"		-> "backup-prepare"		[ style = dashed ]
 		"backup-sources"	-> "backup-create"
 	}
 	"backup-nice"	-> "ionice"		[ style = dashed ]
 	"backup-nice"	-> "nice"		[ style = dashed ]
 	"backup-nice"	-> "nocache"		[ style = dashed ]
-	"backup-purge"	-> "on_ac_power"	[ minlen = 5, style = dashed ]
-	"backup-rsync"	-> "rsync"		[ minlen = 2 ]
+	"backup-purge"	-> "on_ac_power"	[ style = dashed ]
+	"backup-rsync"	-> "rsync"
 	"rsync"		-> "ssh"		[ style = dashed ]
 }
