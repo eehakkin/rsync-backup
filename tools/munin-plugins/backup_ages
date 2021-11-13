@@ -1,7 +1,7 @@
 #! /bin/sh -Ce
 # -*- sh -*-
 ###########################################################################
-# backup_ages 0.0.20211029
+# backup_ages 0.0.20211113
 #
 # Copyright (C) 2019-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -131,10 +131,7 @@ esac
 me=$( command -v -- "${0}" || ls -d -- "${0}" )
 me=$( readlink -f -- "${me}" || ls -d -- "${me}" )
 me_dir=$( dirname -- "${me}" )
-case ${me_dir} in
-. ) dir=../.. ;;
-* ) dir=$( dirname -- "${me_dir}" ); dir=$( dirname -- "${dir}" ) ;;
-esac
+dir=$( cd -- "${me_dir}/../.." && pwd )
 
 . "${MUNIN_LIBDIR?}/plugins/plugin.sh"
 

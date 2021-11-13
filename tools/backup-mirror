@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-mirror 0.0.20211107
+# backup-mirror 0.0.20211113
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -26,8 +26,10 @@
 me=$( command -v -- "${0}" || ls -d -- "${0}" )
 me_dir=$( dirname -- "${me}" )
 case ${me_dir} in
-. ) dir=.. ;;
-* ) dir=$( dirname -- "${me_dir}" ) ;;
+.  ) dir=.. ;;
+.. ) dir=../.. ;;
+*. ) dir=$( cd -- "${me_dir}/.." && pwd ) ;;
+*  ) dir=$( dirname -- "${me_dir}" ) ;;
 esac
 
 basename=${0##*[\\/]}
