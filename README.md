@@ -130,6 +130,7 @@ Directory structure
    - **[backup-copy-rsync]**:     a backup copying oriented file-copying tool
    - **[backup-create]**:         create a new backup directory
    - **[backup-create-rsync]**:   a backup creation oriented file-copying tool
+   - **[backup-make-tag]**:       construct a new backup directory name
    - **[backup-mirror]**:         copy backup directories and do related tasks
    - **[backup-mirror-sources]**: copy backup directories from mirror sources
    - **[backup-nice]**:           run a backup command nicely
@@ -171,6 +172,7 @@ Directory structure
 [backup-copy-rsync]: tools/README.md#backup-copy-rsync
 [backup-create]: tools/README.md#backup-create
 [backup-create-rsync]: tools/README.md#backup-create-rsync
+[backup-make-tag]: tools/README.md#backup-make-tag
 [backup-mirror]: tools/README.md#backup-mirror
 [backup-mirror-sources]: tools/README.md#backup-mirror-sources
 [backup-nice]: tools/README.md#backup-nice

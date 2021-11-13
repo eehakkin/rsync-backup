@@ -12,6 +12,7 @@ digraph "rsync-backup" {
 		"backup-copy-rsync"	-> "backup-rsync"
 		"backup-create"		-> "backup-clean-tmp"
 		"backup-create"		-> "backup-create-rsync"
+		"backup-create"		-> "backup-make-tag"
 		"backup-create-rsync"	-> "backup-rsync"
 		"backup-mirror"		-> "backup-mirror-sources"	[ label = 1 ]
 		"backup-mirror"		-> "backup-purge"		[ label = 2 ]

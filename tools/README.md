@@ -7,6 +7,7 @@ Backup tools
  - **[backup-copy-rsync]**:     a backup copying oriented file-copying tool
  - **[backup-create]**:         create a new backup directory
  - **[backup-create-rsync]**:   a backup creation oriented file-copying tool
+ - **[backup-make-tag]**:       construct a new backup directory name
  - **[backup-mirror]**:         copy backup directories and do related tasks
  - **[backup-mirror-sources]**: copy backup directories from mirror sources
  - **[backup-nice]**:           run a backup command nicely
@@ -169,6 +170,18 @@ For a reference manual,
 run
 `tools/backup-create-rsync --help` or
 `tools/backup-create-rsync --help=man`.
+
+**backup-make-tag**
+-------------------
+[backup-make-tag]: #backup-make-tag
+
+Construct a new backup backup directory name based on date and time and
+the names of the existing backup directories.
+
+For a reference manual,
+run
+`tools/backup-make-tag --help` or
+`tools/backup-make-tag --help=man`.
 
 **backup-mirror**
 -----------------

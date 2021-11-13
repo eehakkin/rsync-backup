@@ -1,0 +1,186 @@
+#! /bin/sh -Ceu
+###########################################################################
+# backup-make-tag 0.0.20211113
+#
+# Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 3
+# as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###########################################################################
+# Try to be nice.
+{
+	ionice -c 3  -p "${$}"
+	renice -n 99 -p "${$}"
+} > /dev/null 2>&1 || :
+
+# Locate the script.
+me=$( command -v -- "${0}" || ls -d -- "${0}" )
+me_dir=$( dirname -- "${me}" )
+case ${me_dir} in
+.  ) dir=.. ;;
+.. ) dir=../.. ;;
+*. ) dir=$( cd -- "${me_dir}/.." && pwd ) ;;
+*  ) dir=$( dirname -- "${me_dir}" ) ;;
+esac
+
+basename=${0##*[\\/]}
+short_description='construct a new backup directory name'
+
+
+
+# Parse options.
+while :
+do
+	case ${1-} in
+	--help | -h )
+		COLUMNS=${COLUMNS:-$( tput cols 2> /dev/null || : )}
+		exec fmt -s ${COLUMNS:+ -w "${COLUMNS}" } << __HELP__ \
+		| exec sed -e '/\\$/{N;s/\\\n  *//;}'; exit
+Usage: \\
+           ${basename} <OPTION>...
+
+Construct a new backup backup directory name \
+based on \
+date and time and \
+the names of the existing backup directories.
+
+Options:
+    -h, --help[=<FORMAT>]
+        Show this help message and exit.
+    -V, --version
+        Show version information and exit.
+
+Files:
+    ${dir}/<YEAR>
+        A yearly backup directory.
+    ${dir}/<YEAR>[-]<MONTH>
+        A monthly backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>
+        A weekly backup directory.
+    ${dir}/<YEAR>[-]<MONTH>[-]<DAY>
+        A daily backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>
+        A daily backup directory.
+    ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>
+        An hourly backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>T<HOUR>
+        An hourly backup directory.
+    ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[:]<MINUTE>
+        A minutely backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>T<HOUR>[:]<MINUTE>
+        A minutely backup directory.
+    ${dir}/<YEAR>[-]<MONTH>[-]<DAY>T<HOUR>[:]<MINUTE>[:]<SECOND>
+        A secondly backup directory.
+    ${dir}/<YEAR>[-]W<WEEK>[-]<DAY>T<HOUR>[:]<MINUTE>[:]<SECOND>
+        A secondly backup directory.
+    ${dir}/conf/tag-formats
+        An optional configuration file \
+containing date formats \
+to be used \
+when constructing a backup directory name for a new backup. \
+Empty lines and comment lines (starting with a "#") are allowed, too. \
+Each date format is tried in turn in order specified \
+until a non-existing backup directory is found.
+
+See also:
+    ${basename%backup*}backup-create(1)
+
+    Home page <https://github.Eero.Häkkinen.fi/rsync-backup/>
+__HELP__
+		;;
+	--help=help2man )
+		COLUMNS=2500 exec "${0}" --help \
+		| exec sed \
+			-e '/^See also:$/,/^[^ ]/{s/^\(See also\):$/*\1*/;s/^ *//;}' \
+			-e '/^    [^ ]/!b'	\
+			-e '/[^ ]  /b'		\
+			-e 'N'			\
+			-e 's/\n        -/  ​-/'	\
+			-e 's/\n        /  /'	\
+			-e 'P'			\
+			-e 'D'
+		exit
+		;;
+	--help=man )
+		exec "${0}" --help=troff \
+		| exec man -l -- -
+		exit
+		;;
+	--help=troff )
+		cat << '__TROFF__'
+.if '\*[.T]'html' \{\
+.HEAD "<link href=""groff.css"" rel=""stylesheet"" type=""text/css"" />"
+.HEAD "<meta name=""viewport"" content=""width=device-width, initial-scale=1.0"" />"
+.HX 0
+.\}
+__TROFF__
+		exec help2man -h --help=help2man -L en_US.UTF-8 -N -n "${short_description}" -- "${0}" \
+		| exec sed \
+			-e '\|^[.]B backup|,\|^[.]SH |{' \
+			-e '\|^[^.]|s| |&\\%|g' \
+			-e '\|^[^.]|s|^|&\\%|' \
+			-e '\|^[.]br$|d' \
+			-e 's|^[.]B backup|.SY backup|' \
+			-e '\|^[.]SH |i\
+.YS' \
+			-e '}' \
+			-e 's|\([[:alpha:]][[:alnum:]\\_-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g' \
+			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|.UR \2\
+\1\
+.UE|'
+		exit
+		;;
+	--help=* )
+		exec "${0}" --help=troff \
+		| exec man -l -T"${1#*=}" -- -
+		exit
+		;;
+	--version | -V )
+		exec sed -n \
+			-e '/^[^#]/q'				\
+			-e "3s/^# [^ ]* /# ${basename} /"	\
+			-e 's/^#\( \(.*\)\)*$/\2/p'		\
+			-e '/^##/{2!q;}'			\
+			-- "${me}"
+		;;
+	esac
+	break
+done
+
+# Construct a tag.
+unset tag_formats tag
+file=${dir}/conf/tag-formats
+[ ! -f "${file}" ] || tag_formats=$(
+	exec sed -n -e '/^[[:space:]]*[^[:space:]#]/p' -- "${file}"
+	)
+while read tag_format
+do
+	tag=$( date +"${tag_format}" )
+	case ${tag} in
+	*[]\(\)\*\/\?\\[]* | *[![:digit:][:punct:]TW]* )
+		;;
+	[[:digit:]]* )
+		[ ! -e "${dir}/${tag}" ] && break
+		;;
+	esac
+	unset tag
+done << __FORMATS__
+${tag_formats-"\
+%Y
+%Y%m
+%GW%V
+%Y%m%d
+%Y%m%dT%H
+%Y%m%dT%H%M
+%Y%m%dT%H%M%S"}
+__FORMATS__
+printf '%s\n' "${tag:?}"

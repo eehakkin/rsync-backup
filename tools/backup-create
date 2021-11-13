@@ -208,6 +208,7 @@ Empty lines and comment lines (starting with a "#") are allowed, too.
 See also:
     ${basename%backup*}backup-clean-tmp(1),
     ${basename%backup*}backup-create-rsync(1),
+    ${basename%backup*}backup-make-tag(1),
     ${basename%backup*}backup-sources(1)
 
     rsync(1),
@@ -276,36 +277,7 @@ __TROFF__
 done
 
 # Construct a tag name.
-file=${dir}/conf/tag-formats
-unset formats tag
-[ ! -f "${file}" ] || formats=$(
-	exec sed -n -e '/^[[:space:]]*[^[:space:]#]/p' -- "${file}"
-	)
-while read format
-do
-	tag2=$( date +"${format}" )
-	case ${tag2} in
-	*[![:digit:][:punct:]TW]* ) continue ;;
-	[[:digit:]]*              ) ;;
-	*                         ) continue ;;
-	esac
-	[ ! -e "${dir}/${tag2}" ] && {
-		tag=${tag2}
-		break
-	}
-done << __FORMATS__
-${formats-"\
-%Y
-%Y%m
-%GW%V
-%Y%m%d
-%Y%m%dT%H
-%Y%m%dT%H%M
-%Y%m%dT%H%M%S"}
-__FORMATS__
-	;;
-esac
-: "${tag:?}"
+tag=$( "${0%backup*}backup-make-tag" )
 
 # Create a protected temporary directory,
 # create a new backup directory in the protected temporary directory,
