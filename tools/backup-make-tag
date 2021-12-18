@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-make-tag 0.0.20211113
+# backup-make-tag 0.0.20211218
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -153,9 +153,17 @@ __TROFF__
 			-e '/^##/{2!q;}'			\
 			-- "${me}"
 		;;
+	--  ) shift; break ;;
+	-?* ) getopts '' OPT "${@}"; exit 1 ;;
+	*   ) break ;;
 	esac
-	break
 done
+
+# Parse operands.
+case ${#} in
+0 ) ;;
+* ) "${0}" --help >&2; exit 1 ;;
+esac
 
 # Construct a tag.
 unset tag_formats tag
