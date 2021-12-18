@@ -135,13 +135,13 @@ __TROFF__
 			-e '\|^[^.]|s|^|&\\%|' \
 			-e '\|^[.]br$|d' \
 			-e 's|^[.]B backup|.SY backup|' \
-			-e '\|^[.]SH |i\
-.YS' \
+			-e '\|^[.]SH |i'"\\
+.YS" \
 			-e '}' \
 			-e 's|\([[:alpha:]][[:alnum:]\\_-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g' \
-			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|.UR \2\
-\1\
-.UE|'
+			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|'".UR \2\\
+\1\\
+.UE"'|'
 		exit
 		;;
 	--help=* )
@@ -158,7 +158,7 @@ __TROFF__
 			-- "${me}"
 		;;
 	--  ) shift; break ;;
-	-?* ) getopts '' OPT "${@}"; exit 1 ;;
+	-?* ) "getopts${-##*}" '' OPT "${@}"; exit 1 ;;
 	*   ) break ;;
 	esac
 done
@@ -181,7 +181,7 @@ do
 	do
 		tag=$( date +"${tag_format}" )
 		case ${tag} in
-		*[]\(\)\*\/\?\\[]* | *[![:digit:][:punct:]TW]* )
+		*[]\(\)\*/\?\\[]* | *[![:digit:][:punct:]TW]* )
 			;;
 		[[:digit:]]* )
 			[ ! -e "${dir2}/${tag}" ] && break

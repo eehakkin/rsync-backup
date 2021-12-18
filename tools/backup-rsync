@@ -34,7 +34,7 @@ esac
 
 basename=${0##*[\\/]}
 short_description='a backup-oriented file-copying tool'
-valid=[:alnum:]_.-
+valid='[:alnum:]_.-'
 
 
 # Parse options.
@@ -90,8 +90,8 @@ $( exec rsync --help | exec sed '
 	s/,-/, -/g
 	/^ *-/{
 		s//    -/
-		s/\([^, ]\)  */\1\
-        /
+		s/\([^, ]\)  */'"\1\\
+        "'/
 	}
 ' )
 
@@ -183,13 +183,13 @@ __TROFF__
 			-e '\|^[^.]|s|^|&\\%|' \
 			-e '\|^[.]br$|d' \
 			-e 's|^[.]B backup|.SY backup|' \
-			-e '\|^[.]SH |i\
-.YS' \
+			-e '\|^[.]SH |'"i\\
+.YS" \
 			-e '}' \
 			-e 's|\([[:alpha:]][[:alnum:]\\_-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g' \
-			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|.UR \2\
-\1\
-.UE|'
+			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|'".UR \2\\
+\1\\
+.UE"'|'
 		exit
 		;;
 	--help=* )
@@ -210,7 +210,7 @@ __TROFF__
 done
 
 # Prepare to parse server options.
-args= backup_args= backup_prepare= extra_args=
+args='' backup_args='' backup_prepare='' extra_args=''
 for arg
 do
 	case "${args} ${arg}" in
@@ -225,57 +225,60 @@ case ${SSH_ORIGINAL_COMMAND++} in
 	# Check if SSH_ORIGINAL_COMMAND matches the supplied arguments and
 	# extend the options and the operands with ones from
 	# SSH_ORIGINAL_COMMAND.
-	case ${SSH_ORIGINAL_COMMAND} in
-	*"${0}${backup_args}${args}" | \
-	*"${0}${args}"               ) ;;
-	*"${0}${backup_args}${args} "* )
-		extra_args=" ${SSH_ORIGINAL_COMMAND#**"${0}${backup_args}${args} "}"
-		;;
-	*"${0}${args} "* )
-		extra_args=" ${SSH_ORIGINAL_COMMAND#**"${0}${args} "}"
-		;;
-	* ) false ;;
-	esac &&
-	case ${args} in
-	' --server --sender -s'*           | \
-	' --server --sender -'[!-s]*' . '* | \
-	' --server -s'*                    | \
-	' --server -'[!-s]*' . '*          )
-		# Require exact argument match.
-		[ -z "${extra_args}" ]
-		;;
-	' --server --sender -'[!-s]*' .' | \
-	' --server -'[!-s]*' .'          )
-		# Allow extra operands but not extra options.
-		(
-			for arg in ${extra_args}
-			do
-				case ${arg} in
-				( -* ) exit 1 ;;
-				esac
-			done
-		)
-		;;
-	' --server --sender' | \
-	' --server'          )
-		# Allow extra options and operands.
-		;;
-	* )
-		# Allow extra options and operands.
-		case ${backup_args}${args}${extra_args} in
-		' --backup-prepare --server --sender '* | \
-		' --server --sender '*                  | \
-		' --server '*                           ) ;;
+	{
+		# shellcheck disable=SC2086
+		case ${SSH_ORIGINAL_COMMAND} in
+		*"${0}${backup_args}${args}" | \
+		*"${0}${args}"               ) ;;
+		*"${0}${backup_args}${args} "* )
+			extra_args=" ${SSH_ORIGINAL_COMMAND#**"${0}${backup_args}${args} "}"
+			;;
+		*"${0}${args} "* )
+			extra_args=" ${SSH_ORIGINAL_COMMAND#**"${0}${args} "}"
+			;;
+		* ) false ;;
+		esac &&
+		case ${args} in
+		' --server --sender -s'*           | \
+		' --server --sender -'[!-s]*' . '* | \
+		' --server -s'*                    | \
+		' --server -'[!-s]*' . '*          )
+			# Require exact argument match.
+			[ -z "${extra_args}" ]
+			;;
+		' --server --sender -'[!-s]*' .' | \
+		' --server -'[!-s]*' .'          )
+			# Allow extra operands but not extra options.
+			(
+				for arg in ${extra_args}
+				do
+					case ${arg} in
+					( -* ) exit 1 ;;
+					esac
+				done
+			)
+			;;
+		' --server --sender' | \
+		' --server'          )
+			# Allow extra options and operands.
+			;;
+		* )
+			# Allow extra options and operands.
+			case ${backup_args}${args}${extra_args} in
+			' --backup-prepare --server --sender '* | \
+			' --server --sender '*                  | \
+			' --server '*                           ) ;;
+			* ) false ;;
+			esac
+			;;
+		esac &&
+		set -- "${@}" ${extra_args} &&
+		case ${SSH_ORIGINAL_COMMAND} in
+		*"${0}${backup_args}${args}${extra_args}" ) ;;
+		*"${0}${args}${extra_args}" ) backup_prepare= ;;
 		* ) false ;;
 		esac
-		;;
-	esac &&
-	set -- "${@}" ${extra_args} &&
-	case ${SSH_ORIGINAL_COMMAND} in
-	*"${0}${backup_args}${args}${extra_args}" ) ;;
-	*"${0}${args}${extra_args}" ) backup_prepare= ;;
-	* ) false ;;
-	esac || {
+	} || {
 		printf "%s: SSH_ORIGINAL_COMMAND='%s' does not match '%s'\n" \
 			"${basename}" \
 			"${SSH_ORIGINAL_COMMAND}" \
@@ -304,6 +307,7 @@ case ${args}${extra_args} in
 	eval 'last_arg=${'"${#}"'}'
 	case ${last_arg} in
 	. )
+		# shellcheck disable=SC2004
 		max_dest_opts=$(( ${max_dest_opts} / 2 ))
 		# Replace the last operand with <DIR>/tmp/rsync-<PID>/<TAG>.
 		tag=$( "${0%backup*}backup-make-tag" )
@@ -332,6 +336,7 @@ case ${args}${extra_args} in
 	*      ) unset filter ;;
 	esac
 	rsh=${dir}/conf/rsh; [ ! -x "${rsh}" ] && unset rsh
+	# shellcheck disable=SC2089
 	rsync_path="\
 IONICE=\$( command -v -- ionice || : ) && \
 NICE=\$( command -v -- nice || : ) && \
@@ -365,6 +370,7 @@ rsync"
 	done
 
 	# Extend the options with default options.
+	# shellcheck disable=SC2090
 	set -- \
 		--archive					\
 		${filter+ --filter="${filter}" }		\
@@ -378,7 +384,7 @@ rsync"
 	# Check if the last operand is <DIR>/tmp/<BASE-PREFIX>-<PID>/<TAG>.
 	eval 'last_arg=${'"${#}"'}'
 	case ${last_arg#"${dir}/tmp/"} in
-	"${last_arg}" | */*[]\(\)\*\/\?\\[]* | */*[![:digit:][:punct:]TW]* ) ;;
+	"${last_arg}" | */*[]\(\)\*/\?\\[]* | */*[![:digit:][:punct:]TW]* ) ;;
 	*-*/[[:digit:]]* )
 		last_arg_dir=${last_arg%/*}
 		tag=${last_arg##*/}
@@ -427,6 +433,7 @@ case ${tmp_base++}${tag++} in
 		)
 
 	# Run rsync.
+	# shellcheck disable=SC2086
 	"${0%backup*}backup-nice" -- rsync ${dest_opts} "${@}" ||
 	case ${?} in
 	24 ) ;; # Partial transfer due to vanished source files

@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup 0.0.20211113
+# backup 0.0.20211218
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -34,7 +34,7 @@ esac
 
 basename=${0##*[\\/]}
 short_description='create a new backup directory and do related tasks'
-valid=[:alnum:]_.-
+valid='[:alnum:]_.-'
 
 
 # Parse options.
@@ -99,8 +99,8 @@ $( exec rsync --help | exec sed '
 	s/,-/, -/g
 	/^ *-/{
 		s//    -/
-		s/\([^, ]\)  */\1\
-        /
+		s/\([^, ]\)  */'"\1\\
+        "'/
 	}
 ' )
 
@@ -343,13 +343,13 @@ __TROFF__
 			-e '\|^[^.]|s|^|&\\%|' \
 			-e '\|^[.]br$|d' \
 			-e 's|^[.]B backup|.SY backup|' \
-			-e '\|^[.]SH |i\
-.YS' \
+			-e '\|^[.]SH |i'"\\
+.YS" \
 			-e '}' \
 			-e 's|\([[:alpha:]][[:alnum:]\\_-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g' \
-			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|.UR \2\
-\1\
-.UE|'
+			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|'".UR \2\\
+\1\\
+.UE"'|'
 		exit
 		;;
 	--help=* )

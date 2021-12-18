@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-nologin 0.0.20210829
+# backup-nologin 0.0.20211218
 #
 # Copyright (C) 2019-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -28,6 +28,7 @@ case ${SSH_ORIGINAL_COMMAND:++},${#},${1-} in
 		case ${command_string} in
 		'sudo '* ) unset LD_PRELOAD ;;
 		esac
+		# shellcheck disable=SC2086
 		exec \
 			${command_string%%"${0%backup*}backup-rsync "*} \
 			"${0%backup*}backup-rsync" \

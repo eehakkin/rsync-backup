@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-copy 0.0.20211113
+# backup-copy 0.0.20211218
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -105,8 +105,8 @@ $( exec rsync --help | exec sed '
 	s/,-/, -/g
 	/^ *-/{
 		s//    -/
-		s/\([^, ]\)  */\1\
-        /
+		s/\([^, ]\)  */'"\1\\
+        "'/
 	}
 ' )
 
@@ -222,13 +222,13 @@ __TROFF__
 			-e '\|^[^.]|s|^|&\\%|' \
 			-e '\|^[.]br$|d' \
 			-e 's|^[.]B backup|.SY backup|' \
-			-e '\|^[.]SH |i\
-.YS' \
+			-e '\|^[.]SH |i'"\\
+.YS" \
 			-e '}' \
 			-e 's|\([[:alpha:]][[:alnum:]\\_-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g' \
-			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|.UR \2\
-\1\
-.UE|'
+			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|'".UR \2\\
+\1\\
+.UE"'|'
 		exit
 		;;
 	--help=* )
@@ -346,6 +346,7 @@ do
 			exec ls -- "${dir}/" \
 			| exec sed -n -e '/./s|^[[:digit:]][[:digit:][:punct:]TW]*$|--exclude=/&/|p'
 			)
+		# shellcheck disable=SC2086
 		"${0%backup*}backup-copy-rsync" \
 			--exclude='/*[![:digit:][:punct:]TW]*'	\
 			--exclude='/*/*'			\

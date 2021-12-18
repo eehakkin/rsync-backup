@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-clean-tmp 0.0.20211113
+# backup-clean-tmp 0.0.20211218
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -114,13 +114,13 @@ __TROFF__
 			-e '\|^[^.]|s|^|&\\%|' \
 			-e '\|^[.]br$|d' \
 			-e 's|^[.]B backup|.SY backup|' \
-			-e '\|^[.]SH |i\
-.YS' \
+			-e '\|^[.]SH |i'"\\
+.YS" \
 			-e '}' \
 			-e 's|\([[:alpha:]][[:alnum:]\\_-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g' \
-			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|.UR \2\
-\1\
-.UE|'
+			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|'".UR \2\\
+\1\\
+.UE"'|'
 		exit
 		;;
 	--help=* )
@@ -142,7 +142,7 @@ __TROFF__
 		set -- "-${opts%"${opts#?}"}" "-${opts#?}" "${@}"
 		;;
 	--  ) shift; break ;;
-	-?* ) getopts '' OPT "${@}"; exit 1 ;;
+	-?* ) "getopts${-##*}" '' OPT "${@}"; exit 1 ;;
 	*   ) break ;;
 	esac
 done
@@ -170,6 +170,7 @@ else
 	done
 
 	# Remove existing temporary old subdirectories unconditionally.
+	# shellcheck disable=SC2086
 	find "${dir}/tmp/." \
 		! -name . \
 		-prune \
@@ -194,6 +195,7 @@ else
 	done
 	# [-name '<BASE-PREFIX>-*' -o]... -ctime +0 -mtime +0
 	set -- "${@}" -ctime +0 -mtime +0
+	# shellcheck disable=SC2016
 	tmp_old="${dir}/tmp/${old_base_prefix}-${$}" exec find "${dir}/tmp/." \
 		! -name . \
 		-prune \

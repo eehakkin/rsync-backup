@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-prepare 0.0.20211113
+# backup-prepare 0.0.20211218
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -34,7 +34,7 @@ esac
 
 basename=${0##*[\\/]}
 short_description='prepare for backups'
-valid=[:alnum:]_.-
+valid='[:alnum:]_.-'
 
 
 # Parse options.
@@ -121,13 +121,13 @@ __TROFF__
 			-e '\|^[^.]|s|^|&\\%|' \
 			-e '\|^[.]br$|d' \
 			-e 's|^[.]B backup|.SY backup|' \
-			-e '\|^[.]SH |i\
-.YS' \
+			-e '\|^[.]SH |i'"\\
+.YS" \
 			-e '}' \
 			-e 's|\([[:alpha:]][[:alnum:]\\_-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g' \
-			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|.UR \2\
-\1\
-.UE|'
+			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|'".UR \2\\
+\1\\
+.UE"'|'
 		exit
 		;;
 	--help=* )
@@ -144,7 +144,7 @@ __TROFF__
 			-- "${me}"
 		;;
 	--  ) shift; break ;;
-	-?* ) getopts '' OPT "${@}"; exit 1 ;;
+	-?* ) "getopts${-##*}" '' OPT "${@}"; exit 1 ;;
 	*   ) break ;;
 	esac
 done

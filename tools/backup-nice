@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-nice 0.0.20211113
+# backup-nice 0.0.20211218
 #
 # Copyright (C) 2018-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -24,13 +24,13 @@
 
 # Locate the script.
 me=$( command -v -- "${0}" || ls -d -- "${0}" )
-me_dir=$( dirname -- "${me}" )
-case ${me_dir} in
-.  ) dir=.. ;;
-.. ) dir=../.. ;;
-*. ) dir=$( cd -- "${me_dir}/.." && pwd ) ;;
-*  ) dir=$( dirname -- "${me_dir}" ) ;;
-esac
+
+
+
+
+
+
+
 
 basename=${0##*[\\/]}
 short_description='run a backup command nicely'
@@ -110,13 +110,13 @@ __TROFF__
 			-e '\|^[^.]|s|^|&\\%|' \
 			-e '\|^[.]br$|d' \
 			-e 's|^[.]B backup|.SY backup|' \
-			-e '\|^[.]SH |i\
-.YS' \
+			-e '\|^[.]SH |i'"\\
+.YS" \
 			-e '}' \
 			-e 's|\([[:alpha:]][[:alnum:]\\_-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g' \
-			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|.UR \2\
-\1\
-.UE|'
+			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|'".UR \2\\
+\1\\
+.UE"'|'
 		exit
 		;;
 	--help=* )
@@ -133,7 +133,7 @@ __TROFF__
 			-- "${me}"
 		;;
 	--  ) shift; break ;;
-	-?* ) getopts '' OPT "${@}"; exit 1 ;;
+	-?* ) "getopts${-##*}" '' OPT "${@}"; exit 1 ;;
 	*   ) break ;;
 	esac
 done

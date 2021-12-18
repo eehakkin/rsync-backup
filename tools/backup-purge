@@ -35,7 +35,7 @@ esac
 basename=${0##*[\\/]}
 short_description='delete old backup directories'
 default_args='hourly=0 fake-daily=0 daily=7 fake-weekly=7 weekly=31 fake-monthly=31 monthly=366 fake-yearly=366'
-dry_run= force=
+dry_run='' force=''
 
 # Parse options.
 while :
@@ -224,18 +224,18 @@ __TROFF__
 			-e '\|^[^.]|s|^|&\\%|' \
 			-e '\|^[.]br$|d' \
 			-e 's|^[.]B backup|.SY backup|' \
-			-e '\|^[.]SH |i\
-.YS' \
+			-e '\|^[.]SH |i'"\\
+.YS" \
 			-e '}' \
 			-e '\|^[.][IT]P$|N' \
-			-e '\|^\([[]0\\-9[]]\)\1\1\1\(\(\\-\)*\)W*\([[]*0*\\*-*9[]]*\)\4\(\2\1\1*\)*|i\
-.br' \
-			-e '\|^<[[:upper:]]*>\([[]\\-[]]\)W*<[[:upper:]]*>\(\1<[[:upper:]]*>\)*|i\
-.br' \
+			-e '\|^\([[]0\\-9[]]\)\1\1\1\(\(\\-\)*\)W*\([[]*0*\\*-*9[]]*\)\4\(\2\1\1*\)*|i'"\\
+.br" \
+			-e '\|^<[[:upper:]]*>\([[]\\-[]]\)W*<[[:upper:]]*>\(\1<[[:upper:]]*>\)*|i'"\\
+.br" \
 			-e 's|\([[:alpha:]][[:alnum:]\\_-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g' \
-			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|.UR \2\
-\1\
-.UE|'
+			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|'".UR \2\\
+\1\\
+.UE"'|'
 		exit
 		;;
 	--help=* )
@@ -257,7 +257,7 @@ __TROFF__
 		set -- "-${opts%"${opts#?}"}" "-${opts#?}" "${@}"
 		;;
 	--  ) shift; break ;;
-	-?* ) getopts '' OPT "${@}"; exit 1 ;;
+	-?* ) "getopts${-##*}" '' OPT "${@}"; exit 1 ;;
 	*   ) break ;;
 	esac
 done
@@ -275,6 +275,7 @@ case ${#} in
 			set -- "${@}" "${arg}"
 		done < "${dir}/conf/purge-list"
 	else
+		# shellcheck disable=SC2086
 		set -- ${default_args}
 	fi
 	case ${#} in
@@ -283,7 +284,7 @@ case ${#} in
 	;;
 esac
 
-digit=[[:digit:]]
+digit='[[:digit:]]'
 day=${digit}${digit}
 hour=${digit}${digit}
 month=${digit}${digit}
@@ -375,5 +376,6 @@ ${dry_run:+:} "${0%backup*}backup-clean-tmp" -- purge
 	${dry_run:+echo} mv -f -- "${@}" "${dir}/tmp/purge-${$}/"
 	# Remove the protected temporary directory and the backup directories
 	# within it.
+	# shellcheck disable=SC2086
 	${dry_run:+echo} ${rm_fr} -- "${dir}/tmp/purge-${$}"
 } >&2
