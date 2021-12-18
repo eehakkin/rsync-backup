@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-purge 0.0.20211113
+# backup-purge 0.0.20211218
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -267,7 +267,7 @@ case ${#} in
 	if [ -f "${dir}/conf/purge-list" ]
 	then
 		set --
-		while read arg
+		while read -r arg
 		do
 			case ${arg} in
 			'' | '#'* ) continue ;;
@@ -354,7 +354,7 @@ ${dry_run:+:} "${0%backup*}backup-clean-tmp" -- purge
 } | {
 	# Read the names of the to be deleted backup directories.
 	set --
-	while read backup_tag
+	while read -r backup_tag
 	do
 		set -- "${@}" "${dir}/${backup_tag#.[\\/]}"
 	done

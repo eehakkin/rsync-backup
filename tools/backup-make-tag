@@ -177,7 +177,7 @@ file=${dir}/conf/tag-formats
 for dir2
 do
 	unset tag
-	while read tag_format
+	while read -r tag_format
 	do
 		tag=$( date +"${tag_format}" )
 		case ${tag} in

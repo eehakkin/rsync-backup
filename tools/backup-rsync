@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-rsync 0.0.20211113
+# backup-rsync 0.0.20211218
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -348,7 +348,7 @@ rsync"
 		[ ! -f "${dir}/conf/${config_name}-config" ] || {
 			for arg
 			do
-				while IFS="${IFS}=" read opt optarg
+				while IFS="${IFS}=" read -r opt optarg
 				do
 					case ${opt} in
 					'' | '#'*  ) continue ;;

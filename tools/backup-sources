@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-sources 0.0.20211113
+# backup-sources 0.0.20211218
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -352,7 +352,7 @@ then
 else
 	src_prefix=$( grep -- '^[^#]' "${dir}/conf/backup-src-prefix" )
 fi
-while read src
+while read -r src
 do
 	case ${src} in
 	'' | '#'* ) continue ;;
