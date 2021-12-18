@@ -46,7 +46,7 @@ do
 		exec fmt -s ${COLUMNS:+ -w "${COLUMNS}" } << __HELP__ \
 		| exec sed -e '/\\$/{N;s/\\\n  *//;}'; exit
 Usage: \\
-           ${basename} <OPTION>...
+           ${basename} <OPTION>... [<ALT-DIR>]...
 
 Construct a new backup backup directory name \
 based on \
@@ -58,6 +58,10 @@ Options:
         Show this help message and exit.
     -V, --version
         Show version information and exit.
+
+Operands:
+    <ALT-DIR>
+        An alternative directory containing existing backup directories.
 
 Files:
     ${dir}/<YEAR>
@@ -161,28 +165,30 @@ done
 
 # Parse operands.
 case ${#} in
-0 ) ;;
-* ) "${0}" --help >&2; exit 1 ;;
+0 ) set -- "${dir}" ;;
 esac
 
-# Construct a tag.
-unset tag_formats tag
+# Construct tags.
+unset tag_formats
 file=${dir}/conf/tag-formats
 [ ! -f "${file}" ] || tag_formats=$(
 	exec sed -n -e '/^[[:space:]]*[^[:space:]#]/p' -- "${file}"
 	)
-while read tag_format
+for dir2
 do
-	tag=$( date +"${tag_format}" )
-	case ${tag} in
-	*[]\(\)\*\/\?\\[]* | *[![:digit:][:punct:]TW]* )
-		;;
-	[[:digit:]]* )
-		[ ! -e "${dir}/${tag}" ] && break
-		;;
-	esac
 	unset tag
-done << __FORMATS__
+	while read tag_format
+	do
+		tag=$( date +"${tag_format}" )
+		case ${tag} in
+		*[]\(\)\*\/\?\\[]* | *[![:digit:][:punct:]TW]* )
+			;;
+		[[:digit:]]* )
+			[ ! -e "${dir2}/${tag}" ] && break
+			;;
+		esac
+		unset tag
+	done << __FORMATS__
 ${tag_formats-"\
 %Y
 %Y%m
@@ -192,4 +198,5 @@ ${tag_formats-"\
 %Y%m%dT%H%M
 %Y%m%dT%H%M%S"}
 __FORMATS__
-printf '%s\n' "${tag:?}"
+	printf '%s\n' "${tag:?}"
+done
