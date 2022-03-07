@@ -251,7 +251,7 @@ done
 # Find out rsync options requiring an option argument.
 rsync_optarg_opts=$( LC_ALL=C exec rsync --help | exec sed '
 	/^ *-/,/^$/!d
-	s/^ *\(\(-[^(), ]*\(, \)*\)*\).*/\1/
+	s/^ *\(\(-[^(), ]*\(, \)*\)*\).*$/\1/
 	/=[^, ]*/!d
 	s///
 	s/[, ][, ]*/ /g

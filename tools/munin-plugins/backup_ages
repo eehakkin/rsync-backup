@@ -1,9 +1,9 @@
 #! /bin/sh -Ce
 # -*- sh -*-
 ###########################################################################
-# backup_ages 0.0.20211218
+# backup_ages 0.0.20220307
 #
-# Copyright (C) 2019-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2019-2022 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -43,7 +43,8 @@ This plugin must have access to backups.
 The default behaviour is to report backup ages for the current
 backup directory and for all of its sibling directories
 which contain
-a conf/backup-src-list configuration file and
+a conf/backup-src-list configuration file or
+a conf/backup-src-list.d configuration directory and
 a tools/backup tool.
 That behaviour can be overridden with the names variable
 which may contain
@@ -161,9 +162,10 @@ normalize_backup_name() {
 	"${dir}"/../*/tools/backup )
 		backup_dir=${backup_name%/tools/backup}
 		backup_name=${backup_dir#"${dir}"/../}
-		if
-			[ -h "${backup_dir}" ] ||
-			[ ! -s "${backup_dir}/conf/backup-src-list" ]
+		if [ -h "${backup_dir}" ] || {
+			[ ! -s "${backup_dir}/conf/backup-src-list" ] &&
+			[ ! -d "${backup_dir}/conf/backup-src-list.d" ]
+			}
 		then
 			unset backup_dir backup_name
 		fi

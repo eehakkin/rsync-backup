@@ -1,8 +1,8 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# backup-sources 0.0.20211218
+# backup-sources 0.0.20220307
 #
-# Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010-2022 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -34,7 +34,7 @@ esac
 
 basename=${0##*[\\/]}
 short_description='create a new backup directory from backup sources'
-
+valid='[:alnum:]_.-'
 
 
 # Parse options.
@@ -152,6 +152,15 @@ The file must contain operand lines having any the following forms:
         These operands will be passed \
 to the ${basename%backup*}backup-create(1) tool. \
 Empty lines and comment lines (starting with a "#") are allowed, too.
+    ${dir}/conf/backup-src-list.d
+        An optional directory \
+containing configuration files \
+similar to the ${dir}/conf/backup-src-list configuration file \
+containing the backup sources \
+to be copied to a newly created backup directory \
+when creating a new backup. \
+The names of the files must consist of only characters \
+matching the pattern [${valid}].
     ${dir}/conf/backup-src-module
         An optional configuration file \
 containing the backup source module \
@@ -352,14 +361,25 @@ then
 else
 	src_prefix=$( grep -- '^[^#]' "${dir}/conf/backup-src-prefix" )
 fi
-while read -r src
+case ${src_prefix} in
+*/ ) src_unprefix=/ ;;
+*  ) src_unprefix= ;;
+esac
+unset src
+for file in "${dir}/conf/backup-src-list" "${dir}/conf/backup-src-list.d"/*
 do
-	case ${src} in
-	'' | '#'* ) continue ;;
+	case ${file#"${dir}/conf/"} in
+	*.d/*[!${valid}]* ) continue ;;
+	*.d/*             ) ;;
+	*                 ) [ ! -f "${file}" ] && continue ;;
 	esac
-	case ${src_prefix} in
-	*/ ) src=${src#/} ;;
-	esac
-	set -- "${@}" "${src_prefix}${src}"
-done < "${dir}/conf/backup-src-list"
+	while read -r src
+	do
+		case ${src} in
+		'' | '#'* ) continue ;;
+		esac
+		set -- "${@}" "${src_prefix}${src#${src_unprefix}}"
+	done < "${file}"
+done
+${src+:} false || : < "${dir}/conf/backup-src-list"
 exec "${0%backup*}backup-create" "${@}"

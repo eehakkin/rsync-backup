@@ -4,6 +4,7 @@ Backup configuration
  - conf/backup-src-base
  - conf/backup-src-host
  - conf/backup-src-list
+ - conf/backup-src-list.d
  - conf/backup-src-module
  - conf/backup-src-port
  - conf/backup-src-prefix
@@ -16,6 +17,7 @@ Backup configuration
  - conf/mirror-src-base
  - conf/mirror-src-host
  - conf/mirror-src-list
+ - conf/mirror-src-list.d
  - conf/mirror-src-module
  - conf/mirror-src-port
  - conf/mirror-src-prefix
@@ -93,6 +95,16 @@ to specify the backup source port in the conf/backup-src-port
 configuration file and to specify the backup source user in the
 conf/backup-src-user configuration file or to specify these in the
 conf/backup-src-prefix configuration file.
+
+The conf/backup-src-list.d directory
+------------------------------------
+
+An optional directory used by backup-sources(1) used by backup(1)
+containing configuration files similar to the conf/backup-src-list
+configuration file containing the backup sources to be copied to a newly
+created backup directory when creating a new backup. The names of the
+files must consist of only characters matching the pattern
+[[:alnum:]_.-].
 
 The conf/backup-src-module file
 -------------------------------
@@ -249,6 +261,16 @@ to specify the mirror source port in the conf/mirror-src-port
 configuration file and to specify the mirror source user in the
 conf/mirror-src-user configuration file or to specify these in the
 conf/mirror-src-prefix configuration file.
+
+The conf/mirror-src-list.d directory
+------------------------------------
+
+An optional directory used by backup-mirror-sources(1) used by
+backup-mirror(1) containing configuration files similar to the
+conf/mirror-src-list configuration file containing the mirror sources to
+be copied to a newly created backup directory when copying backup
+directories. The names of the files must consist of only characters
+matching the pattern [[:alnum:]_.-].
 
 The conf/mirror-src-module file
 -------------------------------
