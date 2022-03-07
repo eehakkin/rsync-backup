@@ -2,8 +2,8 @@
 # ===============================================
 
 # Backup chrooted /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories with the base
-# directory.
+# /var/backups, /var/log, /var/mail and /var/spool directories with the
+# base directory.
 /base/dir/etc/
 /base/dir/home/
 /base/dir/opt/
@@ -12,6 +12,7 @@
 /base/dir/usr/local/
 /base/dir/var/backups/
 /base/dir/var/log/
+/base/dir/var/mail/
 /base/dir/var/spool/
 
 # It is also possible to specify /base/dir in conf/backup-src-base or in
@@ -22,8 +23,8 @@
 # ===============================================
 
 # Backup chrooted /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories without the base
-# directory.
+# /var/backups, /var/log, /var/mail and /var/spool directories without
+# the base directory.
 /base/dir/./etc/
 /base/dir/./home/
 /base/dir/./opt/
@@ -32,6 +33,7 @@
 /base/dir/./usr/local/
 /base/dir/./var/backups/
 /base/dir/./var/log/
+/base/dir/./var/mail/
 /base/dir/./var/spool/
 
 # It is also possible to specify /base/dir/. in conf/backup-src-base or
@@ -42,7 +44,8 @@
 # ===============================================
 
 # Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories via a remote shell.
+# /var/backups, /var/log, /var/mail and /var/spool directories via a
+# remote shell.
 remote.example.com:/etc/
 remote.example.com:/home/
 remote.example.com:/opt/
@@ -51,6 +54,7 @@ remote.example.com:/srv/
 remote.example.com:/usr/local/
 remote.example.com:/var/backups/
 remote.example.com:/var/log/
+remote.example.com:/var/mail/
 remote.example.com:/var/spool/
 
 # It is also possible to specify remote.example.com in
@@ -62,8 +66,8 @@ remote.example.com:/var/spool/
 # ===============================================
 
 # Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories with the base
-# directory via a remote shell.
+# /var/backups, /var/log, /var/mail and /var/spool directories with the
+# base directory via a remote shell.
 remote.example.com:/base/dir/etc/
 remote.example.com:/base/dir/home/
 remote.example.com:/base/dir/opt/
@@ -72,6 +76,7 @@ remote.example.com:/base/dir/srv/
 remote.example.com:/base/dir/usr/local/
 remote.example.com:/base/dir/var/backups/
 remote.example.com:/base/dir/var/log/
+remote.example.com:/base/dir/var/mail/
 remote.example.com:/base/dir/var/spool/
 
 # It is also possible to specify remote.example.com in
@@ -83,8 +88,8 @@ remote.example.com:/base/dir/var/spool/
 # ===============================================
 
 # Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories without the base
-# directory via a remote shell.
+# /var/backups, /var/log, /var/mail and /var/spool directories without
+# the base directory via a remote shell.
 remote.example.com:/base/dir/./etc/
 remote.example.com:/base/dir/./home/
 remote.example.com:/base/dir/./opt/
@@ -93,6 +98,7 @@ remote.example.com:/base/dir/./srv/
 remote.example.com:/base/dir/./usr/local/
 remote.example.com:/base/dir/./var/backups/
 remote.example.com:/base/dir/./var/log/
+remote.example.com:/base/dir/./var/mail/
 remote.example.com:/base/dir/./var/spool/
 
 # It is also possible to specify remote.example.com in
@@ -104,8 +110,8 @@ remote.example.com:/base/dir/./var/spool/
 # ===============================================
 
 # Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories via a remote shell
-# using a different remote user.
+# /var/backups, /var/log, /var/mail and /var/spool directories via a
+# remote shell using a different remote user.
 backup-user@remote.example.com:/etc/
 backup-user@remote.example.com:/home/
 backup-user@remote.example.com:/opt/
@@ -114,6 +120,7 @@ backup-user@remote.example.com:/srv/
 backup-user@remote.example.com:/usr/local/
 backup-user@remote.example.com:/var/backups/
 backup-user@remote.example.com:/var/log/
+backup-user@remote.example.com:/var/mail/
 backup-user@remote.example.com:/var/spool/
 
 # It is also possible to specify backup-user in conf/backup-src-user and
@@ -125,8 +132,8 @@ backup-user@remote.example.com:/var/spool/
 # ===============================================
 
 # Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories with the base
-# directory via a remote shell using a different remote user.
+# /var/backups, /var/log, /var/mail and /var/spool directories with the
+# base directory via a remote shell using a different remote user.
 backup-user@remote.example.com:/base/dir/etc/
 backup-user@remote.example.com:/base/dir/home/
 backup-user@remote.example.com:/base/dir/opt/
@@ -135,6 +142,7 @@ backup-user@remote.example.com:/base/dir/srv/
 backup-user@remote.example.com:/base/dir/usr/local/
 backup-user@remote.example.com:/base/dir/var/backups/
 backup-user@remote.example.com:/base/dir/var/log/
+backup-user@remote.example.com:/base/dir/var/mail/
 backup-user@remote.example.com:/base/dir/var/spool/
 
 # It is also possible to specify backup-user in conf/backup-src-user,
@@ -147,8 +155,8 @@ backup-user@remote.example.com:/base/dir/var/spool/
 # ===============================================
 
 # Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories without the base
-# directory via a remote shell using a different remote user.
+# /var/backups, /var/log, /var/mail and /var/spool directories without
+# the base directory via a remote shell using a different remote user.
 backup-user@remote.example.com:/base/dir/./etc/
 backup-user@remote.example.com:/base/dir/./home/
 backup-user@remote.example.com:/base/dir/./opt/
@@ -157,6 +165,7 @@ backup-user@remote.example.com:/base/dir/./srv/
 backup-user@remote.example.com:/base/dir/./usr/local/
 backup-user@remote.example.com:/base/dir/./var/backups/
 backup-user@remote.example.com:/base/dir/./var/log/
+backup-user@remote.example.com:/base/dir/./var/mail/
 backup-user@remote.example.com:/base/dir/./var/spool/
 
 # It is also possible to specify backup-user in conf/backup-src-user,
@@ -169,7 +178,8 @@ backup-user@remote.example.com:/base/dir/./var/spool/
 # ===============================================
 
 # Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories via an rsync daemon.
+# /var/backups, /var/log, /var/mail and /var/spool directories via an
+# rsync daemon.
 remote.example.com::backup-module/etc/
 remote.example.com::backup-module/home/
 remote.example.com::backup-module/opt/
@@ -178,6 +188,7 @@ remote.example.com::backup-module/srv/
 remote.example.com::backup-module/usr/local/
 remote.example.com::backup-module/var/backups/
 remote.example.com::backup-module/var/log/
+remote.example.com::backup-module/var/mail/
 remote.example.com::backup-module/var/spool/
 
 # It is also possible to specify remote.example.com in
@@ -191,7 +202,8 @@ remote.example.com::backup-module/var/spool/
 # ===============================================
 
 # Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories via an rsync daemon.
+# /var/backups, /var/log, /var/mail and /var/spool directories via an
+# rsync daemon.
 rsync://remote.example.com/backup-module/etc/
 rsync://remote.example.com/backup-module/home/
 rsync://remote.example.com/backup-module/opt/
@@ -200,6 +212,7 @@ rsync://remote.example.com/backup-module/srv/
 rsync://remote.example.com/backup-module/usr/local/
 rsync://remote.example.com/backup-module/var/backups/
 rsync://remote.example.com/backup-module/var/log/
+rsync://remote.example.com/backup-module/var/mail/
 rsync://remote.example.com/backup-module/var/spool/
 
 # It is also possible to specify remote.example.com in
@@ -214,8 +227,8 @@ rsync://remote.example.com/backup-module/var/spool/
 # ===============================================
 
 # Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories via an rsync daemon
-# using a non-standard remote port.
+# /var/backups, /var/log, /var/mail and /var/spool directories via an
+# rsync daemon using a non-standard remote port.
 rsync://remote.example.com:12345/backup-module/etc/
 rsync://remote.example.com:12345/backup-module/home/
 rsync://remote.example.com:12345/backup-module/opt/
@@ -224,6 +237,7 @@ rsync://remote.example.com:12345/backup-module/srv/
 rsync://remote.example.com:12345/backup-module/usr/local/
 rsync://remote.example.com:12345/backup-module/var/backups/
 rsync://remote.example.com:12345/backup-module/var/log/
+rsync://remote.example.com:12345/backup-module/var/mail/
 rsync://remote.example.com:12345/backup-module/var/spool/
 
 # It is also possible to specify remote.example.com in
@@ -239,8 +253,8 @@ rsync://remote.example.com:12345/backup-module/var/spool/
 # ===============================================
 
 # Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories with the base
-# directory via an rsync daemon.
+# /var/backups, /var/log, /var/mail and /var/spool directories with the
+# base directory via an rsync daemon.
 remote.example.com::backup-module/base/dir/etc/
 remote.example.com::backup-module/base/dir/home/
 remote.example.com::backup-module/base/dir/opt/
@@ -249,6 +263,7 @@ remote.example.com::backup-module/base/dir/srv/
 remote.example.com::backup-module/base/dir/usr/local/
 remote.example.com::backup-module/base/dir/var/backups/
 remote.example.com::backup-module/base/dir/var/log/
+remote.example.com::backup-module/base/dir/var/mail/
 remote.example.com::backup-module/base/dir/var/spool/
 
 # It is also possible to specify remote.example.com in
@@ -263,8 +278,8 @@ remote.example.com::backup-module/base/dir/var/spool/
 # ===============================================
 
 # Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories with the base
-# directory via an rsync daemon.
+# /var/backups, /var/log, /var/mail and /var/spool directories with the
+# base directory via an rsync daemon.
 rsync://remote.example.com/backup-module/base/dir/etc/
 rsync://remote.example.com/backup-module/base/dir/home/
 rsync://remote.example.com/backup-module/base/dir/opt/
@@ -273,6 +288,7 @@ rsync://remote.example.com/backup-module/base/dir/srv/
 rsync://remote.example.com/backup-module/base/dir/usr/local/
 rsync://remote.example.com/backup-module/base/dir/var/backups/
 rsync://remote.example.com/backup-module/base/dir/var/log/
+rsync://remote.example.com/backup-module/base/dir/var/mail/
 rsync://remote.example.com/backup-module/base/dir/var/spool/
 
 # It is also possible to specify remote.example.com in
@@ -288,8 +304,8 @@ rsync://remote.example.com/backup-module/base/dir/var/spool/
 # ===============================================
 
 # Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories with the base
-# directory via an rsync daemon using a non-standard remote port.
+# /var/backups, /var/log, /var/mail and /var/spool directories with the
+# base directory via an rsync daemon using a non-standard remote port.
 rsync://remote.example.com:12345/backup-module/base/dir/etc/
 rsync://remote.example.com:12345/backup-module/base/dir/home/
 rsync://remote.example.com:12345/backup-module/base/dir/opt/
@@ -298,6 +314,7 @@ rsync://remote.example.com:12345/backup-module/base/dir/srv/
 rsync://remote.example.com:12345/backup-module/base/dir/usr/local/
 rsync://remote.example.com:12345/backup-module/base/dir/var/backups/
 rsync://remote.example.com:12345/backup-module/base/dir/var/log/
+rsync://remote.example.com:12345/backup-module/base/dir/var/mail/
 rsync://remote.example.com:12345/backup-module/base/dir/var/spool/
 
 # It is also possible to specify remote.example.com in
@@ -313,8 +330,8 @@ rsync://remote.example.com:12345/backup-module/base/dir/var/spool/
 # ===============================================
 
 # Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories without the base
-# directory via an rsync daemon.
+# /var/backups, /var/log, /var/mail and /var/spool directories without
+# the base directory via an rsync daemon.
 remote.example.com::backup-module/base/dir/./etc/
 remote.example.com::backup-module/base/dir/./home/
 remote.example.com::backup-module/base/dir/./opt/
@@ -323,6 +340,7 @@ remote.example.com::backup-module/base/dir/./srv/
 remote.example.com::backup-module/base/dir/./usr/local/
 remote.example.com::backup-module/base/dir/./var/backups/
 remote.example.com::backup-module/base/dir/./var/log/
+remote.example.com::backup-module/base/dir/./var/mail/
 remote.example.com::backup-module/base/dir/./var/spool/
 
 # It is also possible to specify remote.example.com in
@@ -337,8 +355,8 @@ remote.example.com::backup-module/base/dir/./var/spool/
 # ===============================================
 
 # Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories without the base
-# directory via an rsync daemon.
+# /var/backups, /var/log, /var/mail and /var/spool directories without
+# the base directory via an rsync daemon.
 rsync://remote.example.com/backup-module/base/dir/./etc/
 rsync://remote.example.com/backup-module/base/dir/./home/
 rsync://remote.example.com/backup-module/base/dir/./opt/
@@ -347,6 +365,7 @@ rsync://remote.example.com/backup-module/base/dir/./srv/
 rsync://remote.example.com/backup-module/base/dir/./usr/local/
 rsync://remote.example.com/backup-module/base/dir/./var/backups/
 rsync://remote.example.com/backup-module/base/dir/./var/log/
+rsync://remote.example.com/backup-module/base/dir/./var/mail/
 rsync://remote.example.com/backup-module/base/dir/./var/spool/
 
 # It is also possible to specify remote.example.com in
@@ -362,8 +381,9 @@ rsync://remote.example.com/backup-module/base/dir/./var/spool/
 # ===============================================
 
 # Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories without the base
-# directory via an rsync daemon using a non-standard remote port.
+# /var/backups, /var/log, /var/mail and /var/spool directories without
+# the base directory via an rsync daemon using a non-standard remote
+# port.
 rsync://remote.example.com:12345/backup-module/base/dir/./etc/
 rsync://remote.example.com:12345/backup-module/base/dir/./home/
 rsync://remote.example.com:12345/backup-module/base/dir/./opt/
@@ -372,6 +392,7 @@ rsync://remote.example.com:12345/backup-module/base/dir/./srv/
 rsync://remote.example.com:12345/backup-module/base/dir/./usr/local/
 rsync://remote.example.com:12345/backup-module/base/dir/./var/backups/
 rsync://remote.example.com:12345/backup-module/base/dir/./var/log/
+rsync://remote.example.com:12345/backup-module/base/dir/./var/mail/
 rsync://remote.example.com:12345/backup-module/base/dir/./var/spool/
 
 # It is also possible to specify remote.example.com in
@@ -387,8 +408,8 @@ rsync://remote.example.com:12345/backup-module/base/dir/./var/spool/
 # ===============================================
 
 # Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories via an rsync daemon
-# using a different remote user.
+# /var/backups, /var/log, /var/mail and /var/spool directories via an
+# rsync daemon using a different remote user.
 backup-user@remote.example.com::backup-module/etc/
 backup-user@remote.example.com::backup-module/home/
 backup-user@remote.example.com::backup-module/opt/
@@ -397,6 +418,7 @@ backup-user@remote.example.com::backup-module/srv/
 backup-user@remote.example.com::backup-module/usr/local/
 backup-user@remote.example.com::backup-module/var/backups/
 backup-user@remote.example.com::backup-module/var/log/
+backup-user@remote.example.com::backup-module/var/mail/
 backup-user@remote.example.com::backup-module/var/spool/
 
 # It is also possible to specify backup-user in conf/backup-src-user,
@@ -412,8 +434,8 @@ backup-user@remote.example.com::backup-module/var/spool/
 # ===============================================
 
 # Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories via an rsync daemon
-# using a different remote user.
+# /var/backups, /var/log, /var/mail and /var/spool directories via an
+# rsync daemon using a different remote user.
 rsync://backup-user@remote.example.com/backup-module/etc/
 rsync://backup-user@remote.example.com/backup-module/home/
 rsync://backup-user@remote.example.com/backup-module/opt/
@@ -422,6 +444,7 @@ rsync://backup-user@remote.example.com/backup-module/srv/
 rsync://backup-user@remote.example.com/backup-module/usr/local/
 rsync://backup-user@remote.example.com/backup-module/var/backups/
 rsync://backup-user@remote.example.com/backup-module/var/log/
+rsync://backup-user@remote.example.com/backup-module/var/mail/
 rsync://backup-user@remote.example.com/backup-module/var/spool/
 
 # It is also possible to specify backup-user in conf/backup-src-user,
@@ -437,8 +460,9 @@ rsync://backup-user@remote.example.com/backup-module/var/spool/
 # ===============================================
 
 # Backup remote /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories via an rsync daemon
-# using a non-standard remote port and a different remote user.
+# /var/backups, /var/log, /var/mail and /var/spool directories via an
+# rsync daemon using a non-standard remote port and a different remote
+# user.
 rsync://backup-user@remote.example.com:12345/backup-module/etc/
 rsync://backup-user@remote.example.com:12345/backup-module/home/
 rsync://backup-user@remote.example.com:12345/backup-module/opt/
@@ -447,6 +471,7 @@ rsync://backup-user@remote.example.com:12345/backup-module/srv/
 rsync://backup-user@remote.example.com:12345/backup-module/usr/local/
 rsync://backup-user@remote.example.com:12345/backup-module/var/backups/
 rsync://backup-user@remote.example.com:12345/backup-module/var/log/
+rsync://backup-user@remote.example.com:12345/backup-module/var/mail/
 rsync://backup-user@remote.example.com:12345/backup-module/var/spool/
 
 # It is also possible to specify backup-user in conf/backup-src-user,
@@ -462,8 +487,8 @@ rsync://backup-user@remote.example.com:12345/backup-module/var/spool/
 # ===============================================
 
 # Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories with the base
-# directory via an rsync daemon using a different remote user.
+# /var/backups, /var/log, /var/mail and /var/spool directories with the
+# base directory via an rsync daemon using a different remote user.
 backup-user@remote.example.com::backup-module/base/dir/etc/
 backup-user@remote.example.com::backup-module/base/dir/home/
 backup-user@remote.example.com::backup-module/base/dir/opt/
@@ -472,6 +497,7 @@ backup-user@remote.example.com::backup-module/base/dir/srv/
 backup-user@remote.example.com::backup-module/base/dir/usr/local/
 backup-user@remote.example.com::backup-module/base/dir/var/backups/
 backup-user@remote.example.com::backup-module/base/dir/var/log/
+backup-user@remote.example.com::backup-module/base/dir/var/mail/
 backup-user@remote.example.com::backup-module/base/dir/var/spool/
 
 # It is also possible to specify backup-user in conf/backup-src-user,
@@ -487,8 +513,8 @@ backup-user@remote.example.com::backup-module/base/dir/var/spool/
 # ===============================================
 
 # Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories with the base
-# directory via an rsync daemon using a different remote user.
+# /var/backups, /var/log, /var/mail and /var/spool directories with the
+# base directory via an rsync daemon using a different remote user.
 rsync://backup-user@remote.example.com/backup-module/base/dir/etc/
 rsync://backup-user@remote.example.com/backup-module/base/dir/home/
 rsync://backup-user@remote.example.com/backup-module/base/dir/opt/
@@ -497,6 +523,7 @@ rsync://backup-user@remote.example.com/backup-module/base/dir/srv/
 rsync://backup-user@remote.example.com/backup-module/base/dir/usr/local/
 rsync://backup-user@remote.example.com/backup-module/base/dir/var/backups/
 rsync://backup-user@remote.example.com/backup-module/base/dir/var/log/
+rsync://backup-user@remote.example.com/backup-module/base/dir/var/mail/
 rsync://backup-user@remote.example.com/backup-module/base/dir/var/spool/
 
 # It is also possible to specify backup-user in conf/backup-src-user,
@@ -512,9 +539,9 @@ rsync://backup-user@remote.example.com/backup-module/base/dir/var/spool/
 # ===============================================
 
 # Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories with the base
-# directory via an rsync daemon using a non-standard remote port and a
-# different remote user.
+# /var/backups, /var/log, /var/mail and /var/spool directories with the
+# base directory via an rsync daemon using a non-standard remote port
+# and a different remote user.
 rsync://backup-user@remote.example.com:12345/backup-module/base/dir/etc/
 rsync://backup-user@remote.example.com:12345/backup-module/base/dir/home/
 rsync://backup-user@remote.example.com:12345/backup-module/base/dir/opt/
@@ -523,6 +550,7 @@ rsync://backup-user@remote.example.com:12345/backup-module/base/dir/srv/
 rsync://backup-user@remote.example.com:12345/backup-module/base/dir/usr/local/
 rsync://backup-user@remote.example.com:12345/backup-module/base/dir/var/backups/
 rsync://backup-user@remote.example.com:12345/backup-module/base/dir/var/log/
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir/var/mail/
 rsync://backup-user@remote.example.com:12345/backup-module/base/dir/var/spool/
 
 # It is also possible to specify backup-user in conf/backup-src-user,
@@ -539,8 +567,8 @@ rsync://backup-user@remote.example.com:12345/backup-module/base/dir/var/spool/
 # ===============================================
 
 # Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories without the base
-# directory via an rsync daemon using a different remote user.
+# /var/backups, /var/log, /var/mail and /var/spool directories without
+# the base directory via an rsync daemon using a different remote user.
 backup-user@remote.example.com::backup-module/base/dir/./etc/
 backup-user@remote.example.com::backup-module/base/dir/./home/
 backup-user@remote.example.com::backup-module/base/dir/./opt/
@@ -549,6 +577,7 @@ backup-user@remote.example.com::backup-module/base/dir/./srv/
 backup-user@remote.example.com::backup-module/base/dir/./usr/local/
 backup-user@remote.example.com::backup-module/base/dir/./var/backups/
 backup-user@remote.example.com::backup-module/base/dir/./var/log/
+backup-user@remote.example.com::backup-module/base/dir/./var/mail/
 backup-user@remote.example.com::backup-module/base/dir/./var/spool/
 
 # It is also possible to specify backup-user in conf/backup-src-user,
@@ -564,8 +593,8 @@ backup-user@remote.example.com::backup-module/base/dir/./var/spool/
 # ===============================================
 
 # Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories without the base
-# directory via an rsync daemon using a different remote user.
+# /var/backups, /var/log, /var/mail and /var/spool directories without
+# the base directory via an rsync daemon using a different remote user.
 rsync://backup-user@remote.example.com/backup-module/base/dir/./etc/
 rsync://backup-user@remote.example.com/backup-module/base/dir/./home/
 rsync://backup-user@remote.example.com/backup-module/base/dir/./opt/
@@ -574,6 +603,7 @@ rsync://backup-user@remote.example.com/backup-module/base/dir/./srv/
 rsync://backup-user@remote.example.com/backup-module/base/dir/./usr/local/
 rsync://backup-user@remote.example.com/backup-module/base/dir/./var/backups/
 rsync://backup-user@remote.example.com/backup-module/base/dir/./var/log/
+rsync://backup-user@remote.example.com/backup-module/base/dir/./var/mail/
 rsync://backup-user@remote.example.com/backup-module/base/dir/./var/spool/
 
 # It is also possible to specify backup-user in conf/backup-src-user,
@@ -590,9 +620,9 @@ rsync://backup-user@remote.example.com/backup-module/base/dir/./var/spool/
 # ===============================================
 
 # Backup remote chrooted /etc, /home, /opt, /root, /srv, /usr/local,
-# /var/backups, /var/log and /var/spool directories without the base
-# directory via an rsync daemon using a non-standard remote port and a
-# different remote user.
+# /var/backups, /var/log, /var/mail and /var/spool directories without
+# the base directory via an rsync daemon using a non-standard remote
+# port and a different remote user.
 rsync://backup-user@remote.example.com:12345/backup-module/base/dir/./etc/
 rsync://backup-user@remote.example.com:12345/backup-module/base/dir/./home/
 rsync://backup-user@remote.example.com:12345/backup-module/base/dir/./opt/
@@ -601,6 +631,7 @@ rsync://backup-user@remote.example.com:12345/backup-module/base/dir/./srv/
 rsync://backup-user@remote.example.com:12345/backup-module/base/dir/./usr/local/
 rsync://backup-user@remote.example.com:12345/backup-module/base/dir/./var/backups/
 rsync://backup-user@remote.example.com:12345/backup-module/base/dir/./var/log/
+rsync://backup-user@remote.example.com:12345/backup-module/base/dir/./var/mail/
 rsync://backup-user@remote.example.com:12345/backup-module/base/dir/./var/spool/
 
 # It is also possible to specify backup-user in conf/backup-src-user,

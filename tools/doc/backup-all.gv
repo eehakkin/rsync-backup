@@ -1,9 +1,9 @@
 digraph "rsync-backup" {
 	graph	[ splines = polyline ]
-	node	[ shape = component ]
+	node	[ shape = component, target = "_parent" ]
 	subgraph "cluster:tools" {
 		graph	[ label = "tools/" ]
-		node	[ target = "_parent", URL = "../#\N" ]
+		node	[ URL = "../#\N" ]
 		"backup"		-> "backup-prepare"		[ taillabel = 1 ]
 		"backup"		-> "backup-sources"		[ label = 2 ]
 		"backup"		-> "backup-purge"		[ label = 3 ]

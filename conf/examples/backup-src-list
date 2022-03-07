@@ -2,7 +2,7 @@
 # ==================================
 
 # Backup /etc, /home, /opt, /root, /srv, /usr/local, /var/backups,
-# /var/log and /var/spool directories.
+# /var/log, /var/mail and /var/spool directories.
 /etc/
 /home/
 /opt/
@@ -11,4 +11,5 @@
 /usr/local/
 /var/backups/
 /var/log/
+/var/mail/
 /var/spool/
