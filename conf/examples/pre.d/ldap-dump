@@ -1,8 +1,8 @@
 #! /bin/bash -Ceu
 ###########################################################################
-# ldap-dump 0.0.20211029
+# ldap-dump 0.0.20220502
 #
-# Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010-2022 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -40,8 +40,40 @@ dump_dir=${dump_dir:-"/var/backups/${dump_user}"}
 ldap_paged_size=${ldap_paged_size-"500"}
 #"
 
+move_tmp_to_dst_or_remove_tmp() { # [--] <TMP> <DST>
+	case ${1} in
+	-- ) shift ;;
+	esac
+	if cmp -s -- "${@}"
+	then
+		# There are no changes
+		# thus remove the temporary file and
+		# keep the destination file intact.
+		rm -f -- "${1}"
+	else
+		# There are changes
+		# thus replace the destination file with
+		# the temporary file.
+		chown -h -- "${dump_user}:${dump_group}" "${1}"
+		mv -f -- "${1}" "${2}"
+	fi
+}
+
 # Create missing directories.
 install -d -g "${dump_group}" -m 750 -o "${dump_user}" -- "${dump_dir}"
+
+# Remove old temporary .backup-filter files.
+rm -f -- "${dump_dir}/.backup-filter".*~
+# Create a new temporary .backup-filter file.
+cat > "${dump_dir}/.backup-filter.${$}~" << __BACKUP_FILTER__
+- /*.*~
+__BACKUP_FILTER__
+# Replace the destination .backup-filter file
+# with the new temporary .backup-filter file or
+# remove the new temporary .backup-filter file.
+move_tmp_to_dst_or_remove_tmp -- \
+	"${dump_dir}/.backup-filter.${$}~" \
+	"${dump_dir}/.backup-filter"
 
 # Find out contexts.
 ldapsearch -LLLM ${LDAPSEARCH_OPTS} \
@@ -55,10 +87,10 @@ ldapsearch -LLLM ${LDAPSEARCH_OPTS} \
 	while read -r base
 	do
 		dst_dump_file=${dump_dir}/$( basename -- "${base}" ).ldif.gz
+		tmp_dump_file=${dst_dump_file}.${$}~
 		# Clean up old temporary dump files.
 		rm -f -- "${dst_dump_file}".*~
 		# Dump to a new temporary dump file.
-		tmp_dump_file=${dst_dump_file}.${$}~
 		ldapsearch -LLLM ${LDAPSEARCH_OPTS} \
 			-b "${base}" \
 			${ldap_paged_size:+ -E "pr=${ldap_paged_size}/noprompt" } \
@@ -67,22 +99,10 @@ ldapsearch -LLLM ${LDAPSEARCH_OPTS} \
 		| grep -Ev -- \
 			'^(contextCSN|entryDN|hasSubordinates|structuralObjectClass|subschemaSubentry):' \
 		| gzip -n >| "${tmp_dump_file}"
-		# Update the destination dump file to match the new temporary
-		# dump file.
-		if cmp -s -- "${dst_dump_file}" "${tmp_dump_file}"
-		then
-			# There are no changes
-			# thus remove the new temporary dump file and
-			# keep the old destination dump file intact.
-			rm -- "${tmp_dump_file}"
-		else
-			# There are changes
-			# thus replace the destination dump file with
-			# the new temporary dump file.
-			chown -h -- \
-				"${dump_user}:${dump_group}" \
-				"${tmp_dump_file}"
-			mv -- "${tmp_dump_file}" "${dst_dump_file}"
-		fi
+		# Replace the destination dump file
+		# with the new temporary dump file or
+		# remove the new temporary dump file.
+		move_tmp_to_dst_or_remove_tmp -- \
+			"${tmp_dump_file}" "${dst_dump_file}"
 	done
 }

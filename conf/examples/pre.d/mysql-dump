@@ -1,8 +1,8 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# mysql-dump 0.0.20211029
+# mysql-dump 0.0.20220502
 #
-# Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010-2022 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -38,12 +38,34 @@ dump_dir=${dump_dir-"/var/backups/${dump_user}"}
 mysql_dump_dir=${mysql_dump_dir-"${dump_dir}/mysql"}
 #"
 
+move_tmp_to_dst_or_remove_tmp() { # [--] <TMP> <DST>
+	case ${1} in
+	-- ) shift ;;
+	esac
+	if cmp -s -- "${@}"
+	then
+		# There are no changes
+		# thus remove the temporary file and
+		# keep the destination file intact.
+		rm -f -- "${1}"
+	else
+		# There are changes
+		# thus replace the destination file with
+		# the temporary file.
+		chown -h -- "${dump_user}:${dump_group}" "${1}"
+		mv -f -- "${1}" "${2}"
+	fi
+}
+
 # Clean up old temporary directories.
 # Move first because remove is not atomic for directories.
-for i in "${mysql_dump_dir}".*[!~]~
+rm -f -r -- "${mysql_dump_dir}".*~~
+for i in "${mysql_dump_dir}".*~
 do
-	case ${i} in "${mysql_dump_dir}.*[!~]~" ) continue ;; esac
-	mv -f -- "${i}" "${i}~"
+	case ${i} in
+	"${mysql_dump_dir}.*~" ) ;;
+	* ) mv -f -- "${i}" "${i}~" ;;
+	esac
 done
 rm -f -r -- "${mysql_dump_dir}".*~~
 
@@ -54,6 +76,19 @@ install -d -g "${dump_group}" -m 750 -o "${dump_user}" -- \
 	"${dump_dir}" \
 	"${dst_dump_dir}" \
 	"${tmp_dump_dir}"
+
+# Remove old temporary .backup-filter files.
+rm -f -- "${dump_dir}/.backup-filter".*~
+# Create a new temporary .backup-filter file.
+cat > "${dump_dir}/.backup-filter.${$}~" << __BACKUP_FILTER__
+- /*.*~
+__BACKUP_FILTER__
+# Replace the destination .backup-filter file
+# with the new temporary .backup-filter file or
+# remove the new temporary .backup-filter file.
+move_tmp_to_dst_or_remove_tmp -- \
+	"${dump_dir}/.backup-filter.${$}~" \
+	"${dump_dir}/.backup-filter"
 
 # Dump to a new temporary dump directory.
 umask -- ug-w,o=
@@ -87,19 +122,10 @@ done
 for tmp_dump_file in "${tmp_dump_dir}"/*
 do
 	dst_dump_file=${dst_dump_dir}/${tmp_dump_file##*/}
-	if cmp -s -- "${dst_dump_file}" "${tmp_dump_file}"
-	then
-		# There are no changes
-		# thus remove the new temporary dump file and
-		# keep the old destination dump file intact.
-		rm -f -- "${tmp_dump_file}"
-	else
-		# There are changes
-		# thus replace the destination dump file with the new
-		# temporary dump file.
-		chown -h -- "${dump_user}:${dump_group}" "${tmp_dump_file}"
-		mv -f -- "${tmp_dump_file}" "${dst_dump_dir}/"
-	fi
+	# Replace the destination dump file
+	# with the new temporary dump file or
+	# remove the new temporary dump file.
+	move_tmp_to_dst_or_remove_tmp -- "${tmp_dump_file}" "${dst_dump_file}"
 done
 
 # Remove the new temporary directory which should now be empty.
