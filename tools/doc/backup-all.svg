@@ -80,9 +80,9 @@
 <text text-anchor="middle" x="289.5" y="-495.8" font-family="Times,serif" font-size="14.00">3</text>
 </g>
 <!-- backup&#45;nice -->
-<g id="node14" class="node">
+<g id="node15" class="node">
 <title>backup&#45;nice</title>
-<g id="a_node14"><a xlink:href="../#backup-nice" xlink:title="backup&#45;nice" target="_parent">
+<g id="a_node15"><a xlink:href="../#backup-nice" xlink:title="backup&#45;nice" target="_parent">
 <polygon fill="none" stroke="black" points="250.5,-109 167.5,-109 167.5,-105 163.5,-105 163.5,-101 167.5,-101 167.5,-81 163.5,-81 163.5,-77 167.5,-77 167.5,-73 250.5,-73 250.5,-109"/>
 <polyline fill="none" stroke="black" points="167.5,-105 171.5,-105 171.5,-101 167.5,-101 "/>
 <polyline fill="none" stroke="black" points="167.5,-81 171.5,-81 171.5,-77 167.5,-77 "/>
@@ -97,9 +97,9 @@
 <polygon fill="black" stroke="black" points="255.2,-110.28 244.67,-109.11 252.18,-116.59 255.2,-110.28"/>
 </g>
 <!-- backup&#45;create -->
-<g id="node9" class="node">
+<g id="node10" class="node">
 <title>backup&#45;create</title>
-<g id="a_node9"><a xlink:href="../#backup-create" xlink:title="backup&#45;create" target="_parent">
+<g id="a_node10"><a xlink:href="../#backup-create" xlink:title="backup&#45;create" target="_parent">
 <polygon fill="none" stroke="black" points="363.5,-401 270.5,-401 270.5,-397 266.5,-397 266.5,-393 270.5,-393 270.5,-373 266.5,-373 266.5,-369 270.5,-369 270.5,-365 363.5,-365 363.5,-401"/>
 <polyline fill="none" stroke="black" points="270.5,-397 274.5,-397 274.5,-393 270.5,-393 "/>
 <polyline fill="none" stroke="black" points="270.5,-373 274.5,-373 274.5,-369 270.5,-369 "/>
@@ -131,7 +131,7 @@
 <polygon fill="black" stroke="black" points="79.72,-192.19 76.51,-182.09 72.73,-191.99 79.72,-192.19"/>
 </g>
 <!-- on_ac_power -->
-<g id="node18" class="node">
+<g id="node19" class="node">
 <title>on_ac_power</title>
 <polygon fill="none" stroke="black" points="514.5,-401 425.5,-401 425.5,-397 421.5,-397 421.5,-393 425.5,-393 425.5,-373 421.5,-373 421.5,-369 425.5,-369 425.5,-365 514.5,-365 514.5,-401"/>
 <polyline fill="none" stroke="black" points="425.5,-397 429.5,-397 429.5,-393 425.5,-393 "/>
@@ -208,9 +208,9 @@
 <polygon fill="black" stroke="black" points="123.27,-183.33 112.74,-182.16 120.24,-189.64 123.27,-183.33"/>
 </g>
 <!-- backup&#45;make&#45;tag -->
-<g id="node11" class="node">
+<g id="node12" class="node">
 <title>backup&#45;make&#45;tag</title>
-<g id="a_node11"><a xlink:href="../#backup-make-tag" xlink:title="backup&#45;make&#45;tag" target="_parent">
+<g id="a_node12"><a xlink:href="../#backup-make-tag" xlink:title="backup&#45;make&#45;tag" target="_parent">
 <polygon fill="none" stroke="black" points="288,-182 176,-182 176,-178 172,-178 172,-174 176,-174 176,-154 172,-154 172,-150 176,-150 176,-146 288,-146 288,-182"/>
 <polyline fill="none" stroke="black" points="176,-178 180,-178 180,-174 176,-174 "/>
 <polyline fill="none" stroke="black" points="176,-154 180,-154 180,-150 176,-150 "/>
@@ -231,7 +231,7 @@
 <polygon fill="black" stroke="black" points="192.33,-119.13 195.71,-109.09 186.81,-114.83 192.33,-119.13"/>
 </g>
 <!-- rsync -->
-<g id="node19" class="node">
+<g id="node20" class="node">
 <title>rsync</title>
 <polygon fill="none" stroke="black" points="480,-182 426,-182 426,-178 422,-178 422,-174 426,-174 426,-154 422,-154 422,-150 426,-150 426,-146 480,-146 480,-182"/>
 <polyline fill="none" stroke="black" points="426,-178 430,-178 430,-174 426,-174 "/>
@@ -244,6 +244,17 @@
 <path fill="none" stroke="black" d="M277.03,-223.07C323.09,-209.84 390.91,-190.36 416.13,-182.37"/>
 <polygon fill="black" stroke="black" points="417.44,-185.62 425.75,-179.04 415.15,-179 417.44,-185.62"/>
 </g>
+<!-- backup&#45;du -->
+<g id="node9" class="node">
+<title>backup&#45;du</title>
+<g id="a_node9"><a xlink:href="../#backup-du" xlink:title="backup&#45;du" target="_parent">
+<polygon fill="none" stroke="black" points="275,-561 201,-561 201,-557 197,-557 197,-553 201,-553 201,-533 197,-533 197,-529 201,-529 201,-525 275,-525 275,-561"/>
+<polyline fill="none" stroke="black" points="201,-557 205,-557 205,-553 201,-553 "/>
+<polyline fill="none" stroke="black" points="201,-533 205,-533 205,-529 201,-529 "/>
+<text text-anchor="middle" x="238" y="-539.3" font-family="Times,serif" font-size="14.00">backup&#45;du</text>
+</a>
+</g>
+</g>
 <!-- backup&#45;create&#45;&gt;backup&#45;clean&#45;tmp -->
 <g id="edge7" class="edge">
 <title>backup&#45;create&#45;&gt;backup&#45;clean&#45;tmp</title>
@@ -251,9 +262,9 @@
 <polygon fill="black" stroke="black" points="83.14,-191.75 78.68,-182.14 76.18,-192.43 83.14,-191.75"/>
 </g>
 <!-- backup&#45;create&#45;rsync -->
-<g id="node10" class="node">
+<g id="node11" class="node">
 <title>backup&#45;create&#45;rsync</title>
-<g id="a_node10"><a xlink:href="../#backup-create-rsync" xlink:title="backup&#45;create&#45;rsync" target="_parent">
+<g id="a_node11"><a xlink:href="../#backup-create-rsync" xlink:title="backup&#45;create&#45;rsync" target="_parent">
 <polygon fill="none" stroke="black" points="367.5,-328 240.5,-328 240.5,-324 236.5,-324 236.5,-320 240.5,-320 240.5,-300 236.5,-300 236.5,-296 240.5,-296 240.5,-292 367.5,-292 367.5,-328"/>
 <polyline fill="none" stroke="black" points="240.5,-324 244.5,-324 244.5,-320 240.5,-320 "/>
 <polyline fill="none" stroke="black" points="240.5,-300 244.5,-300 244.5,-296 240.5,-296 "/>
@@ -280,27 +291,27 @@
 <polygon fill="black" stroke="black" points="258.85,-259.56 249.27,-255.03 253.93,-264.54 258.85,-259.56"/>
 </g>
 <!-- backup&#45;mirror -->
-<g id="node12" class="node">
+<g id="node13" class="node">
 <title>backup&#45;mirror</title>
-<g id="a_node12"><a xlink:href="../#backup-mirror" xlink:title="backup&#45;mirror" target="_parent">
-<polygon fill="none" stroke="black" points="203.5,-561 106.5,-561 106.5,-557 102.5,-557 102.5,-553 106.5,-553 106.5,-533 102.5,-533 102.5,-529 106.5,-529 106.5,-525 203.5,-525 203.5,-561"/>
-<polyline fill="none" stroke="black" points="106.5,-557 110.5,-557 110.5,-553 106.5,-553 "/>
-<polyline fill="none" stroke="black" points="106.5,-533 110.5,-533 110.5,-529 106.5,-529 "/>
-<text text-anchor="middle" x="155" y="-539.3" font-family="Times,serif" font-size="14.00">backup&#45;mirror</text>
+<g id="a_node13"><a xlink:href="../#backup-mirror" xlink:title="backup&#45;mirror" target="_parent">
+<polygon fill="none" stroke="black" points="151.5,-561 54.5,-561 54.5,-557 50.5,-557 50.5,-553 54.5,-553 54.5,-533 50.5,-533 50.5,-529 54.5,-529 54.5,-525 151.5,-525 151.5,-561"/>
+<polyline fill="none" stroke="black" points="54.5,-557 58.5,-557 58.5,-553 54.5,-553 "/>
+<polyline fill="none" stroke="black" points="54.5,-533 58.5,-533 58.5,-529 54.5,-529 "/>
+<text text-anchor="middle" x="103" y="-539.3" font-family="Times,serif" font-size="14.00">backup&#45;mirror</text>
 </a>
 </g>
 </g>
 <!-- backup&#45;mirror&#45;&gt;backup&#45;purge -->
 <g id="edge12" class="edge">
 <title>backup&#45;mirror&#45;&gt;backup&#45;purge</title>
-<path fill="none" stroke="black" d="M168.56,-524.8C178.18,-512.59 191.27,-495.99 202.08,-482.28"/>
-<polygon fill="black" stroke="black" points="205.02,-484.2 208.46,-474.18 199.52,-479.86 205.02,-484.2"/>
-<text text-anchor="middle" x="195.5" y="-495.8" font-family="Times,serif" font-size="14.00">2</text>
+<path fill="none" stroke="black" d="M127.08,-524.8C145.07,-511.95 169.84,-494.26 189.57,-480.17"/>
+<polygon fill="black" stroke="black" points="191.85,-482.84 197.95,-474.18 187.78,-477.14 191.85,-482.84"/>
+<text text-anchor="middle" x="172.5" y="-495.8" font-family="Times,serif" font-size="14.00">2</text>
 </g>
 <!-- backup&#45;mirror&#45;sources -->
-<g id="node13" class="node">
+<g id="node14" class="node">
 <title>backup&#45;mirror&#45;sources</title>
-<g id="a_node13"><a xlink:href="../#backup-mirror-sources" xlink:title="backup&#45;mirror&#45;sources" target="_parent">
+<g id="a_node14"><a xlink:href="../#backup-mirror-sources" xlink:title="backup&#45;mirror&#45;sources" target="_parent">
 <polygon fill="none" stroke="black" points="157.5,-474 16.5,-474 16.5,-470 12.5,-470 12.5,-466 16.5,-466 16.5,-446 12.5,-446 12.5,-442 16.5,-442 16.5,-438 157.5,-438 157.5,-474"/>
 <polyline fill="none" stroke="black" points="16.5,-470 20.5,-470 20.5,-466 16.5,-466 "/>
 <polyline fill="none" stroke="black" points="16.5,-446 20.5,-446 20.5,-442 16.5,-442 "/>
@@ -311,9 +322,9 @@
 <!-- backup&#45;mirror&#45;&gt;backup&#45;mirror&#45;sources -->
 <g id="edge11" class="edge">
 <title>backup&#45;mirror&#45;&gt;backup&#45;mirror&#45;sources</title>
-<path fill="none" stroke="black" d="M141.24,-524.8C131.47,-512.59 118.19,-495.99 107.22,-482.28"/>
-<polygon fill="black" stroke="black" points="109.72,-479.8 100.74,-474.18 104.25,-484.17 109.72,-479.8"/>
-<text text-anchor="middle" x="128.5" y="-495.8" font-family="Times,serif" font-size="14.00">1</text>
+<path fill="none" stroke="black" d="M99.76,-524.8C97.57,-513.16 94.63,-497.55 92.13,-484.24"/>
+<polygon fill="black" stroke="black" points="95.52,-483.36 90.23,-474.18 88.64,-484.65 95.52,-483.36"/>
+<text text-anchor="middle" x="98.5" y="-495.8" font-family="Times,serif" font-size="14.00">1</text>
 </g>
 <!-- backup&#45;mirror&#45;sources&#45;&gt;backup&#45;copy -->
 <g id="edge13" class="edge">
@@ -322,7 +333,7 @@
 <polygon fill="black" stroke="black" points="73.3,-409.13 66.48,-401.03 66.76,-411.62 73.3,-409.13"/>
 </g>
 <!-- ionice -->
-<g id="node15" class="node">
+<g id="node16" class="node">
 <title>ionice</title>
 <polygon fill="none" stroke="black" points="164,-36 110,-36 110,-32 106,-32 106,-28 110,-28 110,-8 106,-8 106,-4 110,-4 110,0 164,0 164,-36"/>
 <polyline fill="none" stroke="black" points="110,-32 114,-32 114,-28 110,-28 "/>
@@ -336,7 +347,7 @@
 <polygon fill="black" stroke="black" points="163.85,-40.56 154.27,-36.03 158.93,-45.54 163.85,-40.56"/>
 </g>
 <!-- nice -->
-<g id="node16" class="node">
+<g id="node17" class="node">
 <title>nice</title>
 <polygon fill="none" stroke="black" points="236,-36 182,-36 182,-32 178,-32 178,-28 182,-28 182,-8 178,-8 178,-4 182,-4 182,0 236,0 236,-36"/>
 <polyline fill="none" stroke="black" points="182,-32 186,-32 186,-28 182,-28 "/>
@@ -350,7 +361,7 @@
 <polygon fill="black" stroke="black" points="212.5,-46.03 209,-36.03 205.5,-46.03 212.5,-46.03"/>
 </g>
 <!-- nocache -->
-<g id="node17" class="node">
+<g id="node18" class="node">
 <title>nocache</title>
 <polygon fill="none" stroke="black" points="315.5,-36 254.5,-36 254.5,-32 250.5,-32 250.5,-28 254.5,-28 254.5,-8 250.5,-8 250.5,-4 254.5,-4 254.5,0 315.5,0 315.5,-36"/>
 <polyline fill="none" stroke="black" points="254.5,-32 258.5,-32 258.5,-28 254.5,-28 "/>
@@ -364,7 +375,7 @@
 <polygon fill="black" stroke="black" points="261.85,-45.41 266.77,-36.03 257.08,-40.3 261.85,-45.41"/>
 </g>
 <!-- ssh -->
-<g id="node20" class="node">
+<g id="node21" class="node">
 <title>ssh</title>
 <polygon fill="none" stroke="black" points="480,-109 426,-109 426,-105 422,-105 422,-101 426,-101 426,-81 422,-81 422,-77 426,-77 426,-73 480,-73 480,-109"/>
 <polyline fill="none" stroke="black" points="426,-105 430,-105 430,-101 426,-101 "/>

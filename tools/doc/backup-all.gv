@@ -10,6 +10,7 @@ digraph "rsync-backup" {
 		"backup-copy"		-> "backup-clean-tmp"
 		"backup-copy"		-> "backup-copy-rsync"
 		"backup-copy-rsync"	-> "backup-rsync"
+		"backup-du"
 		"backup-create"		-> "backup-clean-tmp"
 		"backup-create"		-> "backup-create-rsync"
 		"backup-create"		-> "backup-make-tag"

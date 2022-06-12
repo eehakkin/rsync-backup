@@ -1,0 +1,187 @@
+#! /usr/bin/env python3
+###########################################################################
+# backup-du 0.0.20220612
+#
+# Copyright (C) 2022 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 3
+# as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###########################################################################
+__version__ = '0.0.20220612'
+
+PREFIXES = tuple(enumerate(('', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y')))[::-1]
+SI_PREFIXES = tuple((1000**i, prefix) for i, prefix in PREFIXES)
+IEC_PREFIXES = tuple((1 << (10 * i), prefix and f'{prefix.upper()}i') for i, prefix in PREFIXES)
+
+def du_file(path, *, count_links=False, dir_fd=None, shared_nlinks=None, st=None):
+	import os, stat, sys
+	st = st or os.lstat(path, dir_fd=dir_fd)
+	size = st.st_blocks << 9  # From 512 byte blocks to bytes.
+	if st.st_nlink == 1 or not shared_nlinks or stat.S_ISDIR(st.st_mode):
+		# Unshared: first and last.
+		return size, size
+	size_if_count_links = count_links and size or 0
+	shared_dev_nlinks = shared_nlinks.setdefault(st.st_dev, {})
+	nlink = shared_dev_nlinks.get(st.st_ino, st.st_nlink)
+	if nlink == 1:
+		# Shared: last.
+		del shared_dev_nlinks[st.st_ino]
+		return size_if_count_links, size
+	shared_dev_nlinks[st.st_ino] = nlink - 1
+	if nlink == st.st_nlink:
+		# Shared: first.
+		return size, 0
+	# Shared: not first nor last.
+	return size_if_count_links, 0
+
+def du_path(path, *, st=None, **kwargs):
+	import os, stat, sys
+	st = st or os.lstat(path)
+	first_size, last_size = du_file(path, st=st, **kwargs)
+	if stat.S_ISDIR(st.st_mode):
+		for root, dirs, nondirs, dir_fd in os.fwalk(
+			path,
+			onerror=lambda error: print(error, file=sys.stderr),
+			topdown=False
+			):
+			for names in (dirs, nondirs):
+				for name in names:
+					first_size2, last_size2 = du_file(
+						name,
+						dir_fd=dir_fd,
+						**kwargs
+						)
+					first_size += first_size2
+					last_size += last_size2
+	return first_size, last_size
+
+def format_human_readable_size(size, scales_and_prefixes, *, args=None):
+	sizes = []
+	for scale, prefix in scales_and_prefixes:
+		n = size // scale
+		if not n:
+			continue
+		if args and not args.full_size:
+			return f'{size / scale:.1f}\u00A0{prefix}B'
+		sizes.append(f'{n}\u00A0{prefix}B')
+		size -= n * scale
+	return sizes and ' '.join(sizes) or f'{size}\u00A0B'
+
+def format_iec_size(size, *, args=None):
+	return format_human_readable_size(size, IEC_PREFIXES, args=args)
+
+def format_si_size(size, *, args=None):
+	return format_human_readable_size(size, SI_PREFIXES, args=args)
+
+def format_size(size, *, args=None, ceil=True):
+	if args:
+		if args.human_readable:
+			return format_iec_size(size, args=args)
+		if args.si:
+			return format_si_size(size, args=args)
+	block_size, unit = args.block_size if args else (1 << 10, '')
+	sep = unit and '\u00A0'
+	return f'{(size + (block_size - 1 if ceil else 0)) // block_size}{sep}{unit}'
+
+def main():
+	import argparse, os, string
+	def get_default_paths():
+		dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+		return sorted(
+			os.path.join(dir, name)
+			for name in os.listdir(dir)
+			if name[0] in string.digits and all(
+				i in string.digits or
+				i in string.punctuation or
+				i in 'TW'
+				for i in name
+				)
+			)
+	def size(s):
+		u = s.lstrip(string.digits)
+		if u:
+			scale = unit(u)
+			if s == u:
+				return scale, u
+			return int(s.removesuffix(u)) * scale, ''
+		return int(s), ''
+	def unit(s):
+		for scale, prefix in IEC_PREFIXES:
+			if not prefix:
+				continue
+			if s == f'{prefix}B' or s == prefix[0]:
+				return scale
+		for scale, prefix in SI_PREFIXES:
+			if s == f'{prefix}B':
+				return scale
+		raise ValueError(s)
+	block_size = (1 << 9 if 'POSIXLY_CORRECT' in os.environ else 1 << 10, '')
+	for i in ('DU_BLOCK_SIZE', 'BLOCK_SIZE', 'BLOCKSIZE'):
+		if i in os.environ:
+			try:
+				block_size = size(os.environ[i])
+			except ValueError:
+				pass
+			break
+	parser = argparse.ArgumentParser(add_help=False, description='''
+		Summarize disk usage by counting used and releasable blocks and their sizes.''')
+	parser.add_argument('-B', '--block-size', default=block_size, metavar='SIZE', type=size, help='''
+		scale sizes down by SIZE before printing them''')
+	parser.add_argument('-l', '--count-links', action='store_true', help='''
+		count sizes many times if hard linked''')
+	parser.add_argument('-f', '--full-size', action='store_true', help='''
+		print full sizes''')
+	parser.add_argument('--help', action='help', help='''
+		show this help message and exit''')
+	parser.add_argument('-h', '--human-readable', action='store_true', help='''
+		print sizes in human readable format''')
+	parser.add_argument('-k', action='store_const', const=(1 << 10, ''), dest='block_size', help='''
+		like --block-size=KiB''')
+	parser.add_argument('-m', action='store_const', const=(1 << 20, ''), dest='block_size', help='''
+		like --block-size=MiB''')
+	parser.add_argument('--si', action='store_true', help='''
+		like -h, but use powers of 1000 not 1024''')
+	parser.add_argument('-s', '--summarize', action='store_true', help='''
+		display only a total for each argument (no-op)''')
+	parser.add_argument('-c', '--total', action='store_true', help='''
+		produce a grand total''')
+	parser.add_argument('-V', '--version', action='version', version=f'%(prog)s {__version__}', help='''
+		show version information and exit''')
+	parser.add_argument('paths', metavar='PATH', nargs='*', help='''
+		a path whose disk usage is to be summarized''')
+	args = parser.parse_args()
+	shared_nlinks = {0: {}}
+	if args.total:
+		total_first_size = 0
+		total_last_size = 0
+	for path in args.paths or get_default_paths():
+		first_size, last_size = du_path(
+			path,
+			count_links=args.count_links,
+			shared_nlinks=shared_nlinks
+			)
+		print_sizes(first_size, last_size, path, args=args)
+		if args.total:
+			total_first_size += first_size
+			total_last_size += last_size
+	if args.total:
+		print_sizes(total_first_size, total_last_size, 'total', args=args)
+
+def print_sizes(first_size, last_size, path, *, args=None, **kwargs):
+	s1 = format_size(first_size, args=args, ceil=True)
+	sep1 = max(2 - len(s1) // 8, 1) * '\t'
+	s2 = format_size(last_size, args=args, ceil=False)
+	sep2 = max(2 - len(s2) // 8, 1) * '\t'
+	print(s1, sep1, s2, sep2, path, sep='', **kwargs)
+
+if __name__ == '__main__':
+	main()

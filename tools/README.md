@@ -7,6 +7,7 @@ Backup tools
  - **[backup-copy-rsync]**:     a backup copying oriented file-copying tool
  - **[backup-create]**:         create a new backup directory
  - **[backup-create-rsync]**:   a backup creation oriented file-copying tool
+ - **[backup-du]**:             estimate file space usage
  - **[backup-make-tag]**:       construct a new backup directory name
  - **[backup-mirror]**:         copy backup directories and do related tasks
  - **[backup-mirror-sources]**: copy backup directories from mirror sources
@@ -170,6 +171,17 @@ For a reference manual,
 run
 `tools/backup-create-rsync --help` or
 `tools/backup-create-rsync --help=man`.
+
+**backup-du**
+-------------
+[backup-du]: #backup-du
+
+Summarize disk usage by counting used and releasable blocks and their
+sizes.
+
+For a reference manual,
+run
+`tools/backup-make-du --help`.
 
 **backup-make-tag**
 -------------------
