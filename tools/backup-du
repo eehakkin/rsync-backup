@@ -46,7 +46,7 @@ def du_file(path, *, count_links=False, dir_fd=None, shared_nlinks=None, st=None
 	# Shared: not first nor last.
 	return size_if_count_links, 0
 
-def du_path(path, *, onerror=None, summarize=True, **kwargs):
+def du_path(path, *, all=False, onerror=None, summarize=True, **kwargs):
 	import os, stat
 	st = os.lstat(path)
 	top_sizes = list(du_file(path, st=st, **kwargs))
@@ -81,6 +81,11 @@ def du_path(path, *, onerror=None, summarize=True, **kwargs):
 				if not summarize:
 					root_sizes[0] += sizes[0]
 					root_sizes[1] += sizes[1]
+					if all:
+						yield os.path.join(
+							root,
+							name
+							), *sizes
 				else:
 					top_sizes[0] += sizes[0]
 					top_sizes[1] += sizes[1]
@@ -165,6 +170,9 @@ See also:
     Home page <https://github.Eero.Häkkinen.fi/rsync-backup/>''',
 		formatter_class=argparse.RawDescriptionHelpFormatter
 		)
+	all_or_summarize = parser.add_mutually_exclusive_group()
+	all_or_summarize.add_argument('-a', '--all', action='store_true', help='''
+		Write counts for all files, not just directories.''')
 	parser.add_argument('-B', '--block-size', default=block_size, metavar='<SIZE>', type=size, help='''
 		Scale sizes down by SIZE before printing them.''')
 	parser.add_argument('-l', '--count-links', action='store_true', help='''
@@ -182,7 +190,7 @@ See also:
 		Like --block-size=MiB.''')
 	parser.add_argument('--si', action='store_true', help='''
 		Like --human-readable, but use powers of 1000 not 1024.''')
-	parser.add_argument('-s', '--summarize', action='store_true', help='''
+	all_or_summarize.add_argument('-s', '--summarize', action='store_true', help='''
 		Display only a total for each argument.''')
 	parser.add_argument('-c', '--total', action='store_true', help='''
 		Produce a grand total.''')
@@ -203,6 +211,7 @@ See also:
 	for path in args.paths or get_default_paths():
 		for path, *sizes in du_path(
 			path,
+			all=args.all,
 			count_links=args.count_links,
 			onerror=lambda error: print(error, file=sys.stderr),
 			shared_nlinks=shared_nlinks,
