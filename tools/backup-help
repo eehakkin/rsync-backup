@@ -98,7 +98,7 @@ __HELP__
 .HX 0
 .\}
 __TROFF__
-		exec help2man -h --help=help2man -L en_US.UTF-8 -N -n "${short_description:?}" -- "${0}" \
+		exec help2man -h --help=help2man -L C.UTF-8 -N -n "${short_description:?}" -- "${0}" \
 		| exec sed \
 			-e '\|^[.]B backup|,\|^[.]SH |{' \
 			-e '\|^[^.]|s| |&\\%|g' \
