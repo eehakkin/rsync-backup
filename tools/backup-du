@@ -26,7 +26,7 @@ SI_PREFIXES = tuple((1000**i, prefix) for i, prefix in PREFIXES)
 IEC_PREFIXES = tuple((1 << (10 * i), prefix and f'{prefix.upper()}i') for i, prefix in PREFIXES)
 
 def du_file(path, *, count_links=False, dir_fd=None, shared_nlinks=None, st=None):
-	import os, stat, sys
+	import os, stat
 	st = st or os.lstat(path, dir_fd=dir_fd)
 	size = st.st_blocks << 9  # From 512 byte blocks to bytes.
 	if st.st_nlink == 1 or not shared_nlinks or stat.S_ISDIR(st.st_mode):
@@ -46,26 +46,45 @@ def du_file(path, *, count_links=False, dir_fd=None, shared_nlinks=None, st=None
 	# Shared: not first nor last.
 	return size_if_count_links, 0
 
-def du_path(path, *, st=None, **kwargs):
-	import os, stat, sys
-	st = st or os.lstat(path)
-	first_size, last_size = du_file(path, st=st, **kwargs)
+def du_path(path, *, onerror=None, summarize=True, **kwargs):
+	import os, stat
+	st = os.lstat(path)
+	top_sizes = list(du_file(path, st=st, **kwargs))
 	if stat.S_ISDIR(st.st_mode):
+		if not summarize:
+			all_sizes = {path: top_sizes}
 		for root, dirs, nondirs, dir_fd in os.fwalk(
 			path,
-			onerror=lambda error: print(error, file=sys.stderr),
+			onerror=onerror,
 			topdown=False
 			):
-			for names in (dirs, nondirs):
-				for name in names:
-					first_size2, last_size2 = du_file(
-						name,
-						dir_fd=dir_fd,
-						**kwargs
-						)
-					first_size += first_size2
-					last_size += last_size2
-	return first_size, last_size
+			if not summarize:
+				root_sizes = all_sizes.setdefault(root, [0, 0])
+			for name in dirs:
+				sizes = du_file(name, dir_fd=dir_fd, **kwargs)
+				if not summarize:
+					dir_path = os.path.join(root, name)
+					dir_sizes = all_sizes.pop(
+						dir_path,
+						None
+						) or [0, 0]
+					dir_sizes[0] += sizes[0]
+					dir_sizes[1] += sizes[1]
+					root_sizes[0] += dir_sizes[0]
+					root_sizes[1] += dir_sizes[1]
+					yield dir_path, *dir_sizes
+				else:
+					top_sizes[0] += sizes[0]
+					top_sizes[1] += sizes[1]
+			for name in nondirs:
+				sizes = du_file(name, dir_fd=dir_fd, **kwargs)
+				if not summarize:
+					root_sizes[0] += sizes[0]
+					root_sizes[1] += sizes[1]
+				else:
+					top_sizes[0] += sizes[0]
+					top_sizes[1] += sizes[1]
+	yield path, *top_sizes
 
 def format_human_readable_size(size, scales_and_prefixes, *, args=None):
 	sizes = []
@@ -164,7 +183,7 @@ See also:
 	parser.add_argument('--si', action='store_true', help='''
 		Like --human-readable, but use powers of 1000 not 1024.''')
 	parser.add_argument('-s', '--summarize', action='store_true', help='''
-		Display only a total for each argument (no-op).''')
+		Display only a total for each argument.''')
 	parser.add_argument('-c', '--total', action='store_true', help='''
 		Produce a grand total.''')
 	parser.add_argument('-V', '--version', action='version', version=__copyright__, help='''
@@ -180,20 +199,21 @@ See also:
 		os.execlp(backup_help, backup_help, f'--help={help_format}')
 	shared_nlinks = {0: {}}
 	if args.total:
-		total_first_size = 0
-		total_last_size = 0
+		total_sizes = [0, 0]
 	for path in args.paths or get_default_paths():
-		first_size, last_size = du_path(
+		for path, *sizes in du_path(
 			path,
 			count_links=args.count_links,
-			shared_nlinks=shared_nlinks
-			)
-		print_sizes(first_size, last_size, path, args=args)
+			onerror=lambda error: print(error, file=sys.stderr),
+			shared_nlinks=shared_nlinks,
+			summarize=args.summarize
+			):
+			print_sizes(*sizes, path, args=args)
 		if args.total:
-			total_first_size += first_size
-			total_last_size += last_size
+			total_sizes[0] += sizes[0]
+			total_sizes[1] += sizes[1]
 	if args.total:
-		print_sizes(total_first_size, total_last_size, 'total', args=args)
+		print_sizes(*total_sizes, 'total', args=args)
 
 def print_sizes(first_size, last_size, path, *, args=None, **kwargs):
 	s1 = format_size(first_size, args=args, ceil=True)
