@@ -10,14 +10,16 @@ digraph "rsync-backup" {
 		"backup-copy"		-> "backup-clean-tmp"
 		"backup-copy"		-> "backup-copy-rsync"
 		"backup-copy-rsync"	-> "backup-rsync"
-		"backup-du"
 		"backup-create"		-> "backup-clean-tmp"
 		"backup-create"		-> "backup-create-rsync"
 		"backup-create"		-> "backup-make-tag"
 		"backup-create-rsync"	-> "backup-rsync"
+		"backup-du"
 		"backup-mirror"		-> "backup-mirror-sources"	[ label = 1 ]
 		"backup-mirror"		-> "backup-purge"		[ label = 2 ]
 		"backup-mirror-sources"	-> "backup-copy"
+		"backup-nice"		-> "backup-help"		[ style = invis ]
+		"backup-nologin"
 		"backup-prepare"	-> "backup-nice"
 		"backup-purge"		-> "backup-clean-tmp"
 		"backup-rsync"		-> "backup-clean-tmp"		[ style = dashed ]
@@ -26,9 +28,10 @@ digraph "rsync-backup" {
 		"backup-rsync"		-> "backup-prepare"		[ style = dashed ]
 		"backup-sources"	-> "backup-create"
 	}
-	"backup-nice"	-> "ionice"		[ style = dashed ]
-	"backup-nice"	-> "nice"		[ style = dashed ]
-	"backup-nice"	-> "nocache"		[ style = dashed ]
+	"backup-help"	-> "help2man"		[ style = dashed ]
+	"backup-nice"	-> "ionice"		[ minlen = 2, style = dashed ]
+	"backup-nice"	-> "nice"		[ minlen = 2, style = dashed ]
+	"backup-nice"	-> "nocache"		[ minlen = 2, style = dashed ]
 	"backup-purge"	-> "on_ac_power"	[ style = dashed ]
 	"backup-rsync"	-> "rsync"
 	"rsync"		-> "ssh"		[ style = dashed ]

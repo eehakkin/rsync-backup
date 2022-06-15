@@ -1,6 +1,7 @@
 #! /bin/sh -Ceu
+# backup-purge - delete old backup directories
 ###########################################################################
-# backup-purge 0.0.20220307
+# backup-purge 0.0.20220615
 #
 # Copyright (C) 2010-2022 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -24,6 +25,7 @@
 
 # Locate the script.
 me=$( command -v -- "${0}" || ls -d -- "${0}" )
+me_base=$( basename -- "${me}" )
 me_dir=$( dirname -- "${me}" )
 case ${me_dir} in
 .  ) dir=.. ;;
@@ -32,23 +34,19 @@ case ${me_dir} in
 *  ) dir=$( dirname -- "${me_dir}" ) ;;
 esac
 
-basename=${0##*[\\/]}
-short_description='delete old backup directories'
 default_args='hourly=0 fake-daily=0 daily=7 fake-weekly=7 weekly=31 fake-monthly=31 monthly=366 fake-yearly=366'
-dry_run='' force=''
+dry_run= force=
 
 # Parse options.
 while :
 do
 	case ${1-} in
-	--dry-run | -n ) dry_run=+; shift ;;
-	--force   | -f ) force=+; shift ;;
-	--help    | -h )
+	--help | -h )
 		COLUMNS=${COLUMNS:-$( tput cols 2> /dev/null || : )}
 		exec fmt -s ${COLUMNS:+ -w "${COLUMNS}" } << __HELP__ \
 		| exec sed -e '/\\$/{N;s/\\\n  *//;}'; exit
 Usage: \\
-           ${basename} [<OPTION>]... [<PATTERN>=<DAYS>]...
+           ${me_base} [<OPTION>]... [<PATTERN>=<DAYS>]...
 
 Delete old backup directories \
 based on pattern matching and ages. \
@@ -183,74 +181,21 @@ if they are over <DAYS> days old.
         A temporary directory to be used for deleting old backup directories.
 
 See also:
-    ${basename%backup*}backup(1),
-    ${basename%backup*}backup-mirror(1)
+    ${me_base%backup*}backup(1),
+    ${me_base%backup*}backup-help(1),
+    ${me_base%backup*}backup-mirror(1)
 
     on_ac_power(1)
 
     Home page <https://github.Eero.Häkkinen.fi/rsync-backup/>
 __HELP__
 		;;
-	--help=help2man )
-		COLUMNS=2500 exec "${0}" --help \
-		| exec sed \
-			-e '/^See also:$/,/^[^ ]/{s/^\(See also\):$/*\1*/;s/^ *//;}' \
-			-e '/^    [^ ]/!b'	\
-			-e '/[^ ]  /b'		\
-			-e 'N'			\
-			-e 's/\n        -/  ​-/'	\
-			-e 's/\n        /  /'	\
-			-e 'P'			\
-			-e 'D'
-		exit
+	--help=* | --version | -V )
+		export BACKUP_TOOL="${0}"
+		exec "${0%backup*}backup-help" "${1}"
 		;;
-	--help=man )
-		exec "${0}" --help=troff \
-		| exec man -l -- -
-		exit
-		;;
-	--help=troff )
-		cat << '__TROFF__'
-.if '\*[.T]'html' \{\
-.HEAD "<link href=""groff.css"" rel=""stylesheet"" type=""text/css"" />"
-.HEAD "<meta name=""viewport"" content=""width=device-width, initial-scale=1.0"" />"
-.HX 0
-.\}
-__TROFF__
-		exec help2man -h --help=help2man -L en_US.UTF-8 -N -n "${short_description}" -- "${0}" \
-		| exec sed \
-			-e '\|^[.]B backup|,\|^[.]SH |{' \
-			-e '\|^[^.]|s| |&\\%|g' \
-			-e '\|^[^.]|s|^|&\\%|' \
-			-e '\|^[.]br$|d' \
-			-e 's|^[.]B backup|.SY backup|' \
-			-e '\|^[.]SH |i'"\\
-.YS" \
-			-e '}' \
-			-e '\|^[.][IT]P$|N' \
-			-e '\|^\([[]0\\-9[]]\)\1\1\1\(\(\\-\)*\)W*\([[]*0*\\*-*9[]]*\)\4\(\2\1\1*\)*|i'"\\
-.br" \
-			-e '\|^<[[:upper:]]*>\([[]\\-[]]\)W*<[[:upper:]]*>\(\1<[[:upper:]]*>\)*|i'"\\
-.br" \
-			-e 's|\([[:alpha:]][[:alnum:]\\_-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g' \
-			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|'".UR \2\\
-\1\\
-.UE"'|'
-		exit
-		;;
-	--help=* )
-		exec "${0}" --help=troff \
-		| exec man -l -T"${1#*=}" -- -
-		exit
-		;;
-	--version | -V )
-		exec sed -n \
-			-e '/^[^#]/q'				\
-			-e "3s/^# [^ ]* /# ${basename} /"	\
-			-e 's/^#\( \(.*\)\)*$/\2/p'		\
-			-e '/^##/{2!q;}'			\
-			-- "${me}"
-		;;
+	--dry-run  | -n ) dry_run=+; shift ;;
+	--force    | -f ) force=+; shift ;;
 	-[!-][!-]* )
 		opts=${1#-}
 		shift

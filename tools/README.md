@@ -8,6 +8,7 @@ Backup tools
  - **[backup-create]**:         create a new backup directory
  - **[backup-create-rsync]**:   a backup creation oriented file-copying tool
  - **[backup-du]**:             estimate file space usage
+ - **[backup-help]**:           show backup tool help messages
  - **[backup-make-tag]**:       construct a new backup directory name
  - **[backup-mirror]**:         copy backup directories and do related tasks
  - **[backup-mirror-sources]**: copy backup directories from mirror sources
@@ -181,7 +182,19 @@ sizes.
 
 For a reference manual,
 run
-`tools/backup-make-du --help`.
+`tools/backup-du --help` or
+`tools/backup-du --help=man`.
+
+**backup-help**
+---------------
+[backup-help]: #backup-help
+
+Show backup tool help messages in different formats.
+
+For a reference manual,
+run
+`tools/backup-help --help` or
+`tools/backup-help --help=man`.
 
 **backup-make-tag**
 -------------------

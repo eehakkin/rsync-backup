@@ -1,6 +1,7 @@
 #! /bin/sh -Ceu
+# backup-prepare - prepare for backups
 ###########################################################################
-# backup-prepare 0.0.20211218
+# backup-prepare 0.0.20220615
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -24,6 +25,7 @@
 
 # Locate the script.
 me=$( command -v -- "${0}" || ls -d -- "${0}" )
+me_base=$( basename -- "${me}" )
 me_dir=$( dirname -- "${me}" )
 case ${me_dir} in
 .  ) dir=.. ;;
@@ -32,8 +34,6 @@ case ${me_dir} in
 *  ) dir=$( dirname -- "${me_dir}" ) ;;
 esac
 
-basename=${0##*[\\/]}
-short_description='prepare for backups'
 valid='[:alnum:]_.-'
 
 
@@ -46,7 +46,7 @@ do
 		exec fmt -s ${COLUMNS:+ -w "${COLUMNS}" } << __HELP__ \
 		| exec sed -e '/\\$/{N;s/\\\n  *//;}'; exit
 Usage: \\
-           ${basename} [<OPTION>]...
+           ${me_base} [<OPTION>]...
 
 Prepare for backups \by executing preparation scripts. \
 This can be used for dumping database snapshots to files, for instance.
@@ -57,7 +57,7 @@ with an adjusted niceness (which affect process scheduling) and \
 with minimized effect on file system cache \
 provided that the commands ionice(1), nice(1) and nocache(1) are available. \
 For details, see \
-${basename%backup*}backup-nice(1).
+${me_base%backup*}backup-nice(1).
 
 Options:
     -h, --help[=<FORMAT>]
@@ -77,9 +77,10 @@ The names of the files must consist of only characters \
 matching the pattern [${valid}].
 
 See also:
-    ${basename%backup*}backup(1),
-    ${basename%backup*}backup-nice(1),
-    ${basename%backup*}backup-rsync(1)
+    ${me_base%backup*}backup(1),
+    ${me_base%backup*}backup-help(1),
+    ${me_base%backup*}backup-nice(1),
+    ${me_base%backup*}backup-rsync(1)
 
     ionice(1),
     nice(1),
@@ -88,60 +89,9 @@ See also:
     Home page <https://github.Eero.Häkkinen.fi/rsync-backup/>
 __HELP__
 		;;
-	--help=help2man )
-		COLUMNS=2500 exec "${0}" --help \
-		| exec sed \
-			-e '/^See also:$/,/^[^ ]/{s/^\(See also\):$/*\1*/;s/^ *//;}' \
-			-e '/^    [^ ]/!b'	\
-			-e '/[^ ]  /b'		\
-			-e 'N'			\
-			-e 's/\n        -/  ​-/'	\
-			-e 's/\n        /  /'	\
-			-e 'P'			\
-			-e 'D'
-		exit
-		;;
-	--help=man )
-		exec "${0}" --help=troff \
-		| exec man -l -- -
-		exit
-		;;
-	--help=troff )
-		cat << '__TROFF__'
-.if '\*[.T]'html' \{\
-.HEAD "<link href=""groff.css"" rel=""stylesheet"" type=""text/css"" />"
-.HEAD "<meta name=""viewport"" content=""width=device-width, initial-scale=1.0"" />"
-.HX 0
-.\}
-__TROFF__
-		exec help2man -h --help=help2man -L en_US.UTF-8 -N -n "${short_description}" -- "${0}" \
-		| exec sed \
-			-e '\|^[.]B backup|,\|^[.]SH |{' \
-			-e '\|^[^.]|s| |&\\%|g' \
-			-e '\|^[^.]|s|^|&\\%|' \
-			-e '\|^[.]br$|d' \
-			-e 's|^[.]B backup|.SY backup|' \
-			-e '\|^[.]SH |i'"\\
-.YS" \
-			-e '}' \
-			-e 's|\([[:alpha:]][[:alnum:]\\_-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g' \
-			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|'".UR \2\\
-\1\\
-.UE"'|'
-		exit
-		;;
-	--help=* )
-		exec "${0}" --help=troff \
-		| exec man -l -T"${1#*=}" -- -
-		exit
-		;;
-	--version | -V )
-		exec sed -n \
-			-e '/^[^#]/q'				\
-			-e "3s/^# [^ ]* /# ${basename} /"	\
-			-e 's/^#\( \(.*\)\)*$/\2/p'		\
-			-e '/^##/{2!q;}'			\
-			-- "${me}"
+	--help=* | --version | -V )
+		export BACKUP_TOOL="${0}"
+		exec "${0%backup*}backup-help" "${1}"
 		;;
 	--  ) shift; break ;;
 	-?* ) "getopts${-##*}" '' OPT "${@}"; exit 1 ;;

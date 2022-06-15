@@ -1,6 +1,8 @@
 #! /usr/bin/env python3
+# backup-du - estimate file space usage
+__copyright__ = '''
 ###########################################################################
-# backup-du 0.0.20220612
+# backup-du 0.0.20220615
 #
 # Copyright (C) 2022 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -16,7 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
-__version__ = '0.0.20220612'
+'''.strip('\n\r #').replace('\n# ', '\n').replace('\n#', '\n')
+__version__ = __copyright__.split(None, 2)[1]
 
 PREFIXES = tuple(enumerate(('', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y')))[::-1]
 SI_PREFIXES = tuple((1000**i, prefix) for i, prefix in PREFIXES)
@@ -93,7 +96,7 @@ def format_size(size, *, args=None, ceil=True):
 	return f'{(size + (block_size - 1 if ceil else 0)) // block_size}{sep}{unit}'
 
 def main():
-	import argparse, os, string
+	import argparse, os, string, sys
 	def get_default_paths():
 		dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 		return sorted(
@@ -132,33 +135,49 @@ def main():
 			except ValueError:
 				pass
 			break
-	parser = argparse.ArgumentParser(add_help=False, description='''
-		Summarize disk usage by counting used and releasable blocks and their sizes.''')
-	parser.add_argument('-B', '--block-size', default=block_size, metavar='SIZE', type=size, help='''
-		scale sizes down by SIZE before printing them''')
+	parser = argparse.ArgumentParser(
+		add_help=False,
+		description='''
+Summarize disk usage by counting used and releasable blocks and their sizes.''',
+		epilog='''
+See also:
+    backup-help(1)
+
+    Home page <https://github.Eero.Häkkinen.fi/rsync-backup/>''',
+		formatter_class=argparse.RawDescriptionHelpFormatter
+		)
+	parser.add_argument('-B', '--block-size', default=block_size, metavar='<SIZE>', type=size, help='''
+		Scale sizes down by SIZE before printing them.''')
 	parser.add_argument('-l', '--count-links', action='store_true', help='''
-		count sizes many times if hard linked''')
+		Count sizes many times if hard linked.''')
 	parser.add_argument('-f', '--full-size', action='store_true', help='''
-		print full sizes''')
-	parser.add_argument('--help', action='help', help='''
-		show this help message and exit''')
+		Print full sizes.''')
+	parser.add_argument('--help', action='append', metavar='<FORMAT>', nargs='?', help='''
+		Show this help message and exit.''')
+	parser.add_argument('--help=help', action='help', help=argparse.SUPPRESS)
 	parser.add_argument('-h', '--human-readable', action='store_true', help='''
-		print sizes in human readable format''')
+		Print sizes in human readable format.''')
 	parser.add_argument('-k', action='store_const', const=(1 << 10, ''), dest='block_size', help='''
-		like --block-size=KiB''')
+		Like --block-size=KiB.''')
 	parser.add_argument('-m', action='store_const', const=(1 << 20, ''), dest='block_size', help='''
-		like --block-size=MiB''')
+		Like --block-size=MiB.''')
 	parser.add_argument('--si', action='store_true', help='''
-		like -h, but use powers of 1000 not 1024''')
+		Like --human-readable, but use powers of 1000 not 1024.''')
 	parser.add_argument('-s', '--summarize', action='store_true', help='''
-		display only a total for each argument (no-op)''')
+		Display only a total for each argument (no-op).''')
 	parser.add_argument('-c', '--total', action='store_true', help='''
-		produce a grand total''')
-	parser.add_argument('-V', '--version', action='version', version=f'%(prog)s {__version__}', help='''
-		show version information and exit''')
-	parser.add_argument('paths', metavar='PATH', nargs='*', help='''
-		a path whose disk usage is to be summarized''')
+		Produce a grand total.''')
+	parser.add_argument('-V', '--version', action='version', version=__copyright__, help='''
+		Show version information and exit.''')
+	parser.add_argument('paths', metavar='<PATH>', nargs='*', help='''
+		A path whose disk usage is to be summarized.''')
 	args = parser.parse_args()
+	for help_format in args.help or ():
+		if help_format is None:
+			parser.parse_args(['--help=help'])
+		backup_help = 'backup-help'.join(sys.argv[0].rpartition('backup-du')[::2])
+		os.environ['BACKUP_TOOL'] = sys.argv[0]
+		os.execlp(backup_help, backup_help, f'--help={help_format}')
 	shared_nlinks = {0: {}}
 	if args.total:
 		total_first_size = 0

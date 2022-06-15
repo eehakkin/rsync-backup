@@ -1,6 +1,7 @@
 #! /bin/sh -Ceu
+# backup-copy - copy backup directories
 ###########################################################################
-# backup-copy 0.0.20211218
+# backup-copy 0.0.20220615
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -24,6 +25,7 @@
 
 # Locate the script.
 me=$( command -v -- "${0}" || ls -d -- "${0}" )
+me_base=$( basename -- "${me}" )
 me_dir=$( dirname -- "${me}" )
 case ${me_dir} in
 .  ) dir=.. ;;
@@ -32,8 +34,6 @@ case ${me_dir} in
 *  ) dir=$( dirname -- "${me_dir}" ) ;;
 esac
 
-basename=${0##*[\\/]}
-short_description='copy backup directories'
 
 
 
@@ -46,18 +46,18 @@ do
 		exec fmt -s ${COLUMNS:+ -w "${COLUMNS}" } << __HELP__ \
 		| exec sed -e '/\\$/{N;s/\\\n  *//;}'; exit
 Usage: \\
-           ${basename} [<RSYNC-OPTION>]... <SRC>[/[.]]...
+           ${me_base} [<RSYNC-OPTION>]... <SRC>[/[.]]...
  or:   \\
-           ${basename} [<RSYNC-OPTION>]... [<USER>@]<HOST>:<SRC>[/[.]]...
+           ${me_base} [<RSYNC-OPTION>]... [<USER>@]<HOST>:<SRC>[/[.]]...
  or:   \\
-           ${basename} [<RSYNC-OPTION>]... [<USER>@]<HOST>::<MODULE>[/<SRC>][/[.]]...
+           ${me_base} [<RSYNC-OPTION>]... [<USER>@]<HOST>::<MODULE>[/<SRC>][/[.]]...
  or:   \\
-           ${basename} [<RSYNC-OPTION>]... rsync://[<USER>@]<HOST>[:<PORT>]/<MODULE>[/<SRC>][/[.]]...
+           ${me_base} [<RSYNC-OPTION>]... rsync://[<USER>@]<HOST>[:<PORT>]/<MODULE>[/<SRC>][/[.]]...
  or:   \\
-           ${basename} <OPTION>...
+           ${me_base} <OPTION>...
 
 Copy backup directories from sources \
-using ${basename%backup*}backup-copy-rsync(1) and thus rsync(1).
+using ${me_base%backup*}backup-copy-rsync(1) and thus rsync(1).
 
 A backup directory is copied using the following steps:
 
@@ -66,7 +66,7 @@ A backup directory is copied using the following steps:
   Files and directories are copied \
 from a source backup directory \
 to the newly created backup directory \
-using ${basename%backup*}backup-copy-rsync(1) and thus rsync(1).
+using ${me_base%backup*}backup-copy-rsync(1) and thus rsync(1).
 
   A new symbolink link to denote the latest backup directory \
 is created in a temporary directory.
@@ -155,7 +155,7 @@ Files:
         A symbolic link to the latest backup directory.
     ${dir}/conf/copy-config
         An optional configuration file \
-used by ${basename%backup*}backup-copy-rsync(1) \
+used by ${me_base%backup*}backup-copy-rsync(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1) \
@@ -167,21 +167,22 @@ This script can be used for setting identity files and proxy commands, \
 for instance.
     ${dir}/conf/rsync-config
         An optional configuration file \
-used by ${basename%backup*}backup-rsync(1) \
-used by ${basename%backup*}backup-copy-rsync(1) and ${basename%backup*}backup-create-rsync(1) \
-used by ${basename}(1) and ${basename%backup*}backup-create(1) \
+used by ${me_base%backup*}backup-rsync(1) \
+used by ${me_base%backup*}backup-copy-rsync(1) and ${me_base%backup*}backup-create-rsync(1) \
+used by ${me_base}(1) and ${me_base%backup*}backup-create(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).
     ${dir}/tmp/
         A temporary directory to be used for copying backup directories.
-    ${dir}/tools/${basename%backup*}backup-rsync
+    ${dir}/tools/${me_base%backup*}backup-rsync
         Used for copying files using rsync(1).
 
 See also:
-    ${basename%backup*}backup-clean-tmp(1),
-    ${basename%backup*}backup-copy-rsync(1),
-    ${basename%backup*}backup-mirror-sources(1)
+    ${me_base%backup*}backup-clean-tmp(1),
+    ${me_base%backup*}backup-copy-rsync(1),
+    ${me_base%backup*}backup-help(1),
+    ${me_base%backup*}backup-mirror-sources(1)
 
     rsync(1),
     ssh(1)
@@ -189,60 +190,9 @@ See also:
     Home page <https://github.Eero.Häkkinen.fi/rsync-backup/>
 __HELP__
 		;;
-	--help=help2man )
-		COLUMNS=2500 exec "${0}" --help \
-		| exec sed \
-			-e '/^See also:$/,/^[^ ]/{s/^\(See also\):$/*\1*/;s/^ *//;}' \
-			-e '/^    [^ ]/!b'	\
-			-e '/[^ ]  /b'		\
-			-e 'N'			\
-			-e 's/\n        -/  ​-/'	\
-			-e 's/\n        /  /'	\
-			-e 'P'			\
-			-e 'D'
-		exit
-		;;
-	--help=man )
-		exec "${0}" --help=troff \
-		| exec man -l -- -
-		exit
-		;;
-	--help=troff )
-		cat << '__TROFF__'
-.if '\*[.T]'html' \{\
-.HEAD "<link href=""groff.css"" rel=""stylesheet"" type=""text/css"" />"
-.HEAD "<meta name=""viewport"" content=""width=device-width, initial-scale=1.0"" />"
-.HX 0
-.\}
-__TROFF__
-		exec help2man -h --help=help2man -L en_US.UTF-8 -N -n "${short_description}" -- "${0}" \
-		| exec sed \
-			-e '\|^[.]B backup|,\|^[.]SH |{' \
-			-e '\|^[^.]|s| |&\\%|g' \
-			-e '\|^[^.]|s|^|&\\%|' \
-			-e '\|^[.]br$|d' \
-			-e 's|^[.]B backup|.SY backup|' \
-			-e '\|^[.]SH |i'"\\
-.YS" \
-			-e '}' \
-			-e 's|\([[:alpha:]][[:alnum:]\\_-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g' \
-			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|'".UR \2\\
-\1\\
-.UE"'|'
-		exit
-		;;
-	--help=* )
-		exec "${0}" --help=troff \
-		| exec man -l -T"${1#*=}" -- -
-		exit
-		;;
-	--version | -V )
-		exec sed -n \
-			-e '/^[^#]/q'				\
-			-e "3s/^# [^ ]* /# ${basename} /"	\
-			-e 's/^#\( \(.*\)\)*$/\2/p'		\
-			-e '/^##/{2!q;}'			\
-			-- "${me}"
+	--help=* | --version | -V )
+		export BACKUP_TOOL="${0}"
+		exec "${0%backup*}backup-help" "${1}"
 		;;
 	esac
 	break

@@ -1,6 +1,7 @@
 #! /bin/sh -Ceu
+# backup - create a new backup directory and do related tasks
 ###########################################################################
-# backup 0.0.20220307
+# backup 0.0.20220615
 #
 # Copyright (C) 2010-2022 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -24,6 +25,7 @@
 
 # Locate the script.
 me=$( command -v -- "${0}" || ls -d -- "${0}" )
+me_base=$( basename -- "${me}" )
 me_dir=$( dirname -- "${me}" )
 case ${me_dir} in
 .  ) dir=.. ;;
@@ -32,8 +34,6 @@ case ${me_dir} in
 *  ) dir=$( dirname -- "${me_dir}" ) ;;
 esac
 
-basename=${0##*[\\/]}
-short_description='create a new backup directory and do related tasks'
 valid='[:alnum:]_.-'
 
 
@@ -46,9 +46,9 @@ do
 		exec fmt -s ${COLUMNS:+ -w "${COLUMNS}" } << __HELP__ \
 		| exec sed -e '/\\$/{N;s/\\\n  *//;}'; exit
 Usage: \\
-           ${basename} [<RSYNC-OPTION>]...
+           ${me_base} [<RSYNC-OPTION>]...
  or:   \\
-           ${basename} <OPTION>...
+           ${me_base} <OPTION>...
 
 Prepare for backups by executing preparation scripts, \
 read backup sources from configuration files, \
@@ -56,9 +56,9 @@ create a new backup directory from the backup sources using rsync(1) and \
 then delete old backup directories \
 based on pattern matching and ages. \
 For details, see \
-${basename%backup*}backup-prepare(1), \
-${basename%backup*}backup-sources(1) and \
-${basename%backup*}backup-purge(1).
+${me_base%backup*}backup-prepare(1), \
+${me_base%backup*}backup-sources(1) and \
+${me_base%backup*}backup-purge(1).
 
 The preparation scripts can be used for dumping database snapshots to files, \
 for instance.
@@ -131,7 +131,7 @@ Files:
         A symbolic link to the latest backup directory.
     ${dir}/conf/backup-src-base
         An optional configuration file \
-used by ${basename%backup*}backup-sources(1) \
+used by ${me_base%backup*}backup-sources(1) \
 containing the backup source base directory \
 to be used to augment \
 the backup sources specified in the conf/backup-src-list configuration file \
@@ -141,7 +141,7 @@ The file must contain a line having the following form:
         Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/backup-src-host
         An optional configuration file \
-used by ${basename%backup*}backup-sources(1) \
+used by ${me_base%backup*}backup-sources(1) \
 containing the backup source host \
 to be used to augment \
 the backup sources specified in the conf/backup-src-list configuration file \
@@ -151,7 +151,7 @@ The file must contain a line having the following form:
         Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/backup-src-list
         A configuration file \
-used by ${basename%backup*}backup-sources(1) \
+used by ${me_base%backup*}backup-sources(1) \
 containing the backup sources \
 to be copied to a newly created backup directory \
 when creating a new backup. \
@@ -173,11 +173,11 @@ The file must contain operand lines having any the following forms:
             rsync://[<USER>@]<HOST>[:<PORT>]/<MODULE>/<BASE-DIR>/./[<SRC>]
                 An rsync daemon source to be copied to a newly created backup directory without the base directory.
         These operands will be passed \
-to the ${basename%backup*}backup-create(1) tool. \
+to the ${me_base%backup*}backup-create(1) tool. \
 Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/backup-src-list.d
         An optional directory \
-used by ${basename%backup*}backup-sources(1) \
+used by ${me_base%backup*}backup-sources(1) \
 containing configuration files \
 similar to the ${dir}/conf/backup-src-list configuration file \
 containing the backup sources \
@@ -187,7 +187,7 @@ The names of the files must consist of only characters \
 matching the pattern [${valid}].
     ${dir}/conf/backup-src-module
         An optional configuration file \
-used by ${basename%backup*}backup-sources(1) \
+used by ${me_base%backup*}backup-sources(1) \
 containing the backup source module \
 to be used to augment \
 the backup source host specified in the conf/backup-src-host configuration file and \
@@ -198,7 +198,7 @@ The file must contain a line having the following form:
         Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/backup-src-port
         An optional configuration file \
-used by ${basename%backup*}backup-sources(1) \
+used by ${me_base%backup*}backup-sources(1) \
 containing the backup source port \
 to be used to augment \
 the backup source host specified in the conf/backup-src-host configuration file, \
@@ -210,7 +210,7 @@ The file must contain a line having the following form:
         Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/backup-src-prefix
         An optional configuration file \
-used by ${basename%backup*}backup-sources(1) \
+used by ${me_base%backup*}backup-sources(1) \
 containing the backup source prefix \
 to be used to augment \
 the backup sources specified in the conf/backup-src-list configuration file. \
@@ -228,7 +228,7 @@ The file must contain a line having one of the following forms:
         Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/backup-src-user
         An optional configuration file \
-used by ${basename%backup*}backup-sources(1) \
+used by ${me_base%backup*}backup-sources(1) \
 containing the backup source user \
 to be used to augment \
 the backup source host specified in the conf/backup-src-host configuration file and \
@@ -239,9 +239,9 @@ The file must contain a line having the following form:
         Empty lines and comment lines (starting with a "#") are allowed, too.
     ${dir}/conf/create-config
         An optional configuration file \
-used by ${basename%backup*}backup-create-rsync(1) \
-used by ${basename%backup*}backup-create(1) \
-used by ${basename%backup*}backup-sources(1) \
+used by ${me_base%backup*}backup-create-rsync(1) \
+used by ${me_base%backup*}backup-create(1) \
+used by ${me_base%backup*}backup-sources(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1) \
@@ -249,11 +249,11 @@ when creating a new backup directory.
     ${dir}/conf/dump-config
         An optional configuration file \
 used by some ${dir}/conf/pre.d/*-dump scripts \
-used by ${basename%backup*}backup-prepare(1) \
+used by ${me_base%backup*}backup-prepare(1) \
 containing configuration variable assignments.
     ${dir}/conf/pre.d/
         An optional directory \
-used by ${basename%backup*}backup-prepare(1) \
+used by ${me_base%backup*}backup-prepare(1) \
 containing scripts \
 which are executed in lexical order of names \
 when preparing for backups. \
@@ -261,7 +261,7 @@ The names of the files must consist of only characters \
 matching the pattern [${valid}].
     ${dir}/conf/purge-list
         An optional configuration file \
-used by ${basename%backup*}backup-purge(1) \
+used by ${me_base%backup*}backup-purge(1) \
 containing patterns and ages \
 which override the default ones. \
 The file must contain operand lines having the following form:
@@ -276,18 +276,18 @@ This script can be used for setting identity files and proxy commands, \
 for instance.
     ${dir}/conf/rsync-config
         An optional configuration file \
-used by ${basename%backup*}backup-rsync(1) \
-used by ${basename%backup*}backup-copy-rsync(1) and ${basename%backup*}backup-create-rsync(1) \
-used by ${basename%backup*}backup-copy(1) and ${basename%backup*}backup-create(1) \
-used by ${basename%backup*}backup-mirror-sources(1) and ${basename%backup*}backup-sources(1) \
-used by ${basename}(1) and ${basename%backup*}backup-mirror(1) \
+used by ${me_base%backup*}backup-rsync(1) \
+used by ${me_base%backup*}backup-copy-rsync(1) and ${me_base%backup*}backup-create-rsync(1) \
+used by ${me_base%backup*}backup-copy(1) and ${me_base%backup*}backup-create(1) \
+used by ${me_base%backup*}backup-mirror-sources(1) and ${me_base%backup*}backup-sources(1) \
+used by ${me_base}(1) and ${me_base%backup*}backup-mirror(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).
     ${dir}/conf/tag-formats
         An optional configuration file \
-used by ${basename%backup*}backup-create(1) \
-used by ${basename%backup*}backup-sources(1) \
+used by ${me_base%backup*}backup-create(1) \
+used by ${me_base%backup*}backup-sources(1) \
 containing date formats \
 to be used \
 when constructing a backup directory name for a new backup. \
@@ -296,12 +296,12 @@ Each date format is tried in turn in order specified \
 until a non-existing backup directory is found.
     ${dir}/tmp/
         A temporary directory to be used for creating a new backup directory.
-    ${dir}/tools/${basename%backup*}backup-prepare
+    ${dir}/tools/${me_base%backup*}backup-prepare
         Used for preparing for backups by executing preparation scripts.
-    ${dir}/tools/${basename%backup*}backup-purge
+    ${dir}/tools/${me_base%backup*}backup-purge
         Used for deleting old backup directories \
 based on pattern matching and ages.
-    ${dir}/tools/${basename%backup*}backup-sources
+    ${dir}/tools/${me_base%backup*}backup-sources
         Used for creating a new backup directory from backup sources \
 using rsync(1).
     <SOURCE-DIRECTORY>/.backup-filter
@@ -310,9 +310,10 @@ which can be used for excluding files from backups. \
 Empty lines and comment lines (starting with a "#") are allowed, too.
 
 See also:
-    ${basename%backup*}backup-prepare(1),
-    ${basename%backup*}backup-purge(1),
-    ${basename%backup*}backup-sources(1)
+    ${me_base%backup*}backup-help(1),
+    ${me_base%backup*}backup-prepare(1),
+    ${me_base%backup*}backup-purge(1),
+    ${me_base%backup*}backup-sources(1)
 
     rsync(1),
     ssh(1)
@@ -320,60 +321,9 @@ See also:
     Home page <https://github.Eero.Häkkinen.fi/rsync-backup/>
 __HELP__
 		;;
-	--help=help2man )
-		COLUMNS=2500 exec "${0}" --help \
-		| exec sed \
-			-e '/^See also:$/,/^[^ ]/{s/^\(See also\):$/*\1*/;s/^ *//;}' \
-			-e '/^    [^ ]/!b'	\
-			-e '/[^ ]  /b'		\
-			-e 'N'			\
-			-e 's/\n        -/  ​-/'	\
-			-e 's/\n        /  /'	\
-			-e 'P'			\
-			-e 'D'
-		exit
-		;;
-	--help=man )
-		exec "${0}" --help=troff \
-		| exec man -l -- -
-		exit
-		;;
-	--help=troff )
-		cat << '__TROFF__'
-.if '\*[.T]'html' \{\
-.HEAD "<link href=""groff.css"" rel=""stylesheet"" type=""text/css"" />"
-.HEAD "<meta name=""viewport"" content=""width=device-width, initial-scale=1.0"" />"
-.HX 0
-.\}
-__TROFF__
-		exec help2man -h --help=help2man -L en_US.UTF-8 -N -n "${short_description}" -- "${0}" \
-		| exec sed \
-			-e '\|^[.]B backup|,\|^[.]SH |{' \
-			-e '\|^[^.]|s| |&\\%|g' \
-			-e '\|^[^.]|s|^|&\\%|' \
-			-e '\|^[.]br$|d' \
-			-e 's|^[.]B backup|.SY backup|' \
-			-e '\|^[.]SH |i'"\\
-.YS" \
-			-e '}' \
-			-e 's|\([[:alpha:]][[:alnum:]\\_-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g' \
-			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|'".UR \2\\
-\1\\
-.UE"'|'
-		exit
-		;;
-	--help=* )
-		exec "${0}" --help=troff \
-		| exec man -l -T"${1#*=}" -- -
-		exit
-		;;
-	--version | -V )
-		exec sed -n \
-			-e '/^[^#]/q'				\
-			-e "3s/^# [^ ]* /# ${basename} /"	\
-			-e 's/^#\( \(.*\)\)*$/\2/p'		\
-			-e '/^##/{2!q;}'			\
-			-- "${me}"
+	--help=* | --version | -V )
+		export BACKUP_TOOL="${0}"
+		exec "${0%backup*}backup-help" "${1}"
 		;;
 	esac
 	break

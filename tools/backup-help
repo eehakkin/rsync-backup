@@ -1,0 +1,177 @@
+#! /bin/sh -Ceu
+# backup-help - show backup tool help messages
+###########################################################################
+# backup-help 0.0.20220615
+#
+# Copyright (C) 2010-2022 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 3
+# as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###########################################################################
+# Try to be nice.
+{
+	ionice -c 3  -p "${$}"
+	renice -n 99 -p "${$}"
+} > /dev/null 2>&1 || :
+
+# Locate the script.
+me=$( command -v -- "${BACKUP_TOOL-${0}}" || ls -d -- "${BACKUP_TOOL-${0}}" )
+me_base=$( basename -- "${me}" )
+me_dir=$( dirname -- "${me}" )
+case ${me_dir} in
+.  ) dir=.. ;;
+.. ) dir=../.. ;;
+*. ) dir=$( cd -- "${me_dir}/.." && pwd ) ;;
+*  ) dir=$( dirname -- "${me_dir}" ) ;;
+esac
+
+unset format
+
+
+# Parse options.
+while :
+do
+	case ${1-} in
+	--help | -h )
+		COLUMNS=${COLUMNS:-$( tput cols 2> /dev/null || : )}
+		exec fmt -s ${COLUMNS:+ -w "${COLUMNS}" } << __HELP__ \
+		| exec sed -e '/\\$/{N;s/\\\n  *//;}'; exit
+Usage: \\
+           ${me_base} <OPTION>... [<BACKUP-TOOL>]...
+
+Show backup tool help messages in different formats.
+
+Options:
+    -F, --format <FORMAT>, --help2man, --man, --troff
+        Set the help format.
+    -h, --help[=<FORMAT>]
+        Show this help message and exit.
+    -V, --version
+        Show version information and exit.
+
+Files:
+    ${dir}/tools/<BACKUP-TOOL>
+        A backup tool.
+
+See also:
+    help2man(1)
+
+    Home page <https://github.Eero.Häkkinen.fi/rsync-backup/>
+__HELP__
+		;;
+	--help=help2man )
+		COLUMNS=2500 exec "${BACKUP_TOOL-${0}}" --help \
+		| exec sed \
+			-e '/^See also:$/,/^[^ ]/{s/^\(See also\):$/*\1*/;s/^ *//;}' \
+			-e '/^optional arguments:/s//Options:/' \
+			-e '/^positional arguments:/s//Operands:/' \
+			-e '/^usage:/s//Usage:/' \
+			-e '/^    [^ ]/!b' \
+			-e '/[^ ]  /b' \
+			-e 'N' \
+			-e 's/\n        -/  ​-/' \
+			-e 's/\n        /  /' \
+			-e 'P' \
+			-e 'D'
+		exit
+		;;
+	--help=man )
+		exec "${0}" --help=troff \
+		| exec man -l -- -
+		exit
+		;;
+	--help=troff )
+		short_description=$( exec sed -n -e '2!d' -e 's/^# [^ ]* - //p' -- "${me}" )
+		cat << '__TROFF__'
+.if '\*[.T]'html' \{\
+.HEAD "<link href=""groff.css"" rel=""stylesheet"" type=""text/css"" />"
+.HEAD "<meta name=""viewport"" content=""width=device-width, initial-scale=1.0"" />"
+.HX 0
+.\}
+__TROFF__
+		exec help2man -h --help=help2man -L en_US.UTF-8 -N -n "${short_description:?}" -- "${0}" \
+		| exec sed \
+			-e '\|^[.]B backup|,\|^[.]SH |{' \
+			-e '\|^[^.]|s| |&\\%|g' \
+			-e '\|^[^.]|s|^|&\\%|' \
+			-e '\|^[.]br$|d' \
+			-e 's|^[.]B backup|.SY backup|' \
+			-e '\|^[.]SH |i'"\\
+.YS" \
+			-e '}' \
+			-e '\|^[.][IT]P$|N' \
+			-e '\|^\([[]0\\-9[]]\)\1\1\1\(\(\\-\)*\)W*\([[]*0*\\*-*9[]]*\)\4\(\2\1\1*\)*|i'"\\
+.br" \
+			-e '\|^<[[:upper:]]*>\([[]\\-[]]\)W*<[[:upper:]]*>\(\1<[[:upper:]]*>\)*|i'"\\
+.br" \
+			-e 's|\([[:alpha:]][[:alnum:]\\_-]*\)[(]\([[:digit:]]*\)[)]|\\fB\1\\fR(\2)|g' \
+			-e 's|^\(.*\) <\(https://[^<[:space:]>]*\)>$|'".UR \2\\
+\1\\
+.UE"'|'
+		exit
+		;;
+	--help=* )
+		exec "${0}" --help=troff \
+		| exec man -l -T"${1#*=}" -- -
+		exit
+		;;
+	--version | -V )
+		exec sed \
+			-n \
+			-e '1,/^##*$/d' \
+			-e '/^#\( \(.*\)\)*$/!q' \
+			-e 's//\2/' \
+			-e 's/^[^ ]* \([[:digit:]][^ ]*\)$/'"${me_base}"' \1/' \
+			-e 'p' \
+			-- "${me}"
+		;;
+	--format | -F )
+		format=${2}
+		shift 2
+		;;
+	--format=* )
+		format=${1#--*=}
+		shift
+		;;
+	-F?* )
+		format=${1#-?}
+		shift
+		;;
+	--help2man | \
+	--man      | \
+	--troff    )
+		format=${1#--}
+		shift
+		;;
+	-[!-][!-]* )
+		opts=${1#-}
+		shift
+		set -- "-${opts%"${opts#?}"}" "-${opts#?}" "${@}"
+		;;
+	--  ) shift; break ;;
+	-?* ) "getopts${-##*}" '' OPT "${@}"; exit 1 ;;
+	*   ) break ;;
+	esac
+done
+
+export BACKUP_TOOL
+for BACKUP_TOOL
+do
+	case ${BACKUP_TOOL} in
+	*[\\/]* ) ;;
+	*       ) BACKUP_TOOL=${dir}/tools/${BACKUP_TOOL} ;;
+	esac
+	case ${format-help} in
+	help ) "${BACKUP_TOOL}" --help ;;
+	*    ) "${0}" --help=${format} ;;
+	esac
+done
