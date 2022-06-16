@@ -2,10 +2,14 @@
 /conf/pre.d/
 /conf/rsh
 /conf/ssh/
+/conf/*-base
 /conf/*-config
 /conf/*-formats
 /conf/*-host
 /conf/*-list
+/conf/*-list.d/
+/conf/*-module
+/conf/*-port
 /conf/*-prefix
 /conf/*-user
 /latest
