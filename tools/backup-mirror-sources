@@ -312,7 +312,7 @@ do
 		case ${src} in
 		'' | '#'* ) continue ;;
 		esac
-		set -- "${@}" "${src_prefix}${maybe_src#${src_unprefix}}"
+		set -- "${@}" "${src_prefix}${src#${src_unprefix}}"
 	done < "${file}"
 done
 ${src+:} false || : < "${dir}/conf/mirror-src-list"
