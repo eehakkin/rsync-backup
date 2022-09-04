@@ -356,8 +356,17 @@ case ${tmp_base++}${tag++} in
 
 	# Prepare to minimise disk usage and to speed up the transfer.
 	fstype=$(
-		exec find "${dir}/." -prune -printf '%F\n' 2> /dev/null
+		LC_ALL=C exec find \
+			"${dir}/." \
+			-prune \
+			-printf '%F\n' \
+			2> /dev/null
 		) || :
+	case ${fstype} in
+	unknown ) fstype=$(
+		LC_ALL=C exec df --output=fstype -- "${dir}/." 2> /dev/null
+		) && fstype=${fstype##*"${IFS#??}"} || : ;;
+	esac
 	if
 		! [ ! -d "${dir}/latest/." ] &&
 		case ${fstype} in
