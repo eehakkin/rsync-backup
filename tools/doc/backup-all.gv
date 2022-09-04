@@ -34,5 +34,6 @@ digraph "rsync-backup" {
 	"backup-nice"	-> "nocache"		[ minlen = 2, style = dashed ]
 	"backup-purge"	-> "on_ac_power"	[ style = dashed ]
 	"backup-rsync"	-> "rsync"
+	"backup-rsync"	-> "duperemove"		[ style = dashed ]
 	"rsync"		-> "ssh"		[ style = dashed ]
 }

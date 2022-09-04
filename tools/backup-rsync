@@ -415,7 +415,21 @@ case ${tmp_base++}${tag++} in
 		chmod -- g=u-w,o= "${dir}/tmp/${tmp_base}/${tag}"
 		chgrp -- users    "${dir}/tmp/${tmp_base}/${tag}"
 		case ${fstype} in
-		fuse.s3ql ) s3qllock -- "${dir}/tmp/${tmp_base}/${tag}" ;;
+		btrfs | \
+		xfs   )
+			if
+				! [ ! -d "${dir}/latest" ] &&
+				command -v -- duperemove > /dev/null
+			then
+				"${0%backup*}backup-nice" -- \
+					duperemove -dqr -- \
+						"${dir}/latest/." \
+						"${dir}/tmp/${tmp_base}/${tag}"
+			fi
+			;;
+		fuse.s3ql )
+			s3qllock -- "${dir}/tmp/${tmp_base}/${tag}"
+			;;
 		esac
 		ln -s -- "${tag}" "${dir}/tmp/${tmp_base}/latest"
 		sync

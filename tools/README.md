@@ -51,6 +51,7 @@ Minimum requirements:
  - **rsync**(1):        To copy files.
 
 Optional requirements:
+ - **duperemove**(1):   To submit duplicated extends for deduplication.
  - **hostname**(1):     To get the system's hostname.
  - **ionice**(1):       To set idle I/O priority.
  - **nice**(1):         To add niceness.
