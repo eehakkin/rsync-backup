@@ -1,7 +1,7 @@
 #! /bin/sh -Ceu
 # backup-rsync - a backup-oriented file-copying tool
 ###########################################################################
-# backup-rsync 0.0.20220615
+# backup-rsync 0.0.20220904
 #
 # Copyright (C) 2010-2022 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -355,31 +355,29 @@ case ${tmp_base++}${tag++} in
 	mkdir -m go= -- "${dir}/tmp/${tmp_base}"
 
 	# Prepare to minimise disk usage and to speed up the transfer.
-	dest_opt=--link-dest
 	fstype=$(
 		exec find "${dir}/." -prune -printf '%F\n' 2> /dev/null
 		) || :
 	if
+		! [ ! -d "${dir}/latest/." ] &&
 		case ${fstype} in
 		btrfs     ) cp_a='cp --archive --reflink=always' ;;
 		fuse.s3ql ) cp_a=s3qlcp ;;
 		*         ) false ;;
 		esac
 	then
-		[ ! -d "${dir}/latest/." ] || {
+		"${0%backup*}backup-nice" -- \
 			${cp_a} -- \
 				"${dir}/latest/." \
 				"${dir}/tmp/${tmp_base}/${tag}"
-			set -- --delete --delete-delay --delete-excluded "${@}"
-			: > "${dir}/tmp/${tmp_base}/${tag}/.delete-this-file"
-		}
-		dest_opt=--copy-dest
+		set -- --delete --delete-delay --delete-excluded "${@}"
+		: > "${dir}/tmp/${tmp_base}/${tag}/.delete-this-file"
 	fi
 	dest_opts=$(
 		exec ls -t -- "${dir}/" \
 		| exec sed -n \
 			-e '\|[]()*/?\\[]|d' \
-			-e 's|^[[:digit:]][[:digit:][:punct:]TW]*$|'"${dest_opt}"'=../../../&|p' \
+			-e 's|^[[:digit:]][[:digit:][:punct:]TW]*$|--link-dest=../../../&|p' \
 		| exec sed -e "${max_dest_opts}q"
 		)
 

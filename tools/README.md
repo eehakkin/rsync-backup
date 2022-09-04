@@ -116,9 +116,9 @@ and thus **rsync**(1).
 Disk usage is minimised and transfers are speeded up by hard linking
 files from old backup directories to newly created backup directories
 whenever possible (when files in sources and previous backup directories
-are identical in content and in all preserved attributes).
-On the btrfs and s3ql filesystems, hard linking is not needed and is
-therefore not used for disk usage minimisation.
+are identical in content and in all preserved attributes) and by sharing
+physical storage between files (reflinking) on supported filesystems
+(btrfs and s3ql).
 
 For a reference manual,
 run
@@ -152,9 +152,9 @@ accessed and restored directly.
 Disk usage is minimised and the transfer is speeded up by hard linking
 files from old backup directories to the newly created backup directory
 whenever possible (when files in sources and previous backup directories
-are identical in content and in all preserved attributes).
-On the btrfs and s3ql filesystems, hard linking is not needed and is
-therefore not used for disk usage minimisation.
+are identical in content and in all preserved attributes) and by sharing
+physical storage between files (reflinking) on supported filesystems
+(btrfs and s3ql).
 
 For a reference manual,
 run

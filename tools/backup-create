@@ -1,7 +1,7 @@
 #! /bin/sh -Ceu
 # backup-create - create a new backup directory
 ###########################################################################
-# backup-create 0.0.20220615
+# backup-create 0.0.20220904
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -97,12 +97,9 @@ from old backup directories \
 to the newly created backup directory \
 whenever possible \
 (when files in sources and previous backup directories are identical \
-in content and in all preserved attributes).
-On the btrfs and s3ql filesystems, \
-hard linking \
-is not needed and \
-is therefore not used \
-for disk usage minimisation.
+in content and in all preserved attributes) and \
+by sharing physical storage between files (reflinking) \
+on supported filesystems (btrfs and s3ql).
 
 Options:
     -h, --help[=<FORMAT>]
