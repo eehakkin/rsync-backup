@@ -126,6 +126,15 @@ for instance.
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).
+    ${dir}/conf/rsync-config.d
+        An optional directory \
+containing configuration files \
+similar to the ${dir}/conf/rsync-config configuration file \
+containing long option names (without leading slashes) and \
+optional option arguments \
+to be passed to rsync(1). \
+The names of the files must consist of only characters \
+matching the pattern [${valid}].
     ${dir}/tools/${me_base%backup*}backup-prepare
         Used for preparing for backups by executing preparation scripts.
     <SOURCE-DIRECTORY>/.backup-filter
@@ -300,7 +309,15 @@ rsync"
 	# Extend the options with ones read from configuration files.
 	for config_name in ${config_name+ "${config_name}" } rsync #"
 	do
-		[ ! -f "${dir}/conf/${config_name}-config" ] || {
+		for file in \
+			"${dir}/conf/${config_name}-config" \
+			"${dir}/conf/${config_name}-config.d"/*
+		do
+			case ${file#"${dir}/conf/"} in
+			*.d/*[!${valid}]* ) continue ;;
+			*.d/*             ) ;;
+			*                 ) [ ! -f "${file}" ] && continue ;;
+			esac
 			for arg
 			do
 				while IFS="${IFS}=" read -r opt optarg
@@ -315,8 +332,8 @@ rsync"
 				done
 				set -- "${@}" "${arg}"
 				shift
-			done < "${dir}/conf/${config_name}-config"
-		}
+			done < "${file}"
+		done
 	done
 
 	# Extend the options with default options.

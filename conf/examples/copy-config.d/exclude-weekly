@@ -1,0 +1,7 @@
+# Exclude weekly backups:
+#  * <YEAR>W<WEEK>
+exclude	/[[:digit:]][[:digit:]][[:digit:]][[:digit:]]W[[:digit:]][[:digit:]]/
+#  * <YEAR>-W<WEEK>
+exclude	/[[:digit:]][[:digit:]][[:digit:]][[:digit:]]-W[[:digit:]][[:digit:]]/
+
+# For more options, see rsync(1).

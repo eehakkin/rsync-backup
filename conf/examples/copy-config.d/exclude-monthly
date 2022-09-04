@@ -1,0 +1,7 @@
+# Exclude monthly backups:
+#  * <YEAR><MONTH>
+exclude	/[[:digit:]][[:digit:]][[:digit:]][[:digit:]][[:digit:]][[:digit:]]/
+#  * <YEAR>-<MONTH>
+exclude	/[[:digit:]][[:digit:]][[:digit:]][[:digit:]]-[[:digit:]][[:digit:]]/
+
+# For more options, see rsync(1).

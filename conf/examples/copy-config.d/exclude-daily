@@ -1,0 +1,11 @@
+# Exclude daily backups:
+#  * <YEAR><MONTH><DAY>
+exclude	/[[:digit:]][[:digit:]][[:digit:]][[:digit:]][[:digit:]][[:digit:]][[:digit:]][[:digit:]]/
+#  * <YEAR>-<MONTH>-<DAY>
+exclude	/[[:digit:]][[:digit:]][[:digit:]][[:digit:]]-[[:digit:]][[:digit:]]-[[:digit:]][[:digit:]]/
+#  * <YEAR>W<WEEK><DAY>
+exclude	/[[:digit:]][[:digit:]][[:digit:]][[:digit:]]W[[:digit:]][[:digit:]][[:digit:]]/
+#  * <YEAR>-W<WEEK>-<DAY>
+exclude	/[[:digit:]][[:digit:]][[:digit:]][[:digit:]]-W[[:digit:]][[:digit:]]-[[:digit:]]/
+
+# For more options, see rsync(1).

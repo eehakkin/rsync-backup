@@ -1,7 +1,7 @@
 #! /bin/sh -Ceu
 # backup-copy-rsync - a backup copying oriented file-copying tool
 ###########################################################################
-# backup-copy-rsync 0.0.20220615
+# backup-copy-rsync 0.0.20220904
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -34,7 +34,7 @@ case ${me_dir} in
 *  ) dir=$( dirname -- "${me_dir}" ) ;;
 esac
 
-
+valid='[:alnum:]_.-'
 
 
 # Parse options.
@@ -100,6 +100,16 @@ containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1) \
 when copying a backup directory.
+    ${dir}/conf/copy-config.d
+        An optional directory \
+containing configuration files \
+similar to the ${dir}/conf/copy-config configuration file \
+containing long option names (without leading slashes) and \
+optional option arguments \
+to be passed to rsync(1) \
+when copying a backup directory. \
+The names of the files must consist of only characters \
+matching the pattern [${valid}].
     ${dir}/conf/rsh
         An optional script \
 to be used as a remote shell instead of the plain ssh(1). \
@@ -112,6 +122,19 @@ used by ${me_base}(1) and ${me_base%backup*}backup-create-rsync(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).
+    ${dir}/conf/rsync-config.d
+        An optional directory \
+used by ${me_base%backup*}backup-rsync(1) \
+used by ${me_base}(1) and ${me_base%backup*}backup-create-rsync(1) \
+containing configuration files \
+similar to the ${dir}/conf/rsync-config configuration file \
+containing long option names (without leading slashes) and \
+optional option arguments \
+to be passed to rsync(1). \
+The names of the files must consist of only characters \
+matching the pattern [${valid}].
+    ${dir}/tools/${me_base%backup*}backup-rsync
+        Used for copying files using rsync(1).
     <SOURCE-DIRECTORY>/.backup-filter
         An optional per-directory rsync(1) filter merge-file \
 which can be used for excluding files from backups. \

@@ -10,7 +10,9 @@ Backup configuration
  - **[conf/backup-src-prefix]**
  - **[conf/backup-src-user]**
  - **[conf/copy-config]**
+ - **[conf/copy-config.d]**
  - **[conf/create-config]**
+ - **[conf/create-config.d]**
  - **[conf/dump-config]**
  - **[conf/examples/]**
     - ...
@@ -26,6 +28,7 @@ Backup configuration
     - ...
  - **[conf/purge-list]**
  - **[conf/rsync-config]**
+ - **[conf/rsync-config.d]**
  - **[conf/rsh]**
  - **[conf/tag-formats]**
 
@@ -185,6 +188,18 @@ containing long option names (without leading slashes) and optional
 option arguments to be passed to **rsync**(1) when copying a backup
 directory.
 
+The conf/copy-config.d directory
+--------------------------------
+[conf/copy-config.d]: #the-confcopy-configd-directory
+
+An optional directory used by **[backup-copy-rsync]**\(1\) used by
+**[backup-copy]**\(1\) used by **[backup-mirror-sources]**\(1\) used by **[backup-mirror]**\(1\)
+containing configuration files similar to the **[conf/copy-config]**
+configuration file containing long option names (without leading
+slashes) and optional option arguments to be passed to **rsync**(1) when
+copying a backup directory. The names of the files must consist of only
+characters matching the pattern `[[:alnum:]_.-]`.
+
 The conf/create-config file
 ---------------------------
 [conf/create-config]: #the-confcreate-config-file
@@ -193,6 +208,18 @@ An optional configuration file used by **[backup-create-rsync]**\(1\) used by
 **[backup-create]**\(1\) used by **[backup-sources]**\(1\) used by **[backup]**\(1\) containing
 long option names (without leading slashes) and optional option
 arguments to be passed to **rsync**(1) when creating a new backup directory.
+
+The conf/create-config.d directory
+--------------------------------
+[conf/create-config.d]: #the-confcreate-configd-directory
+
+An optional directory used by **[backup-create-rsync]**\(1\) used by
+**[backup-create]**\(1\) used by **[backup-sources]**\(1\) used by **[backup]**\(1\) containing
+configuration files similar to the **[conf/create-config]** configuration file
+containing long option names (without leading slashes) and optional
+option arguments to be passed to **rsync**(1) when creating a new backup
+directory. The names of the files must consist of only characters
+matching the pattern `[[:alnum:]_.-]`.
 
 The conf/dump-config file
 -------------------------
@@ -478,6 +505,19 @@ and **[backup-create]**\(1\) used by **[backup-mirror-sources]**\(1\) and
 **[backup-sources]**\(1\) used by **[backup]**\(1\) and **[backup-mirror]**\(1\) containing long
 option names (without leading slashes) and optional option arguments to
 be passed to **rsync**(1).
+
+The conf/rsync-config.d directory
+---------------------------------
+[conf/rsync-config.d]: #the-confrsync-configd-directory
+
+An optional directory used by **[backup-rsync]**\(1\) used by
+**[backup-copy-rsync]**\(1\) and **[backup-create-rsync]**\(1\) used by **[backup-copy]**\(1\)
+and **[backup-create]**\(1\) used by **[backup-mirror-sources]**\(1\) and
+**[backup-sources]**\(1\) used by **[backup]**\(1\) and **[backup-mirror]**\(1\) containing
+configuration files similar to the **[conf/rsync-config]** configuration file
+containing long option names (without leading slashes) and optional
+option arguments to be passed to **rsync**(1). The names of the files must
+consist of only characters matching the pattern `[[:alnum:]_.-]`.
 
 The conf/tag-formats file
 -------------------------

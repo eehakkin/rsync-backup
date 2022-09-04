@@ -34,7 +34,7 @@ case ${me_dir} in
 *  ) dir=$( dirname -- "${me_dir}" ) ;;
 esac
 
-
+valid='[:alnum:]_.-'
 
 
 # Parse options.
@@ -157,6 +157,17 @@ containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1) \
 when copying a backup directory.
+    ${dir}/conf/copy-config.d
+        An optional directory \
+used by ${me_base%backup*}backup-copy-rsync(1) \
+containing configuration files \
+similar to the ${dir}/conf/copy-config configuration file \
+containing long option names (without leading slashes) and \
+optional option arguments \
+to be passed to rsync(1) \
+when copying a backup directory. \
+The names of the files must consist of only characters \
+matching the pattern [${valid}].
     ${dir}/conf/rsh
         An optional script \
 to be used as a remote shell instead of the plain ssh(1). \
@@ -170,9 +181,21 @@ used by ${me_base}(1) and ${me_base%backup*}backup-create(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).
+    ${dir}/conf/rsync-config.d
+        An optional directory \
+used by ${me_base%backup*}backup-rsync(1) \
+used by ${me_base%backup*}backup-copy-rsync(1) and ${me_base%backup*}backup-create-rsync(1) \
+used by ${me_base}(1) and ${me_base%backup*}backup-create(1) \
+containing configuration files \
+similar to the ${dir}/conf/rsync-config configuration file \
+containing long option names (without leading slashes) and \
+optional option arguments \
+to be passed to rsync(1). \
+The names of the files must consist of only characters \
+matching the pattern [${valid}].
     ${dir}/tmp/
         A temporary directory to be used for copying backup directories.
-    ${dir}/tools/${me_base%backup*}backup-rsync
+    ${dir}/tools/${me_base%backup*}backup-copy-rsync
         Used for copying files using rsync(1).
 
 See also:

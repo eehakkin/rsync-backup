@@ -4,6 +4,7 @@
 /conf/ssh/
 /conf/*-base
 /conf/*-config
+/conf/*-config.d/
 /conf/*-formats
 /conf/*-host
 /conf/*-list

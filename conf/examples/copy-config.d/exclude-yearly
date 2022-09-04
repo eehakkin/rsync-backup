@@ -1,0 +1,5 @@
+# Exclude yearly backups:
+#  * <YEAR>
+exclude	/[[:digit:]][[:digit:]][[:digit:]][[:digit:]]/
+
+# For more options, see rsync(1).

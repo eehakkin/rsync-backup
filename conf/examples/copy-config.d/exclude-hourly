@@ -1,6 +1,3 @@
-# A sample conf/copy-config file
-# ==============================
-
 # Exclude hourly, minutely and secondly backups:
 #  * <YEAR><MONTH><DAY>T<HOUR>[<MINUTE>[<SECOND>]]
 #  * <YEAR>-<MONTH>-<DAY>T<HOUR>[:<MINUTE>[:<SECOND>]]

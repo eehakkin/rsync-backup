@@ -1,7 +1,7 @@
 #! /bin/sh -Ceu
 # backup-mirror-sources - copy backup directories from mirror sources
 ###########################################################################
-# backup-mirror-sources 0.0.20220615
+# backup-mirror-sources 0.0.20220904
 #
 # Copyright (C) 2010-2022 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -110,6 +110,18 @@ containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1) \
 when copying a backup directory.
+    ${dir}/conf/copy-config.d
+        An optional directory \
+used by ${me_base%backup*}backup-copy-rsync(1) \
+used by ${me_base%backup*}backup-copy(1) \
+containing configuration files \
+similar to the ${dir}/conf/copy-config configuration file \
+containing long option names (without leading slashes) and \
+optional option arguments \
+to be passed to rsync(1) \
+when copying a backup directory. \
+The names of the files must consist of only characters \
+matching the pattern [${valid}].
     ${dir}/conf/mirror-src-base
         An optional configuration file \
 containing the mirror source base directory \
@@ -229,6 +241,19 @@ used by ${me_base}(1) and ${me_base%backup*}backup-sources(1) \
 containing long option names (without leading slashes) and \
 optional option arguments \
 to be passed to rsync(1).
+    ${dir}/conf/rsync-config.d
+        An optional directory \
+used by ${me_base%backup*}backup-rsync(1) \
+used by ${me_base%backup*}backup-copy-rsync(1) and ${me_base%backup*}backup-create-rsync(1) \
+used by ${me_base%backup*}backup-copy(1) and ${me_base%backup*}backup-create(1) \
+used by ${me_base}(1) and ${me_base%backup*}backup-sources(1) \
+containing configuration files \
+similar to the ${dir}/conf/rsync-config configuration file \
+containing long option names (without leading slashes) and \
+optional option arguments \
+to be passed to rsync(1). \
+The names of the files must consist of only characters \
+matching the pattern [${valid}].
     ${dir}/tmp/
         A temporary directory to be used for copying backup directories.
     ${dir}/tools/${me_base%backup*}backup-copy
