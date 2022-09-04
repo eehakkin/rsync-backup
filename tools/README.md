@@ -118,7 +118,7 @@ files from old backup directories to newly created backup directories
 whenever possible (when files in sources and previous backup directories
 are identical in content and in all preserved attributes) and by sharing
 physical storage between files (reflinking) on supported filesystems
-(btrfs and s3ql).
+(btrfs, s3ql and xfs).
 
 For a reference manual,
 run
@@ -154,7 +154,7 @@ files from old backup directories to the newly created backup directory
 whenever possible (when files in sources and previous backup directories
 are identical in content and in all preserved attributes) and by sharing
 physical storage between files (reflinking) on supported filesystems
-(btrfs and s3ql).
+(btrfs, s3ql and xfs).
 
 For a reference manual,
 run

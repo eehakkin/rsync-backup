@@ -361,7 +361,8 @@ case ${tmp_base++}${tag++} in
 	if
 		! [ ! -d "${dir}/latest/." ] &&
 		case ${fstype} in
-		btrfs     ) cp_a='cp --archive --reflink=always' ;;
+		btrfs     | \
+		xfs       ) cp_a='cp --archive --reflink=always' ;;
 		fuse.s3ql ) cp_a=s3qlcp ;;
 		*         ) false ;;
 		esac
