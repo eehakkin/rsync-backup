@@ -434,15 +434,22 @@ case ${tmp_base++}${tag++} in
 		case ${fstype} in
 		btrfs | \
 		xfs   )
-			if
-				! [ ! -d "${dir}/latest" ] &&
-				command -v -- duperemove > /dev/null
+			[ ! -d "${dir}/latest" ] ||
+			if command -v -- jdupes > /dev/null
+			then
+				"${0%backup*}backup-nice" -- \
+					jdupes -Bqr -- \
+						"${dir}/latest/." \
+						"${dir}/tmp/${tmp_base}/${tag}" \
+					> /dev/null
+			elif command -v -- duperemove > /dev/null
 			then
 				"${0%backup*}backup-nice" -- \
 					duperemove -dqr -- \
 						"${dir}/latest/." \
-						"${dir}/tmp/${tmp_base}/${tag}"
-			fi
+						"${dir}/tmp/${tmp_base}/${tag}" \
+					> /dev/null
+			fi || :
 			;;
 		fuse.s3ql )
 			s3qllock -- "${dir}/tmp/${tmp_base}/${tag}"

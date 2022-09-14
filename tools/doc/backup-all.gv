@@ -28,12 +28,12 @@ digraph "rsync-backup" {
 		"backup-rsync"		-> "backup-prepare"		[ style = dashed ]
 		"backup-sources"	-> "backup-create"
 	}
-	"backup-help"	-> "help2man"		[ style = dashed ]
-	"backup-nice"	-> "ionice"		[ minlen = 2, style = dashed ]
-	"backup-nice"	-> "nice"		[ minlen = 2, style = dashed ]
-	"backup-nice"	-> "nocache"		[ minlen = 2, style = dashed ]
-	"backup-purge"	-> "on_ac_power"	[ style = dashed ]
+	"backup-help"	-> "help2man"			[ style = dashed ]
+	"backup-nice"	-> "ionice"			[ minlen = 2, style = dashed ]
+	"backup-nice"	-> "nice"			[ minlen = 2, style = dashed ]
+	"backup-nice"	-> "nocache"			[ minlen = 2, style = dashed ]
+	"backup-purge"	-> "on_ac_power"		[ style = dashed ]
 	"backup-rsync"	-> "rsync"
-	"backup-rsync"	-> "duperemove"		[ style = dashed ]
-	"rsync"		-> "ssh"		[ style = dashed ]
+	"backup-rsync"	-> "jdupes /\nduperemove"	[ style = dashed ]
+	"rsync"		-> "ssh"			[ style = dashed ]
 }
