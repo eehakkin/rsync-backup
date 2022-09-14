@@ -371,35 +371,9 @@ case ${tmp_base++}${tag++} in
 	# Create a protected temporary directory.
 	mkdir -m go= -- "${dir}/tmp/${tmp_base}"
 
-	# Prepare to minimise disk usage and to speed up the transfer.
-	fstype=$(
-		LC_ALL=C exec find \
-			"${dir}/." \
-			-prune \
-			-printf '%F\n' \
-			2> /dev/null
-		) || :
-	case ${fstype} in
-	unknown ) { fstype=$(
-		LC_ALL=C exec df --output=fstype -- "${dir}/." 2> /dev/null
-		) && fstype=${fstype##*"${IFS#??}"}; } || : ;;
-	esac
-	if
-		! [ ! -d "${dir}/latest/." ] &&
-		case ${fstype} in
-		btrfs     | \
-		xfs       ) cp_a='cp --archive --reflink=always' ;;
-		fuse.s3ql ) cp_a=s3qlcp ;;
-		*         ) false ;;
-		esac
-	then
-		"${0%backup*}backup-nice" -- \
-			${cp_a} -- \
-				"${dir}/latest/." \
-				"${dir}/tmp/${tmp_base}/${tag}"
-		set -- --delete --delete-delay --delete-excluded "${@}"
-		: > "${dir}/tmp/${tmp_base}/${tag}/.delete-this-file"
-	fi
+	# Run rsync.
+	# Minimise disk usage and speed up the transfer with destination
+	# options.
 	dest_opts=$(
 		exec ls -t -- "${dir}/" \
 		| exec sed -n \
@@ -407,8 +381,6 @@ case ${tmp_base++}${tag++} in
 			-e 's|^[[:digit:]][[:digit:][:punct:]TW]*$|--link-dest=../../../&|p' \
 		| exec sed -e "${max_dest_opts}q"
 		)
-
-	# Run rsync.
 	# shellcheck disable=SC2086
 	"${0%backup*}backup-nice" -- rsync ${dest_opts} "${@}" ||
 	case ${?} in
@@ -421,16 +393,12 @@ case ${tmp_base++}${tag++} in
 	then
 		# Dry run.
 		:
-	elif [ -f "${dir}/tmp/${tmp_base}/${tag}/.delete-this-file" ]
-	then
-		# Dry run.
-		case ${fstype} in
-		fuse.s3ql ) s3qlrm -- "${dir}/tmp/${tmp_base}/${tag}" ;;
-		*         ) rm -fr -- "${dir}/tmp/${tmp_base}/${tag}" ;;
-		esac
 	else
 		chmod -- g=u-w,o= "${dir}/tmp/${tmp_base}/${tag}"
 		chgrp -- users    "${dir}/tmp/${tmp_base}/${tag}"
+		fstype=$(
+			exec find "${dir}/." -prune -printf '%F\n' 2> /dev/null
+			) || :
 		case ${fstype} in
 		btrfs | \
 		xfs   )

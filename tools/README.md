@@ -32,7 +32,6 @@ Minimum requirements:
    **chgrp**(1),
    **chmod**(1),
    **cp**(1),
-   **df**(1),
    **dirname**(1),
    **echo**(1),
    **find**(1),
