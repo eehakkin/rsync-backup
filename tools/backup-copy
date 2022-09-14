@@ -1,7 +1,7 @@
 #! /bin/sh -Ceu
 # backup-copy - copy backup directories
 ###########################################################################
-# backup-copy 0.0.20220904
+# backup-copy 0.0.20220914
 #
 # Copyright (C) 2010-2021 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -221,6 +221,7 @@ done
 # Find out rsync options requiring an option argument.
 rsync_optarg_opts=$( LC_ALL=C exec rsync --help | exec sed '
 	/^ *-/,/^$/!d
+	s/^ *\(\(-[^(), ]*\(, \)*\)*\).* [(]aka \(-[^(), ]*\)[)]$/\1, \4/
 	s/^ *\(\(-[^(), ]*\(, \)*\)*\).*$/\1/
 	/=[^, ]*/!d
 	s///
