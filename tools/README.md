@@ -19,7 +19,9 @@ Backup tools
  - **[backup-rsync]**:          a backup-oriented file-copying tool
  - **[backup-sources]**:        create a new backup directory from backup sources
 
-![Component diagram for backup tools](doc/backup-all.svg "Component diagram for backup tools")
+<object data="doc/backup-all.svg" style="max-width: 100%;" type="image/svg+xml">
+<a href="doc/backup-all.svg">Component diagram for backup tools</a>
+</object>
 
 Requirements
 ------------
@@ -93,6 +95,7 @@ least one year covering months since the last yearly backup and yearly
 backup directories forever.
 
 For a reference manual,
+open [doc/backup.html](doc/backup.html) or
 run
 `tools/backup --help` or
 `tools/backup --help=man`.
@@ -104,6 +107,7 @@ run
 Remove stale subdirectories from a temporary directory.
 
 For a reference manual,
+open [doc/backup-clean-tmp.html](doc/backup-clean-tmp.html) or
 run
 `tools/backup-clean-tmp --help` or
 `tools/backup-clean-tmp --help=man`.
@@ -123,6 +127,7 @@ physical storage between files (reflinking) on supported filesystems
 (btrfs, s3ql and xfs).
 
 For a reference manual,
+open [doc/backup-copy.html](doc/backup-copy.html) or
 run
 `tools/backup-copy --help` or
 `tools/backup-copy --help=man`.
@@ -135,6 +140,7 @@ Copy files using **[backup-rsync]**\(1\) and thus **rsync**(1) with
 backup copying related options.
 
 For a reference manual,
+open [doc/backup-copy-rsync.html](doc/backup-copy-rsync.html) or
 run
 `tools/backup-copy-rsync --help` or
 `tools/backup-copy-rsync --help=man`.
@@ -159,6 +165,7 @@ physical storage between files (reflinking) on supported filesystems
 (btrfs, s3ql and xfs).
 
 For a reference manual,
+open [doc/backup-create.html](doc/backup-create.html) or
 run
 `tools/backup-create --help` or
 `tools/backup-create --help=man`.
@@ -171,6 +178,7 @@ Copy files using **[backup-rsync]**\(1\) and thus **rsync**(1) with
 backup creation related options.
 
 For a reference manual,
+open [doc/backup-create-rsync.html](doc/backup-create-rsync.html) or
 run
 `tools/backup-create-rsync --help` or
 `tools/backup-create-rsync --help=man`.
@@ -183,6 +191,7 @@ Summarize disk usage by counting used and releasable blocks and their
 sizes.
 
 For a reference manual,
+open [doc/backup-du.html](doc/backup-du.html) or
 run
 `tools/backup-du --help` or
 `tools/backup-du --help=man`.
@@ -194,6 +203,7 @@ run
 Show backup tool help messages in different formats.
 
 For a reference manual,
+open [doc/backup-help.html](doc/backup-help.html) or
 run
 `tools/backup-help --help` or
 `tools/backup-help --help=man`.
@@ -206,6 +216,7 @@ Construct a new backup backup directory name based on date and time and
 the names of the existing backup directories.
 
 For a reference manual,
+open [doc/backup-make-tag.html](doc/backup-make-tag.html) or
 run
 `tools/backup-make-tag --help` or
 `tools/backup-make-tag --help=man`.
@@ -221,6 +232,7 @@ For details, see **[backup-mirror-sources]**\(1\) and
 **[backup-purge]**\(1\).
 
 For a reference manual,
+open [doc/backup-mirror.html](doc/backup-mirror.html) or
 run
 `tools/backup-mirror --help` or
 `tools/backup-mirror --help=man`.
@@ -234,6 +246,7 @@ from the mirror sources using **rsync**(1).
 For details, see **[backup-copy]**\(1\).
 
 For a reference manual,
+open [doc/backup-mirror-sources.html](doc/backup-mirror-sources.html) or
 run
 `tools/backup-mirror-sources --help` or
 `tools/backup-mirror-sources --help=man`.
@@ -249,6 +262,7 @@ provided that the commands **ionice**(1), **nice**(1) and **nocache**(1)
 are available.
 
 For a reference manual,
+open [doc/backup-nice.html](doc/backup-nice.html) or
 run
 `tools/backup-nice --help` or
 `tools/backup-nice --help=man`.
@@ -275,6 +289,7 @@ are available.
 For details, see **[backup-nice]**\(1\).
 
 For a reference manual,
+open [doc/backup-prepare.html](doc/backup-prepare.html) or
 run
 `tools/backup-prepare --help` or
 `tools/backup-prepare --help=man`.
@@ -298,6 +313,7 @@ are available.
 For details, see **[backup-nice]**\(1\).
 
 For a reference manual,
+open [doc/backup-purge.html](doc/backup-purge.html) or
 run
 `tools/backup-purge --help` or
 `tools/backup-purge --help=man`.
@@ -316,6 +332,7 @@ are available.
 For details, see **[backup-nice]**\(1\).
 
 For a reference manual,
+open [doc/backup-rsync.html](doc/backup-rsync.html) or
 run
 `tools/backup-rsync --help` or
 `tools/backup-rsync --help=man`.
@@ -334,6 +351,7 @@ filtered) copies of original files and directories. It can thus be
 accessed and restored directly.
 
 For a reference manual,
+open [doc/backup-sources.html](doc/backup-sources.html) or
 run
 `tools/backup-sources --help` or
 `tools/backup-sources --help=man`.
