@@ -1,7 +1,7 @@
 #! /bin/sh -Ceu
 # backup-purge - delete old backup directories
 ###########################################################################
-# backup-purge 0.0.20220615
+# backup-purge 0.0.20220914
 #
 # Copyright (C) 2010-2022 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -35,7 +35,7 @@ case ${me_dir} in
 esac
 
 default_args='hourly=0 fake-daily=0 daily=7 fake-weekly=7 weekly=31 fake-monthly=31 monthly=366 fake-yearly=366'
-dry_run= force=
+dry_run='' force=''
 
 # Parse options.
 while :
