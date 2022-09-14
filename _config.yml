@@ -1,0 +1,5 @@
+github:
+  tar_url: https://github.com/eehakkin/rsync-backup/tarball/main
+  zip_url: https://github.com/eehakkin/rsync-backup/zipball/main
+show_downloads: true
+theme: jekyll-theme-slate
