@@ -224,6 +224,10 @@ See also:
 			summarize=args.summarize
 			):
 			if path is not None:
+				path = (
+					os.fsencode(path)
+					.decode(errors='backslashreplace')
+					)
 				print_sizes(*sizes, path, args=args)
 		if args.total:
 			total_sizes[0] += sizes[0]
