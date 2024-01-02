@@ -2,9 +2,9 @@
 # backup-du - estimate file space usage
 __copyright__ = '''
 ###########################################################################
-# backup-du 0.0.20220616
+# backup-du 0.0.20240102
 #
-# Copyright (C) 2022 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2022 - 2024 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -173,35 +173,37 @@ See also:
     Home page <https://github.Eero.Häkkinen.fi/rsync-backup/>''',
 		formatter_class=argparse.RawDescriptionHelpFormatter
 		)
-	all_or_summarize = parser.add_mutually_exclusive_group()
+	options = parser.add_argument_group('Options')
+	all_or_summarize = options.add_mutually_exclusive_group()
 	all_or_summarize.add_argument('-a', '--all', action='store_true', help='''
 		Write counts for all files, not just directories.''')
-	parser.add_argument('-B', '--block-size', default=block_size, metavar='<SIZE>', type=size, help='''
+	options.add_argument('-B', '--block-size', default=block_size, metavar='<SIZE>', type=size, help='''
 		Scale sizes down by <SIZE> before printing them.''')
-	parser.add_argument('-l', '--count-links', action='store_true', help='''
+	options.add_argument('-l', '--count-links', action='store_true', help='''
 		Count sizes many times if hard linked.''')
-	parser.add_argument('-f', '--full-size', action='store_true', help='''
+	options.add_argument('-f', '--full-size', action='store_true', help='''
 		Print full sizes.''')
-	parser.add_argument('--help', action='append', metavar='<FORMAT>', nargs='?', help='''
+	options.add_argument('--help', action='append', metavar='<FORMAT>', nargs='?', help='''
 		Show this help message and exit.''')
-	parser.add_argument('--help=help', action='help', help=argparse.SUPPRESS)
-	parser.add_argument('-h', '--human-readable', action='store_true', help='''
+	options.add_argument('--help=help', action='help', help=argparse.SUPPRESS)
+	options.add_argument('-h', '--human-readable', action='store_true', help='''
 		Print sizes in human readable format.''')
-	parser.add_argument('-k', action='store_const', const=(1 << 10, ''), dest='block_size', help='''
+	options.add_argument('-k', action='store_const', const=(1 << 10, ''), dest='block_size', help='''
 		Like --block-size=KiB.''')
-	parser.add_argument('-m', action='store_const', const=(1 << 20, ''), dest='block_size', help='''
+	options.add_argument('-m', action='store_const', const=(1 << 20, ''), dest='block_size', help='''
 		Like --block-size=MiB.''')
-	parser.add_argument('-S', '--separate-dirs', action='store_true', help='''
+	options.add_argument('-S', '--separate-dirs', action='store_true', help='''
 		For directories do not include size of subdirectories.''')
-	parser.add_argument('--si', action='store_true', help='''
+	options.add_argument('--si', action='store_true', help='''
 		Like --human-readable, but use powers of 1000 not 1024.''')
 	all_or_summarize.add_argument('-s', '--summarize', action='store_true', help='''
 		Display only a total for each argument.''')
-	parser.add_argument('-c', '--total', action='store_true', help='''
+	options.add_argument('-c', '--total', action='store_true', help='''
 		Produce a grand total.''')
-	parser.add_argument('-V', '--version', action='version', version=__copyright__, help='''
+	options.add_argument('-V', '--version', action='version', version=__copyright__, help='''
 		Show version information and exit.''')
-	parser.add_argument('paths', metavar='<PATH>', nargs='*', help='''
+	operands = parser.add_argument_group('Operands')
+	operands.add_argument('paths', metavar='<PATH>', nargs='*', help='''
 		A path whose disk usage is to be summarized.''')
 	args = parser.parse_args()
 	for help_format in args.help or ():
