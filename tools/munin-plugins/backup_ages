@@ -1,9 +1,9 @@
 #! /bin/sh -Ce
 # -*- sh -*-
 ###########################################################################
-# backup_ages 0.0.20220307
+# backup_ages 0.0.20240102
 #
-# Copyright (C) 2019-2022 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2019 - 2024 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -242,7 +242,7 @@ seconds_to_hours() { # <ARITHMETIC-EXPRESSION>
 case ${1-} in
 autoconf )
 	autoconf=no
-	for backup_name in ${names- "${dir}"/../*/tools/backup } #"
+	for backup_name in ${names- "${dir}"/../*/tools/backup }
 	do
 		normalize_backup_name
 		${backup_dir+:} ${backup_name+:} continue
@@ -257,7 +257,7 @@ config )
 	echo 'graph_category disk'
 	echo 'graph_args --base 1000 --lower-limit 0'
 	echo 'graph_vlabel Age in hours'
-	for backup_name in ${names- "${dir}"/../*/tools/backup } #"
+	for backup_name in ${names- "${dir}"/../*/tools/backup }
 	do
 		normalize_backup_name
 		${backup_dir+:} ${backup_name+:} continue
@@ -291,7 +291,7 @@ config )
 	;;
 * )
 	now=$( date +%s )
-	for backup_name in ${names- "${dir}"/../*/tools/backup } #"
+	for backup_name in ${names- "${dir}"/../*/tools/backup }
 	do
 		normalize_backup_name
 		${backup_dir+:} ${backup_name+:} continue
