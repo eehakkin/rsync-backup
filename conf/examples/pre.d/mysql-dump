@@ -103,6 +103,9 @@ mydumper \
 	--trx-consistency-only \
 	${mysql_user:+ --user="${mysql_user}" } \
 	--verbose=1
+rm -f -- \
+	"${tmp_dump_dir}"/sys-schema-* \
+	"${tmp_dump_dir}"/sys.*
 
 # Update the destination dump directory to match the new temporary dump
 # directory.
