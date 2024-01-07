@@ -1,9 +1,9 @@
 #! /bin/sh -Ceu
 # backup-make-tag - construct a new backup directory name
 ###########################################################################
-# backup-make-tag 0.0.20220615
+# backup-make-tag 0.0.20240107
 #
-# Copyright (C) 2010 - 2022 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010 - 2024 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -35,7 +35,7 @@ case ${me_dir} in
 esac
 
 
-
+unset tag_format tag_name
 
 # Parse options.
 while :
@@ -58,6 +58,14 @@ Options:
         Show this help message and exit.
     -V, --version
         Show version information and exit.
+    --tag-format <FORMAT>
+        Set the date format \
+to be used \
+when constructing a backup directory name for a new backup.
+    --tag-name <NAME>
+        Set the name \
+to be used \
+when constructing a backup directory name for a new backup.
 
 Operands:
     <ALT-DIR>
@@ -107,6 +115,10 @@ __HELP__
 		export BACKUP_TOOL="${0}"
 		exec "${0%backup*}backup-help" "${1}"
 		;;
+	--tag-format   ) tag_format=${2}; shift 2 ;;
+	--tag-format=* ) tag_format=${1#*=}; shift 1 ;;
+	--tag-name     ) tag_name=${2}; shift 2 ;;
+	--tag-name=*   ) tag_name=${1#*=}; shift 1 ;;
 	--  ) shift; break ;;
 	-?* ) "getopts${-##*}" '' OPT "${@}"; exit 1 ;;
 	*   ) break ;;
@@ -127,9 +139,13 @@ file=${dir}/conf/tag-formats
 for dir2
 do
 	unset tag
-	while read -r tag_format
+	while
+		case ${tag_format++}${tag_name++} in
+		+* ) : ;;
+		*  ) read -r tag_format2 ;;
+		esac
 	do
-		tag=$( date +"${tag_format}" )
+		tag=${tag_name-$( date +"${tag_format-${tag_format2}}" )}
 		case ${tag} in
 		*[]\(\)\*/\?\\[]* | *[![:digit:][:punct:]TW]* )
 			;;
@@ -138,6 +154,9 @@ do
 			;;
 		esac
 		unset tag
+		case ${tag_format++}${tag_name++} in
+		+* ) break ;;
+		esac
 	done << __FORMATS__
 ${tag_formats-"\
 %Y
