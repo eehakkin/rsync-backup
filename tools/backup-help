@@ -1,7 +1,7 @@
 #! /bin/sh -Ceu
 # backup-help - show backup tool help messages
 ###########################################################################
-# backup-help 0.0.20240102
+# backup-help 0.0.20240107
 #
 # Copyright (C) 2010 - 2024 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -34,8 +34,8 @@ case ${me_dir} in
 *  ) dir=$( dirname -- "${me_dir}" ) ;;
 esac
 
-unset format
 
+unset format
 
 # Parse options.
 while :
