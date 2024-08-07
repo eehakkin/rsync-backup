@@ -35,7 +35,7 @@ case ${me_dir} in
 esac
 
 
-
+dry_run=''
 
 # Parse options.
 while :
@@ -51,6 +51,8 @@ Usage: \\
 Remove stale subdirectories from a temporary directory.
 
 Options:
+    -n, --dry-run
+        Perform a trial run with no changes made.
     -h, --help[=<FORMAT>]
         Show this help message and exit.
     -V, --version
@@ -86,6 +88,10 @@ __HELP__
 		export BACKUP_TOOL="${0}"
 		exec "${0%backup*}backup-help" "${1}"
 		;;
+	--dry-run | -n )
+		dry_run=+
+		shift
+		;;
 	-[!-][!-]* )
 		opts=${1#-}
 		shift
@@ -100,7 +106,7 @@ done
 if [ ! -d "${dir}/tmp" ]
 then
 	# Create the missing temporary directory.
-	exec mkdir -m go=u-w -p -- "${dir}/tmp"
+	exec ${dry_run:+echo} mkdir -m go=u-w -p -- "${dir}/tmp"
 else
 	# Determine the preferred remove method.
 	fstype=$(
@@ -131,7 +137,7 @@ else
 		-prune \
 		-name "${old_base_prefix}-${valid+[${valid}]}*" \
 		${valid+ ! -name "${old_base_prefix}-*[!${valid}]*" } \
-		-exec ${rm_fr} -- {} + || :
+		-exec ${dry_run:+echo} ${rm_fr} -- {} + || :
 
 	# Find the temporary subdirectories (and files).
 	# If the name of a temporary subdirectory starts with one of
@@ -165,13 +171,14 @@ else
 	# [-name '<BASE-PREFIX>-*' -o]... -ctime +0 -mtime +0
 	set -- "${@}" -ctime +0 -mtime +0
 	# shellcheck disable=SC2016
-	tmp_old="${dir}/tmp/${old_base_prefix}-${$}" exec find "${dir}/tmp/." \
+	tmp_old="${dir}/tmp/${old_base_prefix}-${$}" exec find \
+		"${dir}/tmp/." \
 		! -name . \
 		-prune \
 		! -name "${old_base_prefix}-*" \
 		\( "${@}" \) \
 		-exec /bin/sh -Cceu '
-mkdir -m go=u-w -- "${tmp_old}" &&
-mv -f -- "${@}" "${tmp_old}"/ &&
-'"${rm_fr}"' -- "${tmp_old}"' sh {} +
+'"${dry_run:+echo }mkdir"' -m go=u-w -- "${tmp_old}" &&
+'"${dry_run:+echo }mv"' -f -- "${@}" "${tmp_old}"/ &&
+'"${dry_run:+echo }${rm_fr}"' -- "${tmp_old}"' sh {} +
 fi

@@ -194,8 +194,14 @@ __HELP__
 		export BACKUP_TOOL="${0}"
 		exec "${0%backup*}backup-help" "${1}"
 		;;
-	--dry-run  | -n ) dry_run=+; shift ;;
-	--force    | -f ) force=+; shift ;;
+	--dry-run | -n )
+		dry_run=+
+		shift
+		;;
+	--force | -f )
+		force=+
+		shift
+		;;
 	-[!-][!-]* )
 		opts=${1#-}
 		shift
@@ -293,7 +299,7 @@ case ${?} in
 esac
 
 # Clean up temporary directories.
-${dry_run:+:} "${0%backup*}backup-clean-tmp" -- purge
+"${0%backup*}backup-clean-tmp" ${dry_run:+ --dry-run } -- purge
 
 {
 	cd -- "${dir}" &&
