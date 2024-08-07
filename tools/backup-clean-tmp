@@ -1,9 +1,9 @@
 #! /bin/sh -Ceu
 # backup-clean-tmp - clean up a temporary directory
 ###########################################################################
-# backup-clean-tmp 0.0.20220615
+# backup-clean-tmp 0.0.20240807
 #
-# Copyright (C) 2010 - 2022 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010 - 2024 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -120,11 +120,17 @@ else
 	done
 
 	# Remove existing temporary old subdirectories unconditionally.
+	case ${old_base_prefix} in
+	old-*-* ) valid='[:digit:]' ;;
+	*       ) unset valid ;;
+	esac
 	# shellcheck disable=SC2086
-	find "${dir}/tmp/." \
+	find \
+		"${dir}/tmp/." \
 		! -name . \
 		-prune \
-		-name "${old_base_prefix}-*" \
+		-name "${old_base_prefix}-${valid+[${valid}]}*" \
+		${valid+ ! -name "${old_base_prefix}-*[!${valid}]*" } \
 		-exec ${rm_fr} -- {} + || :
 
 	# Find the temporary subdirectories (and files).
@@ -140,7 +146,20 @@ else
 	# This ensures atomicity (moving is atomic while removing is not).
 	for base_prefix
 	do
-		set -- "${@}" -name "${base_prefix}-*" -o
+		# If the basename prefix is for instance "copy-<YEAR>-<MONTH>",
+		# find only "copy-<YEAR>-<MONTH>-<PID>" but not
+		# "copy-<YEAR>-<MONTH>-<DAY>-<PID>".
+		# But if the basename prefix is for instance "copy",
+		# find not only "copy-<PID>" but also "copy-<TAG>-<PID>".
+		case ${base_prefix} in
+		*-* ) valid='[:digit:]' ;;
+		*   ) unset valid ;;
+		esac
+		set -- \
+			"${@}" \
+			-name "${base_prefix}-${valid+[${valid}]}*" \
+			${valid+ ! -name "${base_prefix}-*[!${valid}]*" } \
+			-o
 		shift
 	done
 	# [-name '<BASE-PREFIX>-*' -o]... -ctime +0 -mtime +0
