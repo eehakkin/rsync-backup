@@ -1,9 +1,9 @@
 #! /bin/sh -Ceu
 # backup-purge - delete old backup directories
 ###########################################################################
-# backup-purge 0.0.20220914
+# backup-purge 0.0.20240807
 #
-# Copyright (C) 2010-2022 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010 - 2024 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -207,6 +207,7 @@ __HELP__
 	esac
 done
 
+# Parse operands.
 case ${#} in
 0 )
 	if [ -f "${dir}/conf/purge-list" ]
