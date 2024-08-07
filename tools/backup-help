@@ -68,6 +68,9 @@ See also:
     Home page <https://github.Eero.Häkkinen.fi/rsync-backup/>
 __HELP__
 		;;
+	--help=help )
+		exec "${BACKUP_TOOL-${0}}" --help
+		;;
 	--help=help2man )
 		COLUMNS=2500 exec "${BACKUP_TOOL-${0}}" --help \
 		| exec sed \
