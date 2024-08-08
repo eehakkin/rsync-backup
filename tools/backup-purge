@@ -237,57 +237,44 @@ case ${#} in
 esac
 
 digit='[[:digit:]]'
-day=${digit}${digit}
-hour=${digit}${digit}
-month=${digit}${digit}
-week=${digit}${digit}
-year=${digit}${digit}${digit}${digit}
 for arg
 do
+	day=${digit}${digit}
+	hour=${digit}${digit}
+	month=${digit}${digit}
+	week=${digit}${digit}
+	weekday=${digit}
+	year=${digit}${digit}${digit}${digit}
 	case ${arg%=*} in
-	yearly       ) set -- "${@}" -o -name "${year}" -mtime +"${arg##*=}" ;;
-	fake-yearly  ) set -- "${@}" -o -name "9999" -mtime +"${arg##*=}" ;;
-	monthly      ) set -- "${@}" -o \( \
+	fake-yearly  ) year=9999 ;;
+	fake-monthly ) month=99 ;;
+	fake-weekly  ) week=99 ;;
+	fake-daily   ) day=99 weekday=9 ;;
+	fake-hourly  ) hour=99 ;;
+	esac
+	case ${arg%=*} in
+	yearly  | fake-yearly  ) set -- "${@}" -o -name "${year}" -mtime +"${arg##*=}" ;;
+	monthly | fake-monthly ) set -- "${@}" -o \( \
 		-name "${year}${month}" -o \
 		-name "${year}-${month}" \
 		\) -mtime +"${arg##*=}" ;;
-	fake-monthly ) set -- "${@}" -o \( \
-		-name "${year}99" -o \
-		-name "${year}-99" \
-		\) -mtime +"${arg##*=}" ;;
-	weekly       ) set -- "${@}" -o \( \
+	weekly  | fake-weekly  ) set -- "${@}" -o \( \
 		-name "${year}W${week}" -o \
 		-name "${year}-W${week}" \
 		\) -mtime +"${arg##*=}" ;;
-	fake-weekly  ) set -- "${@}" -o \( \
-		-name "${year}W99" -o \
-		-name "${year}-W99" \
-		\) -mtime +"${arg##*=}" ;;
-	daily        ) set -- "${@}" -o \( \
+	daily   | fake-daily   ) set -- "${@}" -o \( \
 		-name "${year}${month}${day}" -o \
 		-name "${year}-${month}-${day}" -o \
-		-name "${year}W${week}${digit}" -o \
-		-name "${year}-W${week}-${digit}" \
+		-name "${year}W${week}${weekday}" -o \
+		-name "${year}-W${week}-${weekday}" \
 		\) -mtime +"${arg##*=}" ;;
-	fake-daily   ) set -- "${@}" -o \( \
-		-name "${year}${month}99" -o \
-		-name "${year}-${month}-99" -o \
-		-name "${year}W${week}9" -o \
-		-name "${year}-W${week}-9" \
-		\) -mtime +"${arg##*=}" ;;
-	hourly       ) set -- "${@}" -o \( \
+	hourly  | fake-hourly  ) set -- "${@}" -o \( \
 		-name "${year}${month}${day}T${hour}*" -o \
 		-name "${year}-${month}-${day}T${hour}*" -o \
-		-name "${year}W${week}${digit}T${hour}*" -o \
-		-name "${year}-W${week}-${digit}T${hour}*" \
+		-name "${year}W${week}${weekday}T${hour}*" -o \
+		-name "${year}-W${week}-${weekday}T${hour}*" \
 		\) -mtime +"${arg##*=}" ;;
-	fake-hourly  ) set -- "${@}" -o \( \
-		-name "${year}${month}${day}T99*" -o \
-		-name "${year}-${month}-${day}T99*" -o \
-		-name "${year}W${week}${digit}T99*" -o \
-		-name "${year}-W${week}-${digit}T99*" \
-		\) -mtime +"${arg##*=}" ;;
-	*            ) set -- "${@}" -o -name "${digit}*" -name "${arg%=*}" -mtime +"${arg##*=}" ;;
+	*       ) set -- "${@}" -o -name "${digit}*" -name "${arg%=*}" -mtime +"${arg##*=}" ;;
 	esac
 	shift
 done
