@@ -216,8 +216,11 @@ done
 # Parse operands.
 case ${#} in
 0 )
-	if [ -f "${dir}/conf/purge-list" ]
+	if [ ! -f "${dir}/conf/purge-list" ]
 	then
+		# shellcheck disable=SC2086
+		set -- ${default_args}
+	else
 		set --
 		while read -r arg
 		do
@@ -226,9 +229,6 @@ case ${#} in
 			esac
 			set -- "${@}" "${arg}"
 		done < "${dir}/conf/purge-list"
-	else
-		# shellcheck disable=SC2086
-		set -- ${default_args}
 	fi
 	case ${#} in
 	0 ) exit ;;
