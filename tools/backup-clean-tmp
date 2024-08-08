@@ -139,7 +139,7 @@ else
 		${valid+ ! -name "${old_base_prefix}-*[!${valid}]*" } \
 		-exec ${dry_run:+echo} ${rm_fr} -- {} + || :
 
-	# Find the temporary subdirectories (and files).
+	# Find the stale temporary subdirectories (and files).
 	# If the name of a temporary subdirectory starts with one of
 	# the basename prefixes, remove the subdirectory unconditionally.
 	# Otherwise, remove the subdirectory only if it has not been
