@@ -1,7 +1,7 @@
 #! /bin/sh -Ceu
 # backup-purge - delete old backup directories
 ###########################################################################
-# backup-purge 0.0.20240807
+# backup-purge 0.0.20240811
 #
 # Copyright (C) 2010 - 2024 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -301,33 +301,28 @@ esac
 # Clean up temporary directories.
 "${0%backup*}backup-clean-tmp" ${dry_run:+ --dry-run } -- purge
 
-{
-	cd -- "${dir}" &&
-	find . ! -name . -prune \( "${@}" \)
-} | {
-	# Read the names of the to be deleted backup directories.
-	set --
-	while read -r backup_tag
-	do
-		set -- "${@}" "${dir}/${backup_tag#.[\\/]}"
-	done
-	${1+:} exit 0
+# Determine the preferred remove method.
+fstype=$(
+	exec find "${dir}/." -prune -printf '%F\n' 2> /dev/null
+	) || :
+case ${fstype} in
+fuse.s3ql ) rm_fr=s3qlrm ;;
+*         ) rm_fr='rm -fr' ;;
+esac
 
-	# Determine the preferred remove method.
-	fstype=$(
-		exec find "${dir}/." -prune -printf '%F\n' 2> /dev/null
-		) || :
-	case ${fstype} in
-	fuse.s3ql ) rm_fr=s3qlrm ;;
-	*         ) rm_fr='rm -fr' ;;
-	esac
-
-	# Create a protected temporary directory.
-	${dry_run:+echo} mkdir -m go= -- "${dir}/tmp/purge-${$}"
-	# Relocate the to be deleted backup directories.
-	${dry_run:+echo} mv -f -- "${@}" "${dir}/tmp/purge-${$}/"
-	# Remove the protected temporary directory and the backup directories
-	# within it.
-	# shellcheck disable=SC2086
-	${dry_run:+echo} ${rm_fr} -- "${dir}/tmp/purge-${$}"
-} >&2
+# Find the old backup directories and remove them.
+# Use the following steps for removals:
+#  1) Create a new temporary purge subdirectory.
+#  2) Move the old backup directories to the newly created temporary
+#     purge subdirectory.
+#  3) Remove the newly created temporary purge subdirectory.
+# This ensures atomicity (moving is atomic while removing is not).
+tmp_purge="${dir}/tmp/purge-${$}" exec find \
+	"${dir}/." \
+	! -name . \
+	-prune \
+	\( "${@}" \) \
+	-exec /bin/sh -Cceu "
+${dry_run:+echo }mkdir -m go=u-w -- \"\${tmp_purge}\" &&
+${dry_run:+echo }mv -f -- \"\${@}\" \"\${tmp_purge}\"/ &&
+${dry_run:+echo }${rm_fr} -- \"\${tmp_purge}\"" sh {} +

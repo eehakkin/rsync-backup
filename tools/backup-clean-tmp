@@ -1,7 +1,7 @@
 #! /bin/sh -Ceu
 # backup-clean-tmp - clean up a temporary directory
 ###########################################################################
-# backup-clean-tmp 0.0.20240807
+# backup-clean-tmp 0.0.20240811
 #
 # Copyright (C) 2010 - 2024 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -139,7 +139,7 @@ else
 		${valid+ ! -name "${old_base_prefix}-*[!${valid}]*" } \
 		-exec ${dry_run:+echo} ${rm_fr} -- {} + || :
 
-	# Find the temporary subdirectories (and files).
+	# Find the stale temporary subdirectories (and files).
 	# If the name of a temporary subdirectory starts with one of
 	# the basename prefixes, remove the subdirectory unconditionally.
 	# Otherwise, remove the subdirectory only if it has not been
@@ -170,15 +170,14 @@ else
 	done
 	# [-name '<BASE-PREFIX>-*' -o]... -ctime +0 -mtime +0
 	set -- "${@}" -ctime +0 -mtime +0
-	# shellcheck disable=SC2016
 	tmp_old="${dir}/tmp/${old_base_prefix}-${$}" exec find \
 		"${dir}/tmp/." \
 		! -name . \
 		-prune \
 		! -name "${old_base_prefix}-*" \
 		\( "${@}" \) \
-		-exec /bin/sh -Cceu '
-'"${dry_run:+echo }mkdir"' -m go=u-w -- "${tmp_old}" &&
-'"${dry_run:+echo }mv"' -f -- "${@}" "${tmp_old}"/ &&
-'"${dry_run:+echo }${rm_fr}"' -- "${tmp_old}"' sh {} +
+		-exec /bin/sh -Cceu "
+${dry_run:+echo }mkdir -m go=u-w -- \"\${tmp_old}\" &&
+${dry_run:+echo }mv -f -- \"\${@}\" \"\${tmp_old}\"/ &&
+${dry_run:+echo }${rm_fr} -- \"\${tmp_old}\"" sh {} +
 fi
