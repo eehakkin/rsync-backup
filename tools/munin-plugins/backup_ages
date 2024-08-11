@@ -61,7 +61,6 @@ but that can be overridden with a field specific _label variable.
   env._path_to_dir_label Directory
   env.mostly_offline_example_org_label Mostly offline
 
-
 =head2 WARNING AND CRITICAL SETTINGS
 
 The default behaviour is to detect backup frequency
@@ -94,8 +93,8 @@ indicating a missing backup.
   env.devel_example_org_warning 3.5
   env._path_to_dir_critical 4.5
   env._path_to_dir_warning 2.5
-  env.mostly_offline_example_org_critical 15
-  env.mostly_offline_example_org_warning 8
+  env.mostly_offline_example_org_critical 360
+  env.mostly_offline_example_org_warning 192
 
 It is also possible to use time units (w for weeks, d for days, h for hours,
 min and m for minutes and s for seconds):
@@ -177,15 +176,6 @@ normalize_backup_name() {
 		backup_dir=${dir}/../${backup_name}
 		;;
 	esac
-}
-
-print_threshold() { # <THRESHOLD-TYPE> <FIELDNAME>
-	threshold=$( "get_${1}" "${2}" )
-	case ${threshold} in
-	'' ) return ;;
-	esac
-	threshold_in_hours=$( timespan_to_hours "${threshold}" )
-	echo "${2}.${1} ${threshold_in_hours}"
 }
 
 seconds_to_hours() { # <ARITHMETIC-EXPRESSION>
@@ -276,24 +266,34 @@ config )
 				-name '*T??' \
 			| exec wc -l
 			) in
-		0  ) critical=60  warning=36 ;;  # Daily backups
-		1  ) critical=30  warning=18 ;;  # Every 12 hours
-		2  ) critical=20  warning=12 ;;  # Every 8 hours
-		3  ) critical=15  warning=9 ;;   # Every 6 hours
+		0  ) critical_hours=60  warning_hours=36 ;;  # Daily backups
+		1  ) critical_hours=30  warning_hours=18 ;;  # Every 12 hours
+		2  ) critical_hours=20  warning_hours=12 ;;  # Every 8 hours
+		3  ) critical_hours=15  warning_hours=9 ;;   # Every 6 hours
 		4  | \
-		5  ) critical=10  warning=6 ;;   # Every 4 hours
+		5  ) critical_hours=10  warning_hours=6 ;;   # Every 4 hours
 		6  | \
-		7  ) critical=7.5 warning=4.5 ;; # Every 3 hours
+		7  ) critical_hours=7.5 warning_hours=4.5 ;; # Every 3 hours
 		8  | \
 		9  | \
 		10 | \
-		11 ) critical=5   warning=3 ;;   # Every 2 hours
-		*  ) critical=2.5 warning=1.5 ;; # Hourly backups
+		11 ) critical_hours=5   warning_hours=3 ;;   # Every 2 hours
+		*  ) critical_hours=2.5 warning_hours=1.5 ;; # Hourly backups
 		esac
 		fieldname=$( clean_fieldname "${backup_name}" )
 		eval echo "\"\${fieldname}.label \${${fieldname}_label-\${backup_name}}\""
-		print_threshold critical "${fieldname}"
-		print_threshold warning  "${fieldname}"
+		for threshold_type in critical warning
+		do
+			threshold=$(
+				critical=${critical-${critical_hours}} &&
+				warning=${warning-${warning_hours}} &&
+				"get_${threshold_type}" "${fieldname}"
+				)
+			${threshold:+:} continue
+			threshold_in_hours=$( timespan_to_hours "${threshold}" ) ||
+			eval "threshold_in_hours=\${${threshold_type}_hours}"
+			echo "${fieldname}.${threshold_type} ${threshold_in_hours}"
+		done
 	done
 	;;
 * )
