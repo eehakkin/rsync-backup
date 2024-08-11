@@ -294,16 +294,16 @@ case ${args}${extra_args} in
 	*      ) unset filter ;;
 	esac
 	rsh=${dir}/conf/rsh; [ ! -x "${rsh}" ] && unset rsh
-	# shellcheck disable=SC2089
-	rsync_path="\
-IONICE=\$( command -v -- ionice || : ) && \
-NICE=\$( command -v -- nice || : ) && \
-NOCACHE=\$( command -v -- nocache || : ) && \
+	rsync_path=$( tr -s -- '\\\n\r\t' ' ' ) << '__RSYNC_PATH__'
+IONICE=$( command -v -- ionice || : ) &&
+NICE=$( command -v -- nice || : ) &&
+NOCACHE=$( command -v -- nocache || : ) &&
 exec \
-\${IONICE:+ \"\${IONICE}\" -c 3 -- } \
-\${NICE:+ \"\${NICE}\" -n 99 -- } \
-\${NOCACHE:+ \"\${NOCACHE}\" -n 2 -- } \
-rsync"
+	${IONICE:+ "${IONICE}" -c 3 -- } \
+	${NICE:+ "${NICE}" -n 99 -- } \
+	${NOCACHE:+ "${NOCACHE}" -n 2 -- } \
+	rsync
+__RSYNC_PATH__
 
 	# Extend the options with ones read from configuration files.
 	for config_name in ${config_name+ "${config_name}" } rsync
@@ -336,7 +336,6 @@ rsync"
 	done
 
 	# Extend the options with default options.
-	# shellcheck disable=SC2090
 	set -- \
 		--archive					\
 		${filter+ --filter="${filter}" }		\

@@ -44,8 +44,10 @@ Minimum requirements:
    **printf**(1),
    **rm**(1),
    **rmdir**(1),
+   **sed**(1),
    **sh**(1),
-   **sync**(1) and
+   **sync**(1),
+   **tr**(1) and
    **uname**(1)
  - **rsync**(1):        To copy files.
 
