@@ -1,7 +1,7 @@
 #! /bin/sh -Ceu
 # backup-rsync - a backup-oriented file-copying tool
 ###########################################################################
-# backup-rsync 0.0.20240102
+# backup-rsync 0.0.20240811
 #
 # Copyright (C) 2010 - 2024 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -266,8 +266,7 @@ case ${args}${extra_args} in
 	eval 'last_arg=${'"${#}"'}'
 	case ${last_arg} in
 	. )
-		# shellcheck disable=SC2004
-		max_dest_opts=$(( ${max_dest_opts} / 2 ))
+		max_dest_opts=$(( max_dest_opts / 2 ))
 		# Replace the last operand with <DIR>/tmp/rsync-<PID>/<TAG>.
 		tag=$( "${0%backup*}backup-make-tag" )
 		tmp_base=rsync-${$}

@@ -136,10 +136,9 @@ dir=$( cd -- "${me_dir}/../.." && pwd )
 # shellcheck source=/usr/share/munin/plugins/plugin.sh
 . "${MUNIN_LIBDIR?}/plugins/plugin.sh"
 
-microseconds_to_hours() { # <ARITHMETIC-EXPRESSION>
-	# shellcheck disable=SC2004
-	microseconds=$(( ${*} )) &&
-	microhours=$(( ${microseconds} / ( 60 * 60 ) )) &&
+microseconds_to_hours() { # <MICROSECONDS>
+	microseconds=${1} &&
+	microhours=$(( ( ( microseconds ) + 30 * 60 ) / ( 60 * 60 ) )) &&
 	case ${microhours} in
 	?      ) hours=0.00000${microhours} ;;
 	??     ) hours=0.0000${microhours} ;;
@@ -178,13 +177,12 @@ normalize_backup_name() {
 	esac
 }
 
-seconds_to_hours() { # <ARITHMETIC-EXPRESSION>
-	seconds=$(( ${*} )) &&
-	microseconds_to_hours "1000000 * ( ${seconds} )"
+seconds_to_hours() { # <SECONDS>
+	seconds=${1} &&
+	microseconds_to_hours "$(( 1000000 * ( seconds ) ))"
 }
 
 timespan_to_hours() { # <VALUE-1>[<UNIT-1>[<VALUE-2><UNIT-2>[...]]]
-	# shellcheck disable=SC2004
 	timespan=${1} &&
 	# Convert from
 	#     <VALUE-1><UNIT-1>[<VALUE-2><UNIT-2>[...]]
@@ -228,10 +226,10 @@ timespan_to_hours() { # <VALUE-1>[<UNIT-1>[<VALUE-2><UNIT-2>[...]]]
 	value=${timespan%%[![:digit:]]*} &&
 	case ${timespan#"${value}"} in
 	s       ) seconds_to_hours "${value}" ;;
-	min | m ) seconds_to_hours "$(( 60 * ( ${value} ) ))" ;;
+	min | m ) seconds_to_hours "$(( 60 * ( value ) ))" ;;
 	h       ) echo "${value}.0" ;;
-	d       ) echo "$((     24 * ${value} )).0" ;;
-	w       ) echo "$(( 7 * 24 * ${value} )).0" ;;
+	d       ) echo "$((     24 * value )).0" ;;
+	w       ) echo "$(( 7 * 24 * value )).0" ;;
 	*       ) echo "${timespan}" ;;
 	esac
 }
@@ -304,7 +302,7 @@ config )
 		${backup_dir+:} ${backup_name+:} continue
 		fieldname=$( clean_fieldname "${backup_name}" )
 		ctime=$( stat --format=%Z -- "${backup_dir}/latest/." ) &&
-		age_in_hours=$( seconds_to_hours "${now}" - "${ctime}" ) ||
+		age_in_hours=$( seconds_to_hours "$(( now - ctime ))" ) ||
 		age_in_hours=U
 		echo "${fieldname}.value ${age_in_hours}"
 	done
