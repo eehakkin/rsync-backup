@@ -184,8 +184,20 @@ print_threshold() { # <THRESHOLD-TYPE> <FIELDNAME>
 	case ${threshold} in
 	'' ) return ;;
 	esac
+	threshold_in_hours=$( timespan_to_hours "${threshold}" )
+	echo "${2}.${1} ${threshold_in_hours}"
+}
+
+seconds_to_hours() { # <ARITHMETIC-EXPRESSION>
+	seconds=$(( ${*} )) &&
+	microseconds_to_hours "1000000 * ( ${seconds} )"
+}
+
+timespan_to_hours() { # <VALUE-1>[<UNIT-1>[<VALUE-2><UNIT-2>[...]]]
+	# shellcheck disable=SC2004
+	timespan=${1} &&
 	# Convert from
-	#     <VALUE-1><UNIT-1>[<VALUE-2><UNIT-2>[<VALUE-3><UNIT-3>[...]]]
+	#     <VALUE-1><UNIT-1>[<VALUE-2><UNIT-2>[...]]
 	# to
 	#     <VALUE><UNIT>.
 	while :
@@ -198,45 +210,40 @@ print_threshold() { # <THRESHOLD-TYPE> <FIELDNAME>
 		#     <VALUE-1><UNIT-1><VALUE-2><UNIT-2>[<VALUE-3><UNIT-3>[...]]
 		# to
 		#     <VALUE><UNIT-2>[<VALUE-3><UNIT-3>[...]].
-		case ${threshold} in
-		*w[[:digit:]]*[dhms]* ) multiplier=7  unit1=w   unit2=d ;;
-		*d[[:digit:]]*[hms]*  ) multiplier=24 unit1=d   unit2=h ;;
-		*h[[:digit:]]*[ms]*   ) multiplier=60 unit1=h   unit2=min ;;
-		*min[[:digit:]]*s     ) multiplier=60 unit1=min unit2=s ;;
-		*m[[:digit:]]*s       ) multiplier=60 unit1=m   unit2=s ;;
-		*                     ) break ;;
-		esac
-		value1=${threshold%%"${unit1}"*}
-		threshold=${threshold#"${value1}${unit1}"}
-		value2=${threshold%%[![:digit:]]*}
-		# shellcheck disable=SC2004
-		case ${threshold} in
-		"${value2}${unit2}"* ) threshold=$((
-			${multiplier} * ( ${value1} ) + ( ${value2} )
-			))${unit2}${threshold#"${value2}${unit2}"} ;;
-		"${value2}${unit2%in}"* ) threshold=$((
-			${multiplier} * ( ${value1} ) + ( ${value2} )
-			))${unit2}${threshold#"${value2}${unit2%in}"} ;;
-		* ) threshold=$((
-			${multiplier} * ( ${value1} )
-			))${unit2}${threshold} ;;
-		esac
-	done
+		value1=${timespan%%[![:digit:]]*} &&
+		case ${timespan#"${value1}"} in
+		"${timespan}"        ) break ;;
+		w[[:digit:]]*[dhms]* ) multiplier=7  unit1=w   unit2=d ;;
+		d[[:digit:]]*[hms]*  ) multiplier=24 unit1=d   unit2=h ;;
+		h[[:digit:]]*[ms]*   ) multiplier=60 unit1=h   unit2=min ;;
+		min[[:digit:]]*s     ) multiplier=60 unit1=min unit2=s ;;
+		m[[:digit:]]*s       ) multiplier=60 unit1=m   unit2=s ;;
+		*                    ) break ;;
+		esac &&
+		timespan=${timespan#"${value1}${unit1}"} &&
+		value2=${timespan%%[![:digit:]]*} &&
+		case ${timespan} in
+		"${value2}${unit2}"* ) timespan=$((
+			multiplier * ( value1 ) + ( value2 )
+			))${unit2}${timespan#"${value2}${unit2}"} ;;
+		"${value2}${unit2%in}"* ) timespan=$((
+			multiplier * ( value1 ) + ( value2 )
+			))${unit2}${timespan#"${value2}${unit2%in}"} ;;
+		* ) timespan=$((
+			multiplier * ( value1 )
+			))${unit2}${timespan} ;;
+		esac || return
+	done &&
 	# Convert from <VALUE><UNIT> to <VALUE-IN-HOURS>.
-	case ${threshold##*[[:digit:]]} in
-	s   ) threshold=$( seconds_to_hours        "${threshold%s}"     ) ;;
-	min ) threshold=$( seconds_to_hours "60 * ( ${threshold%min} )" ) ;;
-	m   ) threshold=$( seconds_to_hours "60 * ( ${threshold%m}   )" ) ;;
-	h   ) threshold=${threshold%h}.0 ;;
-	d   ) threshold=$((     24 * ${threshold%d} )).0 ;;
-	w   ) threshold=$(( 7 * 24 * ${threshold%w} )).0 ;;
+	value=${timespan%%[![:digit:]]*} &&
+	case ${timespan#"${value}"} in
+	s       ) seconds_to_hours "${value}" ;;
+	min | m ) seconds_to_hours "$(( 60 * ( ${value} ) ))" ;;
+	h       ) echo "${value}.0" ;;
+	d       ) echo "$((     24 * ${value} )).0" ;;
+	w       ) echo "$(( 7 * 24 * ${value} )).0" ;;
+	*       ) echo "${timespan}" ;;
 	esac
-	echo "${2}.${1} ${threshold}"
-}
-
-seconds_to_hours() { # <ARITHMETIC-EXPRESSION>
-	seconds=$(( ${*} )) &&
-	microseconds_to_hours "1000000 * ( ${seconds} )"
 }
 
 case ${1-} in
