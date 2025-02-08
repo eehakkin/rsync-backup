@@ -1,8 +1,8 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# mysql-dump 0.0.20240102
+# mysql-dump 0.0.20250209
 #
-# Copyright (C) 2010 - 2024 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2010 - 2025 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
+set -e || exit
+
 # Locate the script.
 me=$( command -v -- "${0}" || ls -d -- "${0}" )
 me_dir=$( dirname -- "${me}" )
