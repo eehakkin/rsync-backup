@@ -60,6 +60,9 @@ case "${user}: ${group} ${groups} " in
 	-- "${me_dir}/${me_base}" "${@}" ;;
 esac
 
+# Set umask.
+umask -- ug-w,o=
+
 move_tmp_to_dst_or_remove_tmp() { # [--] <TMP> <DST>
 	case ${1} in
 	-- ) shift ;;
@@ -112,7 +115,6 @@ install -d -g "${dump_group}" -m 750 -o "${dump_user}" -- \
 	"${tmp_dump_dir}"
 
 # Dump to a new temporary dump directory.
-umask -- ug-w,o=
 mydumper \
 	--compress \
 	${mysql_defaults_file:+ --defaults-file="${mysql_defaults_file}" } \
