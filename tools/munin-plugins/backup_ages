@@ -1,9 +1,9 @@
 #! /bin/sh -Ce
 # -*- sh -*-
 ###########################################################################
-# backup_ages 0.0.20240811
+# backup_ages 0.0.20250803
 #
-# Copyright (C) 2019 - 2024 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
+# Copyright (C) 2019 - 2025 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3
@@ -262,6 +262,7 @@ config )
 				! -name . \
 				-prune \
 				-name '*T??' \
+				! -name '*T99' \
 			| exec wc -l
 			) in
 		0  ) critical_hours=60  warning_hours=36 ;;  # Daily backups
@@ -288,9 +289,9 @@ config )
 				"get_${threshold_type}" "${fieldname}"
 				)
 			${threshold:+:} continue
-			threshold_in_hours=$( timespan_to_hours "${threshold}" ) ||
-			eval "threshold_in_hours=\${${threshold_type}_hours}"
-			echo "${fieldname}.${threshold_type} ${threshold_in_hours}"
+			threshold_hours=$( timespan_to_hours "${threshold}" ) ||
+			eval "threshold_hours=\${${threshold_type}_hours}"
+			echo "${fieldname}.${threshold_type} ${threshold_hours}"
 		done
 	done
 	;;
