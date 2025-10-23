@@ -37,6 +37,7 @@ unset \
 	ldap_timelimit
 ldap_pr_size='250'
 dump_config=${me_dir%conf*}conf/dump-config
+# shellcheck source=/dev/null
 [ ! -f "${dump_config}" ] || . "${dump_config}"
 dump_user=${dump_user:-"backup"}
 dump_group=${dump_group:-"${dump_user}"}
@@ -97,6 +98,7 @@ move_tmp_to_dst_or_remove_tmp -- \
 	"${dump_dir}/.backup-filter"
 
 # Find out contexts.
+# shellcheck disable=SC2086
 ldapsearch \
 	-LLLM \
 	${LDAPSEARCH_OPTS} \
@@ -113,6 +115,7 @@ ldapsearch \
 		# Clean up old temporary dump files.
 		rm -f -- "${dst_dump_file}".*~
 		# Dump to a new temporary dump file.
+		# shellcheck disable=SC1073
 		ldapsearch \
 			-LLLM \
 			${LDAPSEARCH_OPTS} \

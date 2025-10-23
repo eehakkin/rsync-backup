@@ -36,6 +36,7 @@ unset \
 	mysql_host \
 	mysql_user
 dump_config=${me_dir%conf*}conf/dump-config
+# shellcheck source=/dev/null
 [ ! -f "${dump_config}" ] || . "${dump_config}"
 dump_user=${dump_user-"backup"}
 dump_group=${dump_group-"${dump_user}"}
