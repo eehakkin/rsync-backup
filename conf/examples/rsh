@@ -31,9 +31,16 @@ set -- \
 	-o StrictHostKeyChecking=yes \
 	-o VerifyHostKeyDNS=yes \
 	"${@}"
-[ ! -f "${me_dir}/ssh/config" ] || set -- \
-	-F "${me_dir}/ssh/config" \
-	"${@}"
+if [ ! -f "${me_dir}/ssh/config" ]
+then
+	set -- \
+		-o VisualHostKey=no \
+		"${@}"
+else
+	set -- \
+		-F "${me_dir}/ssh/config" \
+		"${@}"
+fi
 
 # Use a proxy command for root.
 case " ${*} " in
