@@ -1,6 +1,6 @@
 #! /bin/sh -Ceu
 ###########################################################################
-# mysql-dump 0.0.20250209
+# mysql-dump 0.0.20251023
 #
 # Copyright (C) 2010 - 2025 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
-set -e || exit
+set -Ceu || exit
 
 # Locate the script.
 me=$( command -v -- "${0}" || ls -d -- "${0}" )

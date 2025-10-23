@@ -1,6 +1,6 @@
 #! /bin/bash -Ceu
 ###########################################################################
-# ldap-dump 0.0.20250209
+# ldap-dump 0.0.20251023
 #
 # Copyright (C) 2010 - 2025 Eero Häkkinen <Eero+rsync-backup@Häkkinen.fi>
 #
@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
-set -e -o pipefail || exit
+set -Ceu -o pipefail || exit
 
 # Locate the script.
 me=$( command -v -- "${0}" || ls -d -- "${0}" )
@@ -33,8 +33,9 @@ unset \
 	dump_dir \
 	dump_group \
 	dump_user \
-	ldap_sizelimit
-ldap_paged_size='250'
+	ldap_sizelimit \
+	ldap_timelimit
+ldap_pr_size='250'
 dump_config=${me_dir%conf*}conf/dump-config
 [ ! -f "${dump_config}" ] || . "${dump_config}"
 dump_user=${dump_user:-"backup"}
@@ -96,7 +97,9 @@ move_tmp_to_dst_or_remove_tmp -- \
 	"${dump_dir}/.backup-filter"
 
 # Find out contexts.
-ldapsearch -LLLM ${LDAPSEARCH_OPTS} \
+ldapsearch \
+	-LLLM \
+	${LDAPSEARCH_OPTS} \
 	-b '' \
 	-o ldif-wrap=no \
 	-s base \
@@ -110,9 +113,13 @@ ldapsearch -LLLM ${LDAPSEARCH_OPTS} \
 		# Clean up old temporary dump files.
 		rm -f -- "${dst_dump_file}".*~
 		# Dump to a new temporary dump file.
-		ldapsearch -LLLM ${LDAPSEARCH_OPTS} \
+		ldapsearch \
+			-LLLM \
+			${LDAPSEARCH_OPTS} \
+			-a never \
 			-b "${base}" \
-			${ldap_paged_size:+ -E "pr=${ldap_paged_size}/noprompt" } \
+			${ldap_pr_size:+ -E "pr=${ldap_pr_size}/noprompt" } \
+			${ldap_timelimit:+ -l "${ldap_timelimit}" } \
 			-o ldif-wrap=no \
 			${ldap_sizelimit:+ -z "${ldap_sizelimit}" } \
 			-- '(objectClass=*)' '*' + \
